@@ -24,19 +24,22 @@
 
 #include <qtabwidget.h>
 #include <qpushbutton.h>
-#include <qlistbox.h>
-#include <qtable.h>
+#include <q3listbox.h>
+#include <q3table.h>
 #include <qsplitter.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qlabel.h>
 #include <qlineedit.h>
-#include <qtextedit.h>
+#include <q3textedit.h>
 #include <qinputdialog.h>
 #include <qapplication.h>
 #include <qcursor.h>
 
 #include "QSimCreateDialog.h"
 #include "QAutoGenDialog.h"
+//Added by qt3to4:
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
 #include "Simulator.h"
 #include "StringHelp.h"
 #include "SimpleLinkModel.h"
@@ -67,7 +70,7 @@
 
 #include "app16x16.xpm"
 
-QSimCreateDialog::QSimCreateDialog(QWidget * parent, const char * name, bool modal, WFlags f)
+QSimCreateDialog::QSimCreateDialog(QWidget * parent, const char * name, bool modal, Qt::WFlags f)
 : QDialog(parent, name, modal, f)
 {
 	unsigned int i;
@@ -96,26 +99,26 @@ QSimCreateDialog::QSimCreateDialog(QWidget * parent, const char * name, bool mod
 	QWidget * pModelNameBox = new QWidget(pModelTypeBox);
 	QWidget * pModelButtons = new QWidget(pTabModels);
 
-	QVBoxLayout * pLayout = new QVBoxLayout(this, 8, 8);
-	QVBoxLayout * pTabVehiclesLayout = new QVBoxLayout(pTabVehicles, 8, 8);
-	QVBoxLayout * pTabInfrastructureNodesLayout = new QVBoxLayout(pTabInfrastructureNodes, 8, 8);
-	QVBoxLayout * pTabModelsLayout = new QVBoxLayout(pTabModels, 8, 8);
-	QHBoxLayout * pVehiclesBoxLayout = new QHBoxLayout(pVehiclesBox, 0, 8);
-	QVBoxLayout * pVehiclesButtonBoxLayout = new QVBoxLayout(pVehiclesButtonBox, 0, 8);
-	QVBoxLayout * pVehicleTypeBoxLayout = new QVBoxLayout(pVehicleTypeBox, 0, 8);
-	QHBoxLayout * pVehicleNameBoxLayout = new QHBoxLayout(pVehicleNameBox, 0, 8);
-	QHBoxLayout * pVehicleButtonsLayout = new QHBoxLayout(pVehicleButtons, 0, 8);
-	QHBoxLayout * pInfrastructureNodesBoxLayout = new QHBoxLayout(pInfrastructureNodesBox, 0, 8);
-	QVBoxLayout * pInfrastructureNodesButtonBoxLayout = new QVBoxLayout(pInfrastructureNodesButtonBox, 0, 8);
-	QVBoxLayout * pInfrastructureNodeTypeBoxLayout = new QVBoxLayout(pInfrastructureNodeTypeBox, 0, 8);
-	QHBoxLayout * pInfrastructureNodeNameBoxLayout = new QHBoxLayout(pInfrastructureNodeNameBox, 0, 8);
-	QHBoxLayout * pInfrastructureNodeButtonsLayout = new QHBoxLayout(pInfrastructureNodeButtons, 0, 8);
-	QHBoxLayout * pModelsBoxLayout = new QHBoxLayout(pModelsBox, 0, 8);
-	QVBoxLayout * pModelsButtonBoxLayout = new QVBoxLayout(pModelsButtonBox, 0, 8);
-	QVBoxLayout * pModelTypeBoxLayout = new QVBoxLayout(pModelTypeBox, 0, 8);
-	QHBoxLayout * pModelNameBoxLayout = new QHBoxLayout(pModelNameBox, 0, 8);
-	QHBoxLayout * pModelButtonsLayout = new QHBoxLayout(pModelButtons, 0, 8);
-	QHBoxLayout * pButtonBoxLayout = new QHBoxLayout(pButtonBox, 0, 8);
+	Q3VBoxLayout * pLayout = new Q3VBoxLayout(this, 8, 8);
+	Q3VBoxLayout * pTabVehiclesLayout = new Q3VBoxLayout(pTabVehicles, 8, 8);
+	Q3VBoxLayout * pTabInfrastructureNodesLayout = new Q3VBoxLayout(pTabInfrastructureNodes, 8, 8);
+	Q3VBoxLayout * pTabModelsLayout = new Q3VBoxLayout(pTabModels, 8, 8);
+	Q3HBoxLayout * pVehiclesBoxLayout = new Q3HBoxLayout(pVehiclesBox, 0, 8);
+	Q3VBoxLayout * pVehiclesButtonBoxLayout = new Q3VBoxLayout(pVehiclesButtonBox, 0, 8);
+	Q3VBoxLayout * pVehicleTypeBoxLayout = new Q3VBoxLayout(pVehicleTypeBox, 0, 8);
+	Q3HBoxLayout * pVehicleNameBoxLayout = new Q3HBoxLayout(pVehicleNameBox, 0, 8);
+	Q3HBoxLayout * pVehicleButtonsLayout = new Q3HBoxLayout(pVehicleButtons, 0, 8);
+	Q3HBoxLayout * pInfrastructureNodesBoxLayout = new Q3HBoxLayout(pInfrastructureNodesBox, 0, 8);
+	Q3VBoxLayout * pInfrastructureNodesButtonBoxLayout = new Q3VBoxLayout(pInfrastructureNodesButtonBox, 0, 8);
+	Q3VBoxLayout * pInfrastructureNodeTypeBoxLayout = new Q3VBoxLayout(pInfrastructureNodeTypeBox, 0, 8);
+	Q3HBoxLayout * pInfrastructureNodeNameBoxLayout = new Q3HBoxLayout(pInfrastructureNodeNameBox, 0, 8);
+	Q3HBoxLayout * pInfrastructureNodeButtonsLayout = new Q3HBoxLayout(pInfrastructureNodeButtons, 0, 8);
+	Q3HBoxLayout * pModelsBoxLayout = new Q3HBoxLayout(pModelsBox, 0, 8);
+	Q3VBoxLayout * pModelsButtonBoxLayout = new Q3VBoxLayout(pModelsButtonBox, 0, 8);
+	Q3VBoxLayout * pModelTypeBoxLayout = new Q3VBoxLayout(pModelTypeBox, 0, 8);
+	Q3HBoxLayout * pModelNameBoxLayout = new Q3HBoxLayout(pModelNameBox, 0, 8);
+	Q3HBoxLayout * pModelButtonsLayout = new Q3HBoxLayout(pModelButtons, 0, 8);
+	Q3HBoxLayout * pButtonBoxLayout = new Q3HBoxLayout(pButtonBox, 0, 8);
 
 	SimpleLinkModel::GetParams(m_mapModelParams[SIMPLELINKMODEL_NAME]);
 	m_vecModelTypes.push_back(SIMPLELINKMODEL_NAME);
@@ -173,37 +176,37 @@ QSimCreateDialog::QSimCreateDialog(QWidget * parent, const char * name, bool mod
 	setSizeGripEnabled(true);
 
 	m_tabsTabs = new QTabWidget(this);
-	m_listVehicles = new QListBox(pVehiclesBox);
-	m_listInfrastructureNodes = new QListBox(pInfrastructureNodesBox);
-	m_listModels = new QListBox(pModelsBox);
+	m_listVehicles = new Q3ListBox(pVehiclesBox);
+	m_listInfrastructureNodes = new Q3ListBox(pInfrastructureNodesBox);
+	m_listModels = new Q3ListBox(pModelsBox);
 	m_buttonVehicleAdd = new QPushButton("Add", pVehiclesButtonBox);
-	m_pVehiclesAddMenu = new QPopupMenu(this);
+	m_pVehiclesAddMenu = new Q3PopupMenu(this);
 	m_buttonVehicleRemove = new QPushButton("Remove", pVehiclesButtonBox);
 	m_buttonVehicleDuplicate = new QPushButton("Duplicate", pVehiclesButtonBox);
 	m_buttonInfrastructureNodeAdd = new QPushButton("Add", pInfrastructureNodesButtonBox);
-	m_pInfrastructureNodesAddMenu = new QPopupMenu(this);
+	m_pInfrastructureNodesAddMenu = new Q3PopupMenu(this);
 	m_buttonInfrastructureNodeRemove = new QPushButton("Remove", pInfrastructureNodesButtonBox);
 	m_buttonInfrastructureNodeDuplicate = new QPushButton("Duplicate", pInfrastructureNodesButtonBox);
 	m_buttonModelAdd = new QPushButton("Add", pModelsButtonBox);
-	m_pModelsAddMenu = new QPopupMenu(this);
+	m_pModelsAddMenu = new Q3PopupMenu(this);
 	m_buttonModelRemove = new QPushButton("Remove", pModelsButtonBox);
 	m_buttonModelDuplicate = new QPushButton("Duplicate", pModelsButtonBox);
 	m_lblVehicleName = new QLabel("Model Name:", pVehicleNameBox);
 	m_txtVehicleName = new QLineEdit(pVehicleNameBox);
-	m_tableVehicleProperties = new QTable(0, 2, pVehicleTypeBox);
-	m_txtVehiclePropertiesHelp = new QTextEdit("", QString::null, splitterVehicles);
+	m_tableVehicleProperties = new Q3Table(0, 2, pVehicleTypeBox);
+	m_txtVehiclePropertiesHelp = new Q3TextEdit("", QString::null, splitterVehicles);
 	m_buttonVehicleAutoGen = new QPushButton("Auto-Generate", pVehicleButtons);
 	m_buttonVehicleRemoveAll = new QPushButton("Remove All", pVehicleButtons);
 	m_lblInfrastructureNodeName = new QLabel("Model Name:", pInfrastructureNodeNameBox);
 	m_txtInfrastructureNodeName = new QLineEdit(pInfrastructureNodeNameBox);
-	m_tableInfrastructureNodeProperties = new QTable(0, 2, pInfrastructureNodeTypeBox);
-	m_txtInfrastructureNodePropertiesHelp = new QTextEdit("", QString::null, splitterInfrastructureNodes);
+	m_tableInfrastructureNodeProperties = new Q3Table(0, 2, pInfrastructureNodeTypeBox);
+	m_txtInfrastructureNodePropertiesHelp = new Q3TextEdit("", QString::null, splitterInfrastructureNodes);
 	m_buttonInfrastructureNodeAutoGen = new QPushButton("Auto-Generate", pInfrastructureNodeButtons);
 	m_buttonInfrastructureNodeRemoveAll = new QPushButton("Remove All", pInfrastructureNodeButtons);
 	m_lblModelName = new QLabel("Model Name:", pModelNameBox);
 	m_txtModelName = new QLineEdit(pModelNameBox);
-	m_tableModelProperties = new QTable(0, 2, pModelTypeBox);
-	m_txtModelPropertiesHelp = new QTextEdit("", QString::null, splitterModels);
+	m_tableModelProperties = new Q3Table(0, 2, pModelTypeBox);
+	m_txtModelPropertiesHelp = new Q3TextEdit("", QString::null, splitterModels);
 	m_buttonModelRemoveAll = new QPushButton("Remove All", pModelButtons);
 	m_buttonOK = new QPushButton("&OK", pButtonBox);
 	m_buttonCancel = new QPushButton("&Cancel", pButtonBox);
@@ -239,9 +242,9 @@ QSimCreateDialog::QSimCreateDialog(QWidget * parent, const char * name, bool mod
 	connect(m_buttonModelRemoveAll, SIGNAL(clicked()), this, SLOT(slotModelsRemoveAll()));
 	connect(m_buttonOK, SIGNAL(clicked()), this, SLOT(slotOK()));
 	connect(m_buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
-	m_listVehicles->setSelectionMode(QListBox::Extended);
-	m_listInfrastructureNodes->setSelectionMode(QListBox::Extended);
-	m_listModels->setSelectionMode(QListBox::Extended);
+	m_listVehicles->setSelectionMode(Q3ListBox::Extended);
+	m_listInfrastructureNodes->setSelectionMode(Q3ListBox::Extended);
+	m_listModels->setSelectionMode(Q3ListBox::Extended);
 	m_listVehicles->clearSelection();
 	m_listInfrastructureNodes->clearSelection();
 	m_listModels->clearSelection();
@@ -268,8 +271,8 @@ QSimCreateDialog::QSimCreateDialog(QWidget * parent, const char * name, bool mod
 	m_tableVehicleProperties->horizontalHeader()->setLabel(0, "Parameter");
 	m_tableVehicleProperties->horizontalHeader()->setLabel(1, "Value");
 	m_tableVehicleProperties->setSorting(false);
-	m_tableVehicleProperties->setSelectionMode(QTable::SingleRow);
-	m_tableVehicleProperties->setFocusStyle(QTable::FollowStyle);
+	m_tableVehicleProperties->setSelectionMode(Q3Table::SingleRow);
+	m_tableVehicleProperties->setFocusStyle(Q3Table::FollowStyle);
 	m_tableVehicleProperties->setColumnReadOnly(0, true);
 	m_tableVehicleProperties->setColumnReadOnly(1, false);
 	m_tableVehicleProperties->setColumnStretchable(1, true);
@@ -281,8 +284,8 @@ QSimCreateDialog::QSimCreateDialog(QWidget * parent, const char * name, bool mod
 	m_tableInfrastructureNodeProperties->horizontalHeader()->setLabel(0, "Parameter");
 	m_tableInfrastructureNodeProperties->horizontalHeader()->setLabel(1, "Value");
 	m_tableInfrastructureNodeProperties->setSorting(false);
-	m_tableInfrastructureNodeProperties->setSelectionMode(QTable::SingleRow);
-	m_tableInfrastructureNodeProperties->setFocusStyle(QTable::FollowStyle);
+	m_tableInfrastructureNodeProperties->setSelectionMode(Q3Table::SingleRow);
+	m_tableInfrastructureNodeProperties->setFocusStyle(Q3Table::FollowStyle);
 	m_tableInfrastructureNodeProperties->setColumnReadOnly(0, true);
 	m_tableInfrastructureNodeProperties->setColumnReadOnly(1, false);
 	m_tableInfrastructureNodeProperties->setColumnStretchable(1, true);
@@ -294,8 +297,8 @@ QSimCreateDialog::QSimCreateDialog(QWidget * parent, const char * name, bool mod
 	m_tableModelProperties->horizontalHeader()->setLabel(0, "Parameter");
 	m_tableModelProperties->horizontalHeader()->setLabel(1, "Value");
 	m_tableModelProperties->setSorting(false);
-	m_tableModelProperties->setSelectionMode(QTable::SingleRow);
-	m_tableModelProperties->setFocusStyle(QTable::FollowStyle);
+	m_tableModelProperties->setSelectionMode(Q3Table::SingleRow);
+	m_tableModelProperties->setFocusStyle(Q3Table::FollowStyle);
 	m_tableModelProperties->setColumnReadOnly(0, true);
 	m_tableModelProperties->setColumnReadOnly(1, false);
 	m_tableModelProperties->setColumnStretchable(1, true);
@@ -1225,7 +1228,7 @@ void QSimCreateDialog::slotOK()
 		accept();
 	} else {
 		qApp->restoreOverrideCursor();
-		QMessageBox::information(this, "GrooveNet", "Failed to create simulation. Please double-check parameters and try again.", QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton);
+		QMessageBox::information(this, "GrooveNet", "Failed to create simulation. Please double-check parameters and try again.", QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
 	}
 }
 
@@ -1335,26 +1338,26 @@ QString QSimCreateDialog::GetModelName(const QString & strLast)
 	return strText;
 }
 
-void QSimCreateDialog::AddTableItem(QTable * pTable, int row, int col, const QString & strValue, const ModelParameter * pParam)
+void QSimCreateDialog::AddTableItem(Q3Table * pTable, int row, int col, const QString & strValue, const ModelParameter * pParam)
 {
 	QStringList listOptions;
 	QStringList listModelTypes;
 	QStringList::iterator iterModelType;
 	unsigned int i;
 	bool bFound = false;
-	QComboTableItem * pComboItem;
+	Q3ComboTableItem * pComboItem;
 	switch (pParam->eType)
 	{
 	case ModelParameterTypeBool:
 		listOptions.push_back("True");
 		listOptions.push_back("False");
-		pTable->setItem(row, col, pComboItem = new QComboTableItem(pTable, listOptions, false));
+		pTable->setItem(row, col, pComboItem = new Q3ComboTableItem(pTable, listOptions, false));
 		pComboItem->setCurrentItem(StringToBoolean(strValue) ? 0 : 1);
 		break;
 	case ModelParameterTypeYesNo:
 		listOptions.push_back("Yes");
 		listOptions.push_back("No");
-		pTable->setItem(row, col, pComboItem = new QComboTableItem(pTable, listOptions, false));
+		pTable->setItem(row, col, pComboItem = new Q3ComboTableItem(pTable, listOptions, false));
 		pComboItem->setCurrentItem(StringToBoolean(strValue) ? 0 : 1);
 		break;
 	case ModelParameterTypeModel:
@@ -1387,12 +1390,12 @@ void QSimCreateDialog::AddTableItem(QTable * pTable, int row, int col, const QSt
 		if (!bFound && strValue != "NULL")
 			listOptions.push_back(strValue);
 		listOptions.sort();
-		pTable->setItem(row, col, pComboItem = new QComboTableItem(pTable, listOptions, true));
+		pTable->setItem(row, col, pComboItem = new Q3ComboTableItem(pTable, listOptions, true));
 		pComboItem->setCurrentItem(strValue);
 		break;
 	case ModelParameterTypeGPS:
 		listOptions = QStringList::split(';', pParam->strAuxData, false);
-		pTable->setItem(row, col, pComboItem = new QComboTableItem(pTable, listOptions, false));
+		pTable->setItem(row, col, pComboItem = new Q3ComboTableItem(pTable, listOptions, false));
 		pComboItem->setCurrentItem(strValue);
 		break;
 	default:

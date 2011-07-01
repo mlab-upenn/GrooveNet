@@ -27,8 +27,8 @@
 QMessageList::QMessageList(QWidget * parent, const char * name, Qt::WFlags f)
 : QWidget(parent, name, f)
 {
-	layout = new QBoxLayout(this,QBoxLayout::TopToBottom);
-	m_listMessages = new QListBox(this,"messages.list");
+	layout = new Q3BoxLayout(this,Q3BoxLayout::TopToBottom);
+	m_listMessages = new Q3ListBox(this,"messages.list");
 	m_listMessages->setEnabled(true);
 	layout->addWidget(m_listMessages);
 }

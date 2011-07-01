@@ -26,6 +26,8 @@
 #define _QBOUNDINGREGIONCONFDIALOG_H
 
 #include <qdialog.h>
+//Added by qt3to4:
+#include <QLabel>
 
 class QMapWidget;
 class QPushButton;
@@ -40,7 +42,7 @@ class QBoundingRegionConfDialog : public QDialog
 {
 Q_OBJECT
 public:
-	QBoundingRegionConfDialog(const SafetyPacket::BoundingRegion & sBoundingRegion, QWidget * parent = NULL, const char * name = 0, WFlags f = 0);
+	QBoundingRegionConfDialog(const SafetyPacket::BoundingRegion & sBoundingRegion, QWidget * parent = NULL, const char * name = 0, Qt::WFlags f = 0);
 	virtual ~QBoundingRegionConfDialog();
 
 	void InitializeBoundingRegionInfo();

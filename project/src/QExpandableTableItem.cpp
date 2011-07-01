@@ -24,8 +24,8 @@
 
 #include "QExpandableTableItem.h"
 
-QExpandableTableItem::QExpandableTableItem(QTable * parent, const QString & strText)
-: QTableItem(parent, Never, strText), m_bExpanded(true)
+QExpandableTableItem::QExpandableTableItem(Q3Table * parent, const QString & strText)
+: Q3TableItem(parent, Never, strText), m_bExpanded(true)
 {
 	setReplaceable(false);
 }
@@ -37,7 +37,7 @@ QExpandableTableItem::~QExpandableTableItem()
 unsigned int QExpandableTableItem::ChildCount() const
 {
 	unsigned int iCount = m_mapChildren.size();
-	std::map<QString, QTableItem *>::const_iterator iterChild;
+	std::map<QString, Q3TableItem *>::const_iterator iterChild;
 	for (iterChild = m_mapChildren.begin(); iterChild != m_mapChildren.end(); ++iterChild)
 	{
 		if (iterChild->second->rtti() == rtti()) // same type
@@ -48,7 +48,7 @@ unsigned int QExpandableTableItem::ChildCount() const
 
 void QExpandableTableItem::ShowItem(bool bShown)
 {
-	std::map<QString, QTableItem *>::iterator iterChild;
+	std::map<QString, Q3TableItem *>::iterator iterChild;
 
 	if (m_bExpanded && bShown)
 	{
@@ -72,7 +72,7 @@ void QExpandableTableItem::ShowItem(bool bShown)
 
 void QExpandableTableItem::Expand()
 {
-	std::map<QString, QTableItem *>::iterator iterChild;
+	std::map<QString, Q3TableItem *>::iterator iterChild;
 
 	m_bExpanded = true;
 	for (iterChild = m_mapChildren.begin(); iterChild != m_mapChildren.end(); ++iterChild)
@@ -85,7 +85,7 @@ void QExpandableTableItem::Expand()
 
 void QExpandableTableItem::Collapse()
 {
-	std::map<QString, QTableItem *>::iterator iterChild;
+	std::map<QString, Q3TableItem *>::iterator iterChild;
 
 	m_bExpanded = false;
 	for (iterChild = m_mapChildren.begin(); iterChild != m_mapChildren.end(); ++iterChild)

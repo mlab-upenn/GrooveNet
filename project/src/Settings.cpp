@@ -29,7 +29,7 @@
 #include "QSettingFileTableItem.h"
 #include "QSettingColorTableItem.h"
 #include "QSettingComboTableItem.h"
-
+#include <stdio.h>
 #define SETTINGS_COMPANY "CMU.EDU"
 #define SETTINGS_PACKAGE PACKAGE_TITLE
 
@@ -242,7 +242,7 @@ int Setting::Compare(const SettingData & x, const SettingData & y) const
 	}
 }
 
-QTableItem * Setting::CreateItem(QTable * pTable)
+Q3TableItem * Setting::CreateItem(Q3Table * pTable)
 {
 	unsigned int i;
 	QSettingComboTableItem * pComboItem;
@@ -286,7 +286,7 @@ QTableItem * Setting::CreateItem(QTable * pTable)
 	}
 }
 
-void Setting::UpdateItem(QTableItem * pItem)
+void Setting::UpdateItem(Q3TableItem * pItem)
 {
 	unsigned int i;
 	QSettingComboTableItem * pComboItem;

@@ -23,14 +23,17 @@
  ***************************************************************************/
 
 #include "QTableVisualizer.h"
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <QDropEvent>
 
 QDraggingTable::QDraggingTable(QWidget * parent, const char * name)
-: QTable(parent, name), m_pfnDragObjectCreator(NULL), m_pTableVisualizer(NULL)
+: Q3Table(parent, name), m_pfnDragObjectCreator(NULL), m_pTableVisualizer(NULL)
 {
 }
 
 QDraggingTable::QDraggingTable(int numRows, int numCols, QWidget * parent, const char * name)
-: QTable(numRows, numCols, parent, name), m_pfnDragObjectCreator(NULL), m_pTableVisualizer(NULL)
+: Q3Table(numRows, numCols, parent, name), m_pfnDragObjectCreator(NULL), m_pTableVisualizer(NULL)
 {
 }
 
@@ -42,7 +45,7 @@ QDraggingTable::~QDraggingTable()
 QTableVisualizer::QTableVisualizer(TableVisualizer * pVisualizer, QWidget * parent, const char * name, Qt::WFlags f)
 : QVisualizer(pVisualizer, parent, name, f)
 {
-	m_pLayout = new QGridLayout(this, 1, 1, 0, -1, "layout");
+	m_pLayout = new Q3GridLayout(this, 1, 1, 0, -1, "layout");
 	m_pTable = new QDraggingTable(this, "table");
 	m_pLayout->addWidget(m_pTable, 0, 0);
 	connect(m_pTable, SIGNAL(currentChanged(int, int)), this, SLOT(slotCurrentChanged(int, int)));

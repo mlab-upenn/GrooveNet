@@ -29,7 +29,7 @@
 
 #include <qmessagebox.h>
 #include <qapplication.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 
 const char * g_strLogFileNames[LOGFILES] = {"GrooveNet Message Log", "Event Log 1", "Vehicle Neighbor Log"};
 
@@ -55,7 +55,7 @@ Logger::Logger()
 	m_pLogDebug = NULL;
 #endif
 
-	LogInfo(QString("[Logging started at %1]\n").arg(QDateTime::currentDateTime(Qt::LocalTime).toString(Qt::LocalDate)));
+//FIXME	LogInfo(QString("[Logging started at %1]\n").arg(QDateTime::currentDateTime().toString(Qt::LocalDate)));
 }
 
 Logger::~Logger()
@@ -111,7 +111,7 @@ void Logger::LogWarning(const QString & strTitle, const QString & strWarning, co
 	if (iWarningLevel <= CURRENT_WARNING_LEVEL)
 	{
 		// display message box
-		QMessageBox::warning(NULL, strTitle, strWarning, QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton);
+		QMessageBox::warning(NULL, strTitle, strWarning, QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
 	}
 }
 
@@ -174,7 +174,7 @@ void Logger::LogError(const QString & strTitle, const QString & strError, const 
 	}
 
 	// display message box
-	QMessageBox::critical(NULL, strTitle, strError, bFatal ? QMessageBox::Abort : QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton);
+	QMessageBox::critical(NULL, strTitle, strError, bFatal ? QMessageBox::Abort : QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
 	// if fatal error, terminate application
 	if (bFatal)
 	{
@@ -212,7 +212,7 @@ void Logger::CreateLogFiles()
 
 		while (true)
 		{
-			strLogFile = QFileDialog::getSaveFileName(QString::null, "Log Files (*.txt)", g_pMainWindow, "choose log file dialog", QString("Specify %1...").arg(g_strLogFileNames[i]));
+			strLogFile = Q3FileDialog::getSaveFileName(QString::null, "Log Files (*.txt)", g_pMainWindow, "choose log file dialog", QString("Specify %1...").arg(g_strLogFileNames[i]));
 			if (!strLogFile.isEmpty())
 			{
 				if ((m_pLogFiles[i] = fopen(strLogFile, "w")) == NULL)

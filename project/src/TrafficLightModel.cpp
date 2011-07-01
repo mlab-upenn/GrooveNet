@@ -95,7 +95,7 @@ int TrafficLightModel::ProcessEvent(SimEvent & event)
 	switch (event.GetEventID())
 	{
 	case EVENT_TRAFFICLIGHTMODEL_SIGNAL:
-		for (i = (intptr_t)event.GetEventData(); i < g_pMapDB->GetVertexCount(); i += VERTEX_COUNT_MAX)
+		for (i = ( intptr_t) event.GetEventData(); i < g_pMapDB->GetVertexCount(); i += VERTEX_COUNT_MAX)
 		{
 			Vertex & vertex = g_pMapDB->GetVertex(i);
 			vertex.iRoadPermitted++;

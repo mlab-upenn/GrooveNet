@@ -25,15 +25,15 @@
 #ifndef _QSETTINGTEXTTABLEITEM_H
 #define _QSETTINGTEXTTABLEITEM_H
 
-#include <qtable.h>
+#include <q3table.h>
 #include "Settings.h"
 
 #define SETTINGTEXTTABLEITEM_RTTI_VALUE 823411310
 
-class QSettingTextTableItem : public QTableItem
+class QSettingTextTableItem : public Q3TableItem
 {
 public:
-	QSettingTextTableItem(QTable * parent, Setting * pSetting = NULL, EditType ed = OnTyping);
+	QSettingTextTableItem(Q3Table * parent, Setting * pSetting = NULL, EditType ed = OnTyping);
 	virtual ~QSettingTextTableItem();
 
 	virtual QString text() const;

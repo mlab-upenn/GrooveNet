@@ -26,6 +26,8 @@
 #define _QSETTINGCOLORTABLEITEM_H
 
 #include "QSettingTextTableItem.h"
+//Added by qt3to4:
+#include <QPixmap>
 #include "Settings.h"
 
 #define SETTINGCOLORTABLEITEM_RTTI_VALUE 4211112
@@ -33,7 +35,7 @@
 class QSettingColorTableItem : public QSettingTextTableItem
 {
 public:
-	QSettingColorTableItem(QTable * parent, Setting * pSetting = NULL);
+	QSettingColorTableItem(Q3Table * parent, Setting * pSetting = NULL);
 	virtual ~QSettingColorTableItem();
 
 	inline virtual int rtti() const { return SETTINGCOLORTABLEITEM_RTTI_VALUE; }

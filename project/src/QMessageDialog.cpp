@@ -23,16 +23,19 @@
  ***************************************************************************/
 
 #include <qradiobutton.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 
 #include "QMessageDialog.h"
 #include "QBoundingRegionConfDialog.h"
+//Added by qt3to4:
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
 #include "CarRegistry.h"
 #include "InfrastructureNodeRegistry.h"
 #include "StringHelp.h"
@@ -40,14 +43,14 @@
 #include "Logger.h"
 
 #include <qfile.h>
-#include <qtextstream.h>
+#include <q3textstream.h>
 #include <qpixmap.h>
 #include <qlayout.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 
 #include "app16x16.xpm"
 
-QMessageDialog::QMessageDialog(in_addr_t ipCar, QWidget * parent, const char * name, WFlags f)
+QMessageDialog::QMessageDialog(in_addr_t ipCar, QWidget * parent, const char * name, Qt::WFlags f)
 : QDialog(parent, name, f), m_ipCar(ipCar), m_pfnAcceptCallback(NULL)
 {
 	std::map<in_addr_t, CarModel *> * pCarRegistry = g_pCarRegistry->acquireLock();
@@ -57,23 +60,23 @@ QMessageDialog::QMessageDialog(in_addr_t ipCar, QWidget * parent, const char * n
 	QLabel * labelMsgSource = new QLabel("Message Source:", boxMsgSource);
 	QWidget * boxMsgText = new QWidget(this);
 	QLabel * labelMsgText = new QLabel("Message:", boxMsgText);
-	QGroupBox * boxBoundingRegion = new QGroupBox(1, Qt::Vertical, "Message Bounding Region", this);
+	Q3GroupBox * boxBoundingRegion = new Q3GroupBox(1, Qt::Vertical, "Message Bounding Region", this);
 	QWidget * boxMsgDest = new QWidget(this);
 	QWidget * boxMsgLifetime = new QWidget(this);
 	QLabel * labelMsgLifetime = new QLabel("Message lifetime:", boxMsgLifetime);
 	QWidget * boxButtons = new QWidget(this);
 
-	QVBoxLayout * pLayout = new QVBoxLayout(this, 8, 8);
-	QHBoxLayout * pMsgSourceBoxLayout = new QHBoxLayout(boxMsgSource, 0, 8);
-	QHBoxLayout * pMsgTextBoxLayout = new QHBoxLayout(boxMsgText, 0, 8);
-	QHBoxLayout * pMsgDestBoxLayout = new QHBoxLayout(boxMsgDest, 0, 8);
-	QHBoxLayout * pMsgLifetimeBoxLayout = new QHBoxLayout(boxMsgLifetime, 0, 8);
-	QHBoxLayout * pButtonBoxLayout = new QHBoxLayout(boxButtons, 0, 8);
+	Q3VBoxLayout * pLayout = new Q3VBoxLayout(this, 8, 8);
+	Q3HBoxLayout * pMsgSourceBoxLayout = new Q3HBoxLayout(boxMsgSource, 0, 8);
+	Q3HBoxLayout * pMsgTextBoxLayout = new Q3HBoxLayout(boxMsgText, 0, 8);
+	Q3HBoxLayout * pMsgDestBoxLayout = new Q3HBoxLayout(boxMsgDest, 0, 8);
+	Q3HBoxLayout * pMsgLifetimeBoxLayout = new Q3HBoxLayout(boxMsgLifetime, 0, 8);
+	Q3HBoxLayout * pButtonBoxLayout = new Q3HBoxLayout(boxButtons, 0, 8);
 
 	m_sBoundingRegion.eRegionType = SafetyPacket::BoundingRegionTypeNone;
 
 	m_comboMsgSource = new QComboBox(false, boxMsgSource);
-	m_groupMsgType = new QButtonGroup(2, Qt::Horizontal, "Message Type", this);
+	m_groupMsgType = new Q3ButtonGroup(2, Qt::Horizontal, "Message Type", this);
 	m_buttonEmergency = new QRadioButton("Emergency Message", m_groupMsgType);
 	m_buttonWarning = new QRadioButton("Warning Message", m_groupMsgType);
 	m_labelMsgRegionType = new QLabel("Bounding region type:", boxBoundingRegion);
@@ -167,11 +170,11 @@ QMessageDialog::~QMessageDialog()
 void QMessageDialog::LoadMessages()
 {
 	QFile file(GetDataPath("messages.txt"));
-	QTextStream reader;
+	Q3TextStream reader;
 	QString strLine;
 	std::vector<QString> * pMessages = NULL;
 
-	if (!file.open(IO_ReadOnly | IO_Translate))
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return;
 
 	m_vecEmergencyMessages.clear();

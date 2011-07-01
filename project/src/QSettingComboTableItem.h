@@ -25,15 +25,15 @@
 #ifndef _QSETTINGCOMBOTABLEITEM_H
 #define _QSETTINGCOMBOTABLEITEM_H
 
-#include <qtable.h>
+#include <q3table.h>
 #include "Settings.h"
 
 #define SETTINGCOMBOTABLEITEM_RTTI_VALUE 51114111
 
-class QSettingComboTableItem : public QComboTableItem
+class QSettingComboTableItem : public Q3ComboTableItem
 {
 public:
-	QSettingComboTableItem(QTable * parent, const QStringList & listStrings, bool bEditable = false, Setting * pSetting = NULL);
+	QSettingComboTableItem(Q3Table * parent, const QStringList & listStrings, bool bEditable = false, Setting * pSetting = NULL);
 	virtual ~QSettingComboTableItem();
 
 	inline virtual int rtti() const { return SETTINGCOMBOTABLEITEM_RTTI_VALUE; }

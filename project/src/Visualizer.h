@@ -29,6 +29,22 @@
 
 #include <qwidget.h>
 #include <qevent.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <QShowEvent>
+#include <QWheelEvent>
+#include <QMoveEvent>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QHideEvent>
+#include <QMouseEvent>
+#include <QDragMoveEvent>
+#include <QContextMenuEvent>
+#include <QKeyEvent>
+#include <QCloseEvent>
+#include <QPaintEvent>
+#include <QFocusEvent>
+#include <QDragLeaveEvent>
 
 #define VISUALIZER_NAME "Visualizer"
 

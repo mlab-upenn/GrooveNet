@@ -24,6 +24,8 @@
 #include "QVisualizer.h"
 
 #include <qpixmap.h>
+//Added by qt3to4:
+#include <QCloseEvent>
 
 #include "app16x16.xpm"
 

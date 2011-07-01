@@ -25,17 +25,20 @@
 #ifndef _QTABLEVISUALIZER_H
 #define _QTABLEVISUALIZER_H
 
-#include <qtable.h>
+#include <q3table.h>
 #include <qlayout.h>
 #include <qobject.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 
 #include "QVisualizer.h"
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <QDropEvent>
 #include "TableVisualizer.h"
 
-typedef QDragObject * (* DragObjectCreator)(TableVisualizer *);
+typedef Q3DragObject * (* DragObjectCreator)(TableVisualizer *);
 
-class QDraggingTable : public QTable
+class QDraggingTable : public Q3Table
 {
 Q_OBJECT
 public:
@@ -54,7 +57,7 @@ public:
 	}
 
 protected:
-	inline virtual QDragObject * dragObject()
+	inline virtual Q3DragObject * dragObject()
 	{
 		return m_pfnDragObjectCreator == NULL ? NULL : (*m_pfnDragObjectCreator)(m_pTableVisualizer);
 	}
@@ -70,7 +73,7 @@ public:
 	QTableVisualizer(TableVisualizer * pVisualizer, QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0);
 	virtual ~QTableVisualizer();
 
-	QGridLayout * m_pLayout;
+	Q3GridLayout * m_pLayout;
 	QDraggingTable * m_pTable;
 
 protected slots:

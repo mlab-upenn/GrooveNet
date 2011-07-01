@@ -24,7 +24,7 @@
 
 #include "QFilePushButton.h"
 
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 
 QFilePushButton::QFilePushButton(QLineEdit * pBuddy, const QString & strText, QWidget * parent, const char * name)
 : QPushButton(strText, parent, name), m_pBuddy(pBuddy)
@@ -39,7 +39,7 @@ QFilePushButton::~QFilePushButton()
 
 void QFilePushButton::slotChangeFile()
 {
-	QString strNew = QFileDialog::getOpenFileName(m_pBuddy == NULL ? QString::null : m_pBuddy->text(), QString::null, this, "filedialog", "Choose File Name...");
+	QString strNew = Q3FileDialog::getOpenFileName(m_pBuddy == NULL ? QString::null : m_pBuddy->text(), QString::null, this, "filedialog", "Choose File Name...");
 	if (!strNew.isNull()) {
 		if (m_pBuddy != NULL)
 			m_pBuddy->setText(strNew);

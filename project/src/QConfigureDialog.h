@@ -27,7 +27,7 @@
 #include <qdialog.h>
 #include "Settings.h"
 
-class QTable;
+class Q3Table;
 class QPushButton;
 class QExpandableTableItem;
 
@@ -42,10 +42,10 @@ protected:
 	void UpdateTable();
 
 	Settings m_Settings;
-	QTable * m_pTableProperties;
+	Q3Table * m_pTableProperties;
 	QPushButton * m_pDefault, * m_pOK, * m_pCancel, * m_pApply;
 	std::map<QString, QExpandableTableItem *> m_mapGroups;
-	std::map<QString, QTableItem *> m_mapChildren;
+	std::map<QString, Q3TableItem *> m_mapChildren;
 
 protected slots:
 	virtual void slotOK();

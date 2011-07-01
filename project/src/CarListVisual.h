@@ -26,12 +26,14 @@
 
 #include "TableVisualizer.h"
 
-#include <qdragobject.h>
+#include <q3dragobject.h>
+//Added by qt3to4:
+#include <Q3PopupMenu>
 #include <arpa/inet.h>
 
 #define CARLISTVISUAL_NAME "CarListVisual"
 
-class QPopupMenu;
+class Q3PopupMenu;
 
 class CarListVisual : public TableVisualizer
 {
@@ -66,10 +68,10 @@ public:
 	std::map<in_addr_t, int> m_mapObjectsToRows;
 
 protected:
-	QPopupMenu * m_pRightClickMenu;
+	Q3PopupMenu * m_pRightClickMenu;
 };
 
-QDragObject * CarListVisualDragObjectCreator(TableVisualizer * pTableVisualizer);
+Q3DragObject * CarListVisualDragObjectCreator(TableVisualizer * pTableVisualizer);
 
 inline Model * CarListVisualCreator(const QString & strModelName)
 {

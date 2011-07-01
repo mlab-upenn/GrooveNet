@@ -24,8 +24,8 @@
 
 #include "QSettingTextTableItem.h"
 
-QSettingTextTableItem::QSettingTextTableItem(QTable * parent, Setting * pSetting, EditType ed)
-: QTableItem(parent, ed), m_pSetting(pSetting)
+QSettingTextTableItem::QSettingTextTableItem(Q3Table * parent, Setting * pSetting, EditType ed)
+: Q3TableItem(parent, ed), m_pSetting(pSetting)
 {
 	setReplaceable(false);
 }
@@ -73,7 +73,7 @@ void QSettingTextTableItem::setText(const QString & str)
 		break;
 	}
 	if (m_pSetting == NULL || m_pSetting->SetValue(sValue))
-		QTableItem::setText(str);
+		Q3TableItem::setText(str);
 	else
 		table()->updateCell(row(), col());
 }

@@ -26,8 +26,8 @@
 
 #include "MapObjects.h"
 
-QMapObjectTableItem::QMapObjectTableItem(QTable * table, EditType ed, int iID)
-: QTableItem(table, ed), m_iID(iID)
+QMapObjectTableItem::QMapObjectTableItem(Q3Table * table, EditType ed, int iID)
+: Q3TableItem(table, ed), m_iID(iID)
 {
 }
 

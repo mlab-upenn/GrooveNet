@@ -25,27 +25,27 @@
 #ifndef _QEXPANDABLETABLEITEM_H
 #define _QEXPANDABLETABLEITEM_H
 
-#include <qtable.h>
+#include <q3table.h>
 #include <vector>
 #include "Settings.h"
 
 #define EXPANDABLETABLEITEM_RTTI_VALUE 342151012
 
-class QExpandableTableItem : public QTableItem
+class QExpandableTableItem : public Q3TableItem
 {
 public:
-	QExpandableTableItem(QTable * parent, const QString & strText = QString::null);
+	QExpandableTableItem(Q3Table * parent, const QString & strText = QString::null);
 	virtual ~QExpandableTableItem();
 
 	inline virtual int rtti() const { return EXPANDABLETABLEITEM_RTTI_VALUE; }
 
-	inline virtual void AddChild(const QString & strKey, QTableItem * pItem)
+	inline virtual void AddChild(const QString & strKey, Q3TableItem * pItem)
 	{
-		m_mapChildren.insert(std::pair<QString, QTableItem *>(strKey, pItem));
+		m_mapChildren.insert(std::pair<QString, Q3TableItem *>(strKey, pItem));
 	}
-	inline virtual QTableItem * GetChild(const QString & strKey)
+	inline virtual Q3TableItem * GetChild(const QString & strKey)
 	{
-		std::map<QString, QTableItem *>::iterator iterChild = m_mapChildren.find(strKey);
+		std::map<QString, Q3TableItem *>::iterator iterChild = m_mapChildren.find(strKey);
 		return iterChild == m_mapChildren.end() ? NULL : iterChild->second;
 	}
 	inline virtual void RemoveChild(const QString & strKey)
@@ -62,7 +62,7 @@ public:
 	}
 
 protected:
-	std::map<QString, QTableItem *> m_mapChildren;
+	std::map<QString, Q3TableItem *> m_mapChildren;
 	bool m_bExpanded;
 };
 

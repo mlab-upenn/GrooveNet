@@ -34,18 +34,18 @@
 
 class QPushButton;
 class QCheckBox;
-class QButtonGroup;
+class Q3ButtonGroup;
 class QRadioButton;
 class QLineEdit;
 class QSpinBox;
-class QListBox;
-class QTable;
+class Q3ListBox;
+class Q3Table;
 
 class QSimRunDialog : public QDialog
 {
 Q_OBJECT
 public:
-	QSimRunDialog(QWidget * parent = 0, const char * name = 0, bool modal = false, WFlags f = 0);
+	QSimRunDialog(QWidget * parent = 0, const char * name = 0, bool modal = false, Qt::WFlags f = 0);
 	virtual ~QSimRunDialog();
 
 	void GetLogFilePaths(std::vector<QString> & vecFilenames);
@@ -70,14 +70,14 @@ protected slots:
 
 protected:
 	QPushButton * m_buttonAddMsg, * m_buttonEditMsg, * m_buttonRemoveMsg, * m_buttonRun, * m_buttonCancel;
-	QButtonGroup * m_groupSimType, * m_groupTime;
+	Q3ButtonGroup * m_groupSimType, * m_groupTime;
 	QRadioButton * m_buttonRunOnce, * m_buttonMonteCarlo, * m_buttonRealTime, * m_buttonFastTime;
 	QSpinBox * m_spinTrials;
 	QCheckBox * m_chkDuration;
 	QLineEdit * m_txtIncrement, * m_txtDuration;
 	QCheckBox * m_chkProfile;
-	QListBox * m_listMessages;
-	QTable * m_tableLogFiles;
+	Q3ListBox * m_listMessages;
+	Q3Table * m_tableLogFiles;
 	int m_iRunOnceID, m_iRunMonteCarloID, m_iRealTimeID, m_iFastTimeID;
 };
 

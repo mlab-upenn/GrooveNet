@@ -28,14 +28,17 @@
 #include <qcombobox.h>
 #include <qspinbox.h>
 #include <qlabel.h>
-#include <qtable.h>
-#include <qtextedit.h>
+#include <q3table.h>
+#include <q3textedit.h>
 #include <qapplication.h>
 #include <qcursor.h>
 #include <qfile.h>
-
+#include <q3textstream.h>
 #include "QAutoGenModelDialog.h"
 #include "QFileTableItem.h"
+//Added by qt3to4:
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
 #include "Simulator.h"
 #include "SimModel.h"
 #include "StringHelp.h"
@@ -52,7 +55,7 @@
 #define COMBOITEM_RANDOM "Random"
 #define COMBOITEM_FILE "File"
 
-QAutoGenDialog::QAutoGenDialog(QWidget * parent, const char * name, WFlags f)
+QAutoGenDialog::QAutoGenDialog(QWidget * parent, const char * name, Qt::WFlags f)
 : QDialog(parent, name, f), m_pModels(NULL), m_pVehicleList(NULL), m_pModelList(NULL), m_pVehicleIPs(NULL), m_pModelNames(NULL), m_pMapParams(NULL), m_pVecModelTypes(NULL)
 {
 	QWidget * pVehiclesBox = new QWidget(this);
@@ -64,11 +67,11 @@ QAutoGenDialog::QAutoGenDialog(QWidget * parent, const char * name, WFlags f)
 	QWidget * pMapBox = new QWidget(splitterDivider);
 	QWidget * pButtonBox = new QWidget(this);
 
-	QVBoxLayout * pLayout = new QVBoxLayout(this, 8, 8);
-	QHBoxLayout * pVehiclesBoxLayout = new QHBoxLayout(pVehiclesBox, 0, 8);
-	QHBoxLayout * pRegionTypeBoxLayout = new QHBoxLayout(pRegionTypeBox, 0, 8);
-	QVBoxLayout * pMapBoxLayout = new QVBoxLayout(pMapBox, 0, 8);
-	QHBoxLayout * pButtonBoxLayout = new QHBoxLayout(pButtonBox, 0, 8);
+	Q3VBoxLayout * pLayout = new Q3VBoxLayout(this, 8, 8);
+	Q3HBoxLayout * pVehiclesBoxLayout = new Q3HBoxLayout(pVehiclesBox, 0, 8);
+	Q3HBoxLayout * pRegionTypeBoxLayout = new Q3HBoxLayout(pRegionTypeBox, 0, 8);
+	Q3VBoxLayout * pMapBoxLayout = new Q3VBoxLayout(pMapBox, 0, 8);
+	Q3HBoxLayout * pButtonBoxLayout = new Q3HBoxLayout(pButtonBox, 0, 8);
 
 	setCaption("GrooveNet - Auto-Generate Nodes...");
 	setIcon(app16x16_xpm);
@@ -79,8 +82,8 @@ QAutoGenDialog::QAutoGenDialog(QWidget * parent, const char * name, WFlags f)
 	m_comboRegionType = new QComboBox(false, pRegionTypeBox);
 	m_pMap = new QMapWidget(pMapBox);
 	m_labelRegionInfo = new QLabel("", pMapBox);
-	m_tableProperties = new QTable(0, 3, splitterDivider);
-	m_txtPropertiesHelp = new QTextEdit("", QString::null, splitterDivider);
+	m_tableProperties = new Q3Table(0, 3, splitterDivider);
+	m_txtPropertiesHelp = new Q3TextEdit("", QString::null, splitterDivider);
 	m_buttonOK = new QPushButton("&OK", pButtonBox);
 	m_buttonCancel = new QPushButton("&Cancel", pButtonBox);
 
@@ -105,8 +108,8 @@ QAutoGenDialog::QAutoGenDialog(QWidget * parent, const char * name, WFlags f)
 	m_tableProperties->horizontalHeader()->setLabel(1, "Type");
 	m_tableProperties->horizontalHeader()->setLabel(2, "Value");
 	m_tableProperties->setSorting(false);
-	m_tableProperties->setSelectionMode(QTable::SingleRow);
-	m_tableProperties->setFocusStyle(QTable::FollowStyle);
+	m_tableProperties->setSelectionMode(Q3Table::SingleRow);
+	m_tableProperties->setFocusStyle(Q3Table::FollowStyle);
 	m_tableProperties->setColumnReadOnly(0, true);
 	m_tableProperties->setColumnReadOnly(1, false);
 	m_tableProperties->setColumnReadOnly(2, false);
@@ -268,7 +271,7 @@ void QAutoGenDialog::slotPropertiesValueChanged(int row, int col)
 		{
 			if (col == 1)
 			{
-				QString strText = ((QComboTableItem *)m_tableProperties->item(row, 1))->currentText();
+				QString strText = ((Q3ComboTableItem *)m_tableProperties->item(row, 1))->currentText();
 				switch (iterParam->second.eType & (~AutoGenParamTypeNoRandom))
 				{
 				case AutoGenParamTypeFixed:
@@ -455,7 +458,7 @@ void QAutoGenDialog::accept()
 	QDialog::accept();
 }
 
-bool QAutoGenDialog::AddTableItem(QTable * pTable, int row, AutoGenParameter & param, bool bUpdateTypes)
+bool QAutoGenDialog::AddTableItem(Q3Table * pTable, int row, AutoGenParameter & param, bool bUpdateTypes)
 {
 	QStringList listOptions;
 	int iSep;
@@ -481,8 +484,8 @@ bool QAutoGenDialog::AddTableItem(QTable * pTable, int row, AutoGenParameter & p
 			else
 			{ // enumeration
 				QStringList listCombo = QStringList::split(';', param.strAuxData, false);
-				pTable->setItem(row, 2, new QComboTableItem(pTable, listCombo, false));
-				((QComboTableItem *)pTable->item(row, 2))->setCurrentItem(param.strValue);
+				pTable->setItem(row, 2, new Q3ComboTableItem(pTable, listCombo, false));
+				((Q3ComboTableItem *)pTable->item(row, 2))->setCurrentItem(param.strValue);
 				param.strValue = pTable->text(row, 2);
 			}
 		}
@@ -511,8 +514,8 @@ bool QAutoGenDialog::AddTableItem(QTable * pTable, int row, AutoGenParameter & p
 				listOptions.push_back((*m_pVecModelTypes)[i]);
 		}
 		listOptions.push_back(NULLMODEL_NAME);
-		pTable->setItem(row, 2, new QComboTableItem(pTable, listOptions, false));
-		((QComboTableItem *)pTable->item(row, 2))->setCurrentItem(param.strValue);
+		pTable->setItem(row, 2, new Q3ComboTableItem(pTable, listOptions, false));
+		((Q3ComboTableItem *)pTable->item(row, 2))->setCurrentItem(param.strValue);
 		param.strValue = pTable->text(row, 2);
 		listOptions.clear();
 		listOptions.push_back(COMBOITEM_FIXED);
@@ -527,8 +530,8 @@ bool QAutoGenDialog::AddTableItem(QTable * pTable, int row, AutoGenParameter & p
 	if (bUpdateTypes)
 	{
 		if (!listOptions.empty()) {
-			pTable->setItem(row, 1, new QComboTableItem(pTable, listOptions, false));
-			((QComboTableItem *)pTable->item(row, 1))->setCurrentItem(strCurrent);
+			pTable->setItem(row, 1, new Q3ComboTableItem(pTable, listOptions, false));
+			((Q3ComboTableItem *)pTable->item(row, 1))->setCurrentItem(strCurrent);
 		} else
 			pTable->clearCell(row, 1);
 	}
@@ -783,9 +786,9 @@ QString QAutoGenDialog::GetFileParameter(const QString & strParam, const QString
 	if (iterFileData == m_mapFileData.end())
 	{
 		QFile fileData(strFilename);
-		if (fileData.exists() && fileData.open(IO_ReadOnly | IO_Translate))
+		if (fileData.exists() && fileData.open(QIODevice::ReadOnly | QIODevice::Text))
 		{
-			QTextStream streamData(&fileData);
+			Q3TextStream streamData(&fileData);
 			QString strLine;
 			iterFileData = m_mapFileData.insert(std::pair<QString, std::vector<QString> >(strFilename, std::vector<QString>())).first;
 			while (!(strLine = streamData.readLine()).isNull())

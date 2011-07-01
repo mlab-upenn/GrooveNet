@@ -29,8 +29,17 @@
 #include "CarModel.h"
 
 #include <qstatusbar.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <qapplication.h>
+//Added by qt3to4:
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QPaintEvent>
+#include <QResizeEvent>
+#include <QPixmap>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QDragEnterEvent>
 
 #define MAPVISUAL_PARAM_COORDS "START_POS"
 #define MAPVISUAL_PARAM_COORDS_DEFAULT "0,0"
@@ -384,16 +393,16 @@ bool MapVisual::processKey(int iQtKey, Qt::ButtonState eButtonState)
 	switch (iQtKey)
 	{
 	case Qt::Key_Left:
-		moveCenter(eButtonState & Qt::ControlButton ? -1.f : -0.25f, 0.f);
+		moveCenter(eButtonState & Qt::ControlModifier ? -1.f : -0.25f, 0.f);
 		return true;
 	case Qt::Key_Up:
-		moveCenter(0.f, eButtonState & Qt::ControlButton ? -1.f : -0.25f);
+		moveCenter(0.f, eButtonState & Qt::ControlModifier ? -1.f : -0.25f);
 		return true;
 	case Qt::Key_Right:
-		moveCenter(eButtonState & Qt::ControlButton ? 1.f : 0.25f, 0.f);
+		moveCenter(eButtonState & Qt::ControlModifier ? 1.f : 0.25f, 0.f);
 		return true;
 	case Qt::Key_Down:
-		moveCenter(0.f, eButtonState & Qt::ControlButton ? 1.f : 0.25f);
+		moveCenter(0.f, eButtonState & Qt::ControlModifier ? 1.f : 0.25f);
 		return true;
 	case Qt::Key_Plus:
 		zoom(-1);
@@ -472,7 +481,7 @@ void MapVisual::mouseReleaseEvent(QMouseEvent * e)
 
 void MapVisual::dragEnterEvent(QDragEnterEvent * e)
 {
-	e->accept(m_pWidget != NULL && QTextDrag::canDecode(e));
+	e->accept(m_pWidget != NULL && Q3TextDrag::canDecode(e));
 }
 
 void MapVisual::dragMoveEvent(QDragMoveEvent * e)
@@ -486,7 +495,7 @@ void MapVisual::dragMoveEvent(QDragMoveEvent * e)
 void MapVisual::dropEvent(QDropEvent * e)
 {
 	QString strCommand;
-	if (QTextDrag::decode(e, strCommand))
+	if (Q3TextDrag::decode(e, strCommand))
 	{
 		if (strCommand.left(7).compare("OBJECT:") == 0)
 		{

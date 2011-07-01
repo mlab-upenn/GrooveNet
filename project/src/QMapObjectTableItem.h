@@ -25,14 +25,14 @@
 #ifndef _QMAPOBJECTTABLEITEM_H
 #define _QMAPOBJECTTABLEITEM_H
 
-#include <qtable.h>
+#include <q3table.h>
 
 #define MAPOBJECTTABLEITEM_RTTI_VALUE 1141512131
 
-class QMapObjectTableItem : public QTableItem
+class QMapObjectTableItem : public Q3TableItem
 {
 public:
-	QMapObjectTableItem(QTable * table, EditType et, int iID);
+	QMapObjectTableItem(Q3Table * table, EditType et, int iID);
 	virtual ~QMapObjectTableItem();
 
 	virtual void paint(QPainter * p, const QColorGroup & cg, const QRect & cr, bool selected);

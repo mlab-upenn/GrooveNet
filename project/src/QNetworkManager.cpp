@@ -26,8 +26,11 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
-#include <qpopupmenu.h>
-#include <qlistbox.h>
+#include <q3popupmenu.h>
+#include <q3listbox.h>
+//Added by qt3to4:
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
 
 #include <set>
 
@@ -39,19 +42,19 @@
 QNetworkManager::QNetworkManager(QWidget * parent, const char * name, Qt::WFlags f)
 : QWidget(parent, name, f)
 {
-	QHBoxLayout * pLayout, * pClientsAddLayout;
-	QVBoxLayout * pClientsLayout, * pNetworkLayout;
+	Q3HBoxLayout * pLayout, * pClientsAddLayout;
+	Q3VBoxLayout * pClientsLayout, * pNetworkLayout;
 	QSizePolicy policy;
 
 	std::map<QString, ServerCreator>::iterator iterServerCreator;
 	std::map<QString, ClientCreator>::iterator iterClientCreator;
 
-	m_pNetworkServerMenu = new QPopupMenu(this);
+	m_pNetworkServerMenu = new Q3PopupMenu(this);
 	connect(m_pNetworkServerMenu, SIGNAL(activated(int)), this, SLOT(slotNetworkServer(int)));
 	for (iterServerCreator = g_mapServerCreators.begin(); iterServerCreator != g_mapServerCreators.end(); ++iterServerCreator)
 		m_pNetworkServerMenu->insertItem(iterServerCreator->first);
 
-	m_pNetworkClientMenu = new QPopupMenu(this);
+	m_pNetworkClientMenu = new Q3PopupMenu(this);
 	connect(m_pNetworkClientMenu, SIGNAL(activated(int)), this, SLOT(slotClientConnect(int)));
 	for (iterClientCreator = g_mapClientCreators.begin(); iterClientCreator != g_mapClientCreators.end(); ++iterClientCreator)
 		m_pNetworkClientMenu->insertItem(iterClientCreator->first);
@@ -69,7 +72,7 @@ QNetworkManager::QNetworkManager(QWidget * parent, const char * name, Qt::WFlags
 	m_btnClientsAddDisconnect = new QPushButton("Disconnect", m_boxClientsAdd, "clients.add.disconnect");
 	m_btnClientsAddDisconnect->setEnabled(false);
 	connect(m_btnClientsAddDisconnect, SIGNAL(clicked()), this, SLOT(slotClientDisconnect()));
-	m_listClients = new QListBox(m_boxClients, "clients.list");
+	m_listClients = new Q3ListBox(m_boxClients, "clients.list");
 	m_listClients->setEnabled(false);
 	connect(m_listClients, SIGNAL(highlighted(int)), this, SLOT(slotClientListHighlighted(int)));
 	m_boxNetwork = new QWidget(this, "network.box");
@@ -83,10 +86,10 @@ QNetworkManager::QNetworkManager(QWidget * parent, const char * name, Qt::WFlags
 	m_btnNetworkServer->setPopup(m_pNetworkServerMenu);
 	connect(m_btnNetworkServer, SIGNAL(clicked()), this, SLOT(slotNetworkServer()));
 
-	pLayout = new QHBoxLayout(this, 8, 8, "layout");
-	pClientsLayout = new QVBoxLayout(m_boxClients, 0, 8, "clients.layout");
-	pClientsAddLayout = new QHBoxLayout(m_boxClientsAdd, 0, 8, "clients.add.layout");
-	pNetworkLayout = new QVBoxLayout(m_boxNetwork, 0, 8, "network.layout");
+	pLayout = new Q3HBoxLayout(this, 8, 8, "layout");
+	pClientsLayout = new Q3VBoxLayout(m_boxClients, 0, 8, "clients.layout");
+	pClientsAddLayout = new Q3HBoxLayout(m_boxClientsAdd, 0, 8, "clients.add.layout");
+	pNetworkLayout = new Q3VBoxLayout(m_boxNetwork, 0, 8, "network.layout");
 
 	pNetworkLayout->addWidget(m_btnNetworkInit, 0, Qt::AlignCenter);
 	pNetworkLayout->addWidget(m_btnNetworkClose, 0, Qt::AlignCenter);

@@ -25,14 +25,14 @@
 #ifndef _QFILETABLEITEM_H
 #define _QFILETABLEITEM_H
 
-#include <qtable.h>
+#include <q3table.h>
 
 #define FILETABLEITEM_RTTI_VALUE 134141410
 
-class QFileTableItem : public QTableItem
+class QFileTableItem : public Q3TableItem
 {
 public:
-	QFileTableItem(QTable * parent);
+	QFileTableItem(Q3Table * parent);
 	virtual ~QFileTableItem();
 
 	inline virtual int rtti() const { return FILETABLEITEM_RTTI_VALUE; }

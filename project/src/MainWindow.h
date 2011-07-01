@@ -25,24 +25,26 @@
 #ifndef _MAINWINDOW_H
 #define _MAINWINDOW_H
 
-#include <qmainwindow.h>
+#include <q3mainwindow.h>
 #include <qworkspace.h>
 #include <qaction.h>
-#include <qpopupmenu.h>
-#include <qtoolbar.h>
+#include <q3popupmenu.h>
+#include <q3toolbar.h>
 #include <qtabwidget.h>
 #include <qlabel.h>
 #include "QNetworkManager.h"
 #include "QMessageList.h"
+//Added by qt3to4:
+#include <QCloseEvent>
 
-class MainWindow: public QMainWindow
+class MainWindow: public Q3MainWindow
 {
 Q_OBJECT
 public:
 	MainWindow();
 	~MainWindow();
 
-	QPopupMenu * m_pFileMenu, * m_pSimMenu, * m_pNetMenu, * m_pWindowMenu, * m_pNetServerMenu;
+	Q3PopupMenu * m_pFileMenu, * m_pSimMenu, * m_pNetMenu, * m_pWindowMenu, * m_pNetServerMenu;
 	QAction * m_pFileNew, * m_pFileEdit, * m_pFileOpen, * m_pFileSave, * m_pFileConfig, * m_pFileExit, * m_pSimRun, * m_pSimPause, * m_pSimSkip, * m_pSimStop, * m_pNetInit, * m_pNetClose, * m_pNetServer,  * m_pWindowCascade, * m_pWindowTile, * m_pWindowCloseAll;
 	QLabel * m_pLblStatus;
 	QNetworkManager * m_pNetworkManager;
@@ -50,7 +52,7 @@ public:
 
 
 
-	QToolBar *tabsContainer;
+	Q3ToolBar *tabsContainer;
 	QTabWidget *tabsWidget;
 
 	QWorkspace * m_pCentralWidget;

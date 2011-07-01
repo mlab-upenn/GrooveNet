@@ -28,17 +28,20 @@
 #include <qwidget.h>
 #include <qmutex.h>
 #include <qlayout.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qlineedit.h>
-#include <qtextedit.h>
-
+#include <q3textedit.h>
+//Added by qt3to4:
+#include <QLabel>
+#include <Q3PopupMenu>
+#include <q3boxlayout.h>
 #include <vector>
 
 class QLabel;
 class QLineEdit;
 class QPushButton;
-class QPopupMenu;
-class QListBox;
+class Q3PopupMenu;
+class Q3ListBox;
 
 class QMessageList : public QWidget
 {
@@ -52,8 +55,8 @@ public:
 	void clear();
 protected:
 	QWidget * m_boxMessages;
-	QListBox * m_listMessages;
-	QBoxLayout * layout;
+	Q3ListBox * m_listMessages;
+	Q3BoxLayout * layout;
 };
 
 extern QMessageList * m_pMessageList;
