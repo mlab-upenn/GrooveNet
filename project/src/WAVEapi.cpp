@@ -23,7 +23,7 @@
 //
 //======================================================================
 
-
+#include <pcap.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <qthread.h>
