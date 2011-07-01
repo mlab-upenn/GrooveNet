@@ -1,0 +1,28 @@
+<Emergency>
+Vehicle crash!
+Vehicle on fire!
+Vehicle out of control!
+Vehicle going the wrong way!
+Vehicle is damaged!
+
+<Warning>
+Ice ahead!
+Deep water ahead!
+Construction ahead!
+Uneven pavement ahead!
+Emergency vehicle incoming!
+Disturbance ahead!
+Road closed ahead!
+Loss of traction causing skidding!
+Engine temperature exceeding recommended limits!
+Obstacle in road ahead!
+Vehicle too close to front!
+Vehicle too close to rear!
+Vehicle out of gas!
+Ignition failed!
+Engine stalled!
+Airbag failed!
+Oil low!
+Coolant low!
+Windshield fluid low!
+Flat or low tire!

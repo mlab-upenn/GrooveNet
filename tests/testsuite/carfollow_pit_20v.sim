@@ -1,0 +1,228 @@
+% Created by GrooveNet Hybrid Simulator on 11/27/2006
+
+MODEL="DjikstraTripModel0" TYPE="DjikstraTripModel"
+FINISH="328 Atwood St, Pittsburgh, PA" START="3950 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel0" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel0"
+HIGH="-50%" LOW="-60%" MULTILANE="NO" TRIP="DjikstraTripModel0"
+
+MODEL="CarFollowingModel0" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel0;UniformSpeedModel0"
+LEADER="UniformSpeedModel0" MULTILANE="NO" TRIP="DjikstraTripModel0"
+
+MODEL="DjikstraTripModel1" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel1" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel1"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel1"
+
+MODEL="CarFollowingModel1" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel1;UniformSpeedModel1"
+LEADER="UniformSpeedModel1" MULTILANE="NO" TRIP="DjikstraTripModel1"
+
+MODEL="DjikstraTripModel10" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel10" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel10"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel10"
+
+MODEL="CarFollowingModel10" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel10;UniformSpeedModel10"
+LEADER="UniformSpeedModel10" MULTILANE="NO" TRIP="DjikstraTripModel10"
+
+MODEL="DjikstraTripModel2" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel2" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel2"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel2"
+
+MODEL="CarFollowingModel2" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel2;UniformSpeedModel2"
+LEADER="UniformSpeedModel2" MULTILANE="NO" TRIP="DjikstraTripModel2"
+
+MODEL="DjikstraTripModel3" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel3" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel3"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel3"
+
+MODEL="CarFollowingModel3" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel3;UniformSpeedModel3"
+LEADER="UniformSpeedModel3" MULTILANE="NO" TRIP="DjikstraTripModel3"
+
+MODEL="DjikstraTripModel4" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel4" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel4"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel4"
+
+MODEL="CarFollowingModel4" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel4;UniformSpeedModel4"
+LEADER="UniformSpeedModel4" MULTILANE="NO" TRIP="DjikstraTripModel4"
+
+MODEL="DjikstraTripModel5" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel5" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel5"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel5"
+
+MODEL="CarFollowingModel5" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel5;UniformSpeedModel5"
+LEADER="UniformSpeedModel5" MULTILANE="NO" TRIP="DjikstraTripModel5"
+
+MODEL="DjikstraTripModel6" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel6" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel6"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel6"
+
+MODEL="CarFollowingModel6" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel6;UniformSpeedModel6"
+LEADER="UniformSpeedModel6" MULTILANE="NO" TRIP="DjikstraTripModel6"
+
+MODEL="DjikstraTripModel7" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel7" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel7"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel7"
+
+MODEL="CarFollowingModel7" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel7;UniformSpeedModel7"
+LEADER="UniformSpeedModel7" MULTILANE="NO" TRIP="DjikstraTripModel7"
+
+MODEL="DjikstraTripModel8" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel8" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel8"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel8"
+
+MODEL="CarFollowingModel8" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel8;UniformSpeedModel8"
+LEADER="UniformSpeedModel8" MULTILANE="NO" TRIP="DjikstraTripModel8"
+
+MODEL="DjikstraTripModel9" TYPE="DjikstraTripModel"
+FINISH="3000 Forbes Ave, Pittsburgh, PA" START="4300 Forbes Ave, Pittsburgh, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel9" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel9"
+HIGH="150%" LOW="100%" MULTILANE="NO" TRIP="DjikstraTripModel9"
+
+MODEL="CarFollowingModel9" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel9;UniformSpeedModel9"
+LEADER="UniformSpeedModel9" MULTILANE="NO" TRIP="DjikstraTripModel9"
+
+MODEL="CarListVisual0" TYPE="CarListVisual"
+CAPTION="GrooveNet Widget" DELAY="0.2" HEIGHT="706" WIDTH="696"
+
+MODEL="MapVisual0" TYPE="MapVisual"
+CAPTION="GrooveNet Widget" DELAY="0.2" FOLLOW="" HEIGHT="706" START_POS="0, 0" WIDTH="696" ZOOM="4"
+
+MODEL="SimplePhysModel0" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimpleLinkModel0" TYPE="SimpleLinkModel"
+
+MODEL="SimpleCommModel0" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimModel0" TYPE="SimModel" DEPENDS="DjikstraTripModel0;SimplePhysModel0;SimpleLinkModel0;SimpleCommModel0;CarFollowingModel0"
+COMM="SimpleCommModel0" DELAY="0.2" DOLOG="YES" ID="192.168.0.1" LINK="SimpleLinkModel0" MOBILITY="CarFollowingModel0" PHYS="SimplePhysModel0" START="0" TRACKSPEED="NO" TRIP="DjikstraTripModel0"
+
+MODEL="SimplePhysModel1" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimpleCommModel1" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimpleLinkModel1" TYPE="SimpleLinkModel"
+
+MODEL="SimModel1" TYPE="SimModel" DEPENDS="DjikstraTripModel1;SimplePhysModel1;CarFollowingModel1;SimpleCommModel1;SimpleLinkModel1"
+COMM="SimpleCommModel1" DELAY="0.2" DOLOG="YES" ID="192.168.0.2" LINK="SimpleLinkModel1" MOBILITY="CarFollowingModel1" PHYS="SimplePhysModel1" START="2" TRACKSPEED="NO" TRIP="DjikstraTripModel1"
+
+MODEL="SimplePhysModel10" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimpleLinkModel10" TYPE="SimpleLinkModel"
+
+MODEL="SimpleCommModel10" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimModel10" TYPE="SimModel" DEPENDS="SimplePhysModel10;DjikstraTripModel10;CarFollowingModel10;SimpleLinkModel10;SimpleCommModel10"
+COMM="SimpleCommModel10" DELAY="0.2" DOLOG="YES" ID="192.168.0.11" LINK="SimpleLinkModel10" MOBILITY="CarFollowingModel10" PHYS="SimplePhysModel10" START="4" TRACKSPEED="NO" TRIP="DjikstraTripModel10"
+
+MODEL="SimplePhysModel2" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimpleLinkModel2" TYPE="SimpleLinkModel"
+
+MODEL="SimpleCommModel2" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimModel2" TYPE="SimModel" DEPENDS="SimplePhysModel2;SimpleLinkModel2;SimpleCommModel2;DjikstraTripModel2;CarFollowingModel2"
+COMM="SimpleCommModel2" DELAY="0.2" DOLOG="YES" ID="192.168.0.3" LINK="SimpleLinkModel2" MOBILITY="CarFollowingModel2" PHYS="SimplePhysModel2" START="6" TRACKSPEED="NO" TRIP="DjikstraTripModel2"
+
+MODEL="SimplePhysModel3" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimpleLinkModel3" TYPE="SimpleLinkModel"
+
+MODEL="SimpleCommModel3" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimModel3" TYPE="SimModel" DEPENDS="SimplePhysModel3;SimpleLinkModel3;SimpleCommModel3;DjikstraTripModel3;CarFollowingModel3"
+COMM="SimpleCommModel3" DELAY="0.2" DOLOG="YES" ID="192.168.0.4" LINK="SimpleLinkModel3" MOBILITY="CarFollowingModel3" PHYS="SimplePhysModel3" START="8" TRACKSPEED="NO" TRIP="DjikstraTripModel3"
+
+MODEL="SimpleLinkModel4" TYPE="SimpleLinkModel"
+
+MODEL="SimplePhysModel4" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimpleCommModel4" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimModel4" TYPE="SimModel" DEPENDS="SimpleLinkModel4;SimplePhysModel4;SimpleCommModel4;DjikstraTripModel4;CarFollowingModel4"
+COMM="SimpleCommModel4" DELAY="0.2" DOLOG="YES" ID="192.168.0.5" LINK="SimpleLinkModel4" MOBILITY="CarFollowingModel4" PHYS="SimplePhysModel4" START="10" TRACKSPEED="NO" TRIP="DjikstraTripModel4"
+
+MODEL="SimpleLinkModel5" TYPE="SimpleLinkModel"
+
+MODEL="SimpleCommModel5" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimplePhysModel5" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimModel5" TYPE="SimModel" DEPENDS="SimpleLinkModel5;SimpleCommModel5;DjikstraTripModel5;CarFollowingModel5;SimplePhysModel5"
+COMM="SimpleCommModel5" DELAY="0.2" DOLOG="YES" ID="192.168.0.6" LINK="SimpleLinkModel5" MOBILITY="CarFollowingModel5" PHYS="SimplePhysModel5" START="12" TRACKSPEED="NO" TRIP="DjikstraTripModel5"
+
+MODEL="SimpleLinkModel6" TYPE="SimpleLinkModel"
+
+MODEL="SimplePhysModel6" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimpleCommModel6" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimModel6" TYPE="SimModel" DEPENDS="SimpleLinkModel6;DjikstraTripModel6;SimplePhysModel6;SimpleCommModel6;CarFollowingModel6"
+COMM="SimpleCommModel6" DELAY="0.2" DOLOG="YES" ID="192.168.0.7" LINK="SimpleLinkModel6" MOBILITY="CarFollowingModel6" PHYS="SimplePhysModel6" START="14" TRACKSPEED="NO" TRIP="DjikstraTripModel6"
+
+MODEL="SimpleLinkModel7" TYPE="SimpleLinkModel"
+
+MODEL="SimpleCommModel7" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimplePhysModel7" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimModel7" TYPE="SimModel" DEPENDS="SimpleLinkModel7;DjikstraTripModel7;SimpleCommModel7;SimplePhysModel7;CarFollowingModel7"
+COMM="SimpleCommModel7" DELAY="0.2" DOLOG="YES" ID="192.168.0.8" LINK="SimpleLinkModel7" MOBILITY="CarFollowingModel7" PHYS="SimplePhysModel7" START="16" TRACKSPEED="NO" TRIP="DjikstraTripModel7"
+
+MODEL="SimpleLinkModel8" TYPE="SimpleLinkModel"
+
+MODEL="SimpleCommModel8" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimplePhysModel8" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimModel8" TYPE="SimModel" DEPENDS="SimpleLinkModel8;SimpleCommModel8;DjikstraTripModel8;CarFollowingModel8;SimplePhysModel8"
+COMM="SimpleCommModel8" DELAY="0.2" DOLOG="YES" ID="192.168.0.9" LINK="SimpleLinkModel8" MOBILITY="CarFollowingModel8" PHYS="SimplePhysModel8" START="18" TRACKSPEED="NO" TRIP="DjikstraTripModel8"
+
+MODEL="SimpleLinkModel9" TYPE="SimpleLinkModel"
+
+MODEL="SimplePhysModel9" TYPE="SimplePhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="SimpleCommModel9" TYPE="SimpleCommModel"
+GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimModel9" TYPE="SimModel" DEPENDS="SimpleLinkModel9;DjikstraTripModel9;CarFollowingModel9;SimplePhysModel9;SimpleCommModel9"
+COMM="SimpleCommModel9" DELAY="0.2" DOLOG="YES" ID="192.168.0.10" LINK="SimpleLinkModel9" MOBILITY="CarFollowingModel9" PHYS="SimplePhysModel9" START="20" TRACKSPEED="NO" TRIP="DjikstraTripModel9"
+

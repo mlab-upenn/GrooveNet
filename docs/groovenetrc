@@ -1,0 +1,55 @@
+[AddressHistory]
+Address1=100 Forbes Ave, Pittsburgh, PA, 15213
+Address10=
+Address2=
+Address3=
+Address4=
+Address5=
+Address6=
+Address7=
+Address8=
+Address9=
+
+[Appearance]
+Color/Background=#ffffff
+Color/Foreground=#c0c0c0
+Color/Highways=#ffaa00
+Color/Land Boundaries=#a0a0a0
+Color/Landmarks=#2faf41
+Color/Large Roads=#827000
+Color/Misc. Boundaries=#c0c0ff
+Color/Physical Features=#000000
+Color/Primary Roads=#b68628
+Color/Railways=#808080
+Color/Small Roads=#a0a0a0
+Color/Water=#0000ff
+Color/Water Boundaries=#c0c0ff
+Fill Water=true
+Show Compass=true
+Show Markers=true
+Show Scale=true
+Show Tracks=true
+
+[General]
+Address History Size=10
+Autoload Maps=true
+Autostart Network=true
+Enable Logging=true
+
+[Hybrid Network]
+IP=192.168.1.100
+Mode=1
+
+[Network]
+Adapter Name=eth0
+Adapter Type=
+Autostart Server=false
+IP Address=192.168.0.1
+IP Subnet Mask=0.0.0.0
+Shutdown Script=
+Shutdown Script Arguments=
+Startup Script=
+Startup Script Arguments=
+Transmit Bandwidth=0
+Transmit Power=20
+

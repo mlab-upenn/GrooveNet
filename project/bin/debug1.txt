@@ -1,0 +1,9 @@
+[Logging started at 10/10/2009 04:46:56 PM]
+Loading state information...Successful
+Loading county information...Successful
+Loading zip code information...Successful
+Loading abbreviations...Successful
+Opening Network Interface...Successful
+Starting UDP Server...Successful
+Stopping Server...Successful
+Closing Network Interface...Successful

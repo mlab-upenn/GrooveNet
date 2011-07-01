@@ -1,0 +1,384 @@
+Academia		Acade		Acad		Academy
+Academy		Acad			-			-
+Acueducto		Acued		Acue		Aqueduct
+Aeropuerto		Arpto		Arpt		Airport
+Air Force Base		AFB			-			-
+Airfield		Afld			-			-
+Airpark		Airpark		Aprk			-
+Airport		Arpt			-			-
+Airstrip		Airstrp		Astr			-
+Aljibe		Aljibe		Alj		Cistern
+Alley		Alley		Aly			-
+Alternate Route		Alt			-			-
+Apartment		Apt			-			-
+Aqueduct		Aque			-			-
+Arcade		Arcade		Arc			-
+Arroyo		Arroyo		Arry		Creek
+Autopista		Atpta		Atpt		Expressway
+Avenida		Avenida		Ave		Avenue
+Avenue		Avenue		Ave			-
+Bahia		Bahia		B		Bay
+Bank		Bank		Bnk			-
+Basin		Basin		Basn			-
+Bay		Bay		B			-
+Bayou		Bayou		Byu			-
+BIA Highway		BIA Hwy		BIAH			
+BIA Road		BIA Rd		BIAR			-
+BIA Route		BIA Rte		BIAR			-
+Bluff		Bluff		Blf			-
+Boulevard		Blvd			-				-
+Boundary		Bdy			-		-
+Branch		Branch		Br			-
+Bridge		Bridge		Brg			-
+Brook		Brook		Brk			-
+Building		Bldg			-			-
+Bulevar		Blvr		Blv 		Boulevard
+Bureau of Land Mgmt Rd		BLM Rd		BLMR			-
+Business Route		Bus Rte		Bus			-
+Bypass		Bypass		Byp			-
+Calle		Calle		C		Street
+Calleja		Calleja		Cja		Lane
+Callejon		Callej		Cjon		Narrow street
+Camino		Camino		Cam		Road
+Camp		Camp			-			-
+Campamento		Campam		Camp		Campground
+Campground		Campgrnd		Cmpg			-
+Canal		Canal		Can			-
+Cano		Cano		Cno 		Drain
+Cantera		Cantera		Cant		Quarry
+Canyon		Canyon		Cyn			-
+Capilla		Capilla		Cplla		Chapel
+Carretera		Carrt		Carr		Road
+Caserio		Cas			-		Public housing 
+project
+Causeway		Cswy			-			-
+Cementerio		Cemt		Cem		Cemetery
+Cemetery		Cem			-			-
+Center		Center		Ctr			-
+Centro		Centro		Ctro		Center
+Channel		Chan			-			-
+Chapel		Chapel		Ch			-
+Church		Church		Ch			-
+Circle		Circle		Cir			-
+Circulo		Circ		Cir		Circle
+Cliff		Cliff		Clf			-
+Club		Club		Clb			-
+Colegio		Colegio		Col		College
+College		College		Clg			-
+Condominio		Cond			-	Condominium
+Condominium		Condo			-		-
+Convent		Cnvt 			-		-
+Coulee		Coulee		Coul			-
+Country Club		Country Club		CC			-
+County Highway		County Hwy		CoHw			-
+County Home		County Home		CoHm			-
+County Lane		Co Ln		CoLn			-
+County Loop		Co Loop		CoLp			-
+County Road		County Rd		CoRd			-
+County Route		County Rte		CoRt			-
+County Spur		Co Spur		CoSp			-
+Court		Court		Ct			-
+Courthouse		Cthse		Cths			-
+Cove		Cove		Cv			-
+Crater		Crater		Crtr			-
+Creek		Creek		Cr			-
+Crescent		Cres		Cres			-
+Crossing		Xing			-		-
+Cruce		Cruce		Cru 		Crossroad
+Dam		Dam		Dm			-
+Depot		Depot		Dpo			-
+Detention Center		Det Ctr		DtCt			-
+District of Columbia Hwy 		DC Hwy		DCHw			-
+Ditch		Ditch		Dit 			-
+Divide		Divide		Div			-
+Dock		Dock		Dock		Dock
+Dormitory		Dorm 			-		-
+Drain		Drain		Drn			-
+Draw		Draw			-		-
+Drive		Drive		Dr			-
+Edificio		Edif			-	Building
+Emergency Road		Em Rd		EmRd			-
+Ensenada		Ensen		Ens		Cove
+Escarpment		Escarp		Escr			-
+Escuela		Escul		Esc		School
+Estuary		Est			-		-
+Expreso		Expo		Exp		Expressway
+Expressway		Exwy		Expy			-
+Extended		Extd			-		-
+Extension		Extn			-		-
+Fairgrounds		Fairgrnds		Fgrn			-
+Falls		Falls		Fall			-
+Farm Road		Farm Rd		FmRd			-
+Farm-to-Market Road		F-M Rd		FMRd			-
+Faro		Faro			-	Lighthouse
+Federal Penitentiary		Fed Pen		FdPn			-
+Fence Line		Fence		Fen			-
+Ferry Crossing		Ferry		Fy			-
+Field		Field		Fld			-
+Fire Control Road		FC Rd		FCRd			-
+Fire District Road		FD Rd		FDRd			-
+Fire Road		FR Rd		FRRd			-
+Fire Route		FR Rte 		FRRt			-
+Fire Trail		FR Trl		FRTr			-
+Floodway		Floodway		Fldw			-
+Flowage		Flowage		Flow			-
+Flume		Flume		Flm			-
+Forest		Forest 		For			-
+Forest Highway		For Hwy		ForH			-
+Forest Road		For Rd		ForR			-
+Forest Route		For Rte		ForR			-
+Forest Service Road		FS Rd		FSRd			-
+Fork		Fork		Frk			-
+Four-Wheel Drive Trail		4WD Trl		4WD			-
+Fraternity		Frat			-		-
+Freeway		Frwy		Fwy			-
+Golf Course		Golf Course		GC			-
+Grade		Grade		Grd			-
+Gravel Pit		Gr Pit		GrPt			-
+Gravero		Grav			-	Gravel pit
+Gulch		Gulch		Gl			-
+Gulf		Gulf		Glf			-
+Gully		Gully			-		-
+Harbor		Harbor		Hbr			-
+High School		H S		HS			-
+Highway		Hwy			-		-
+Hill		Hill			-		-
+Hollow		Hollow		Hllw			-
+Hospital		Hosp			-		-
+Hotel		Hotel		Htl			-
+Iglesia		Iglesia		Igle		Church
+Illinois Route		IL Rte		ILRt			-
+Indian Route		Ind Rte		IndR			-
+Indian Service Route		IndSvRte		IndS			-
+Industrial Center		Indl Ctr		IndC			-
+Industrial Park		Indl Park		IPrk			-
+Inlet		Inlet		Inlt			-
+Inn		Inn			-		-
+Institute		Inst			-		-
+Institution		Instn			-		-
+Interstate Highway		I-			-		-
+Isla		Isla		Is		Island
+Island		Island		Is			-
+Islands		Islands		Is			-
+Jail		Jail		Jl			-
+Jeep Trail		Jeep Trl		4WD			-
+Kansas State Highway		KS StHwy		KStH			-
+Kill		Kill			-		-
+Lago		Lago		Lag		Lake
+Lagoon		Lagoon		Lag			-
+Lagoons		Lagoons		Lag			-
+Laguna		Laguna		Lagn		Lagoon
+Lake		Lake		Lk			-
+Lakes		Lakes		Lk			-
+Lane		Lane		Ln			-
+Lateral		Lateral		Ltrl			-
+Levee		Levee		Lv			-
+Lighthouse		Lghthse		Lh			-
+Line		Line			-		-
+Logging Road		Lg Rd		LgRd			-
+Loop		Loop		Lp			-
+Mall		Mall		Ml			-
+Mar		Mar		Mr		Sea
+Marginal		Marg			-	Service road
+Marina		Marina		Mrna			-
+Marsh		Marsh		Mrsh			-
+Medical Building		Med Bldg		MdBl			-
+Medical Center		Med Ctr		MdCt			-
+Millpond		Mllpd		Mlpd			-
+Mission		Msn			-		-
+Monastery		Mony			-		-
+Monument		Mon			-		-
+Motel		Motel		Mtl			-
+Motorway		Mtwy			-		-
+Mount		Mount		Mt			-
+Mountain		Mtn		Mt			-
+Muro		Muro		Mro		Wall
+National Battlefield		Nat Bfld		NB			-
+National Battlefield Park 		Nat Bfld Pk		NBP			-
+National Battlefield Site		Nat Bfld Site		NBS			-
+National Conservation Area		Nat Con Area		NCA			-
+National Forest		Nat For		NF			-
+National Forest Develop Road		NFD			-		-
+National Forest Highway 		NF Hwy		NFHw			-
+National Grassland		Nat Grsslnd		NG			-
+National Historic Site		Nat Hist Site		NHS			-
+National Historical Park 		Nat Hist Pk		NHP			-
+National Lakeshore		Nat Lkshr		NLksh			-
+National Memorial		Nat Mem		NMem			-
+National Military Park		Nat Mil Pk		NMP			-
+National Monument		Nat Mon		NMon			-
+National Park		Nat Pk		NP			-
+National Preserve		Nat Prsv		NPrs			-
+National Recreation Area		Nat Rec Area		NRA			-
+National Recreational River		Nat Rec Rvr		NRR			-
+National Reserve		Nat Rsv		NRsv			-
+National River		Nat Rvr		NRvr			-
+National Scenic Area		Nat Sc Area		NSA			-
+National Scenic River		Nat Sc Rvr		NSR			-
+National Scenic Riverway 		Nat Sc Rvrwy		NSR			-
+National Scenic Riverways		Nat Sc Rvrwys		NSR			-
+National Scenic Trail		Nat Sc Trl		NST			-
+National Seashore		Nat Seashr		NS			-
+National Wildlife Refuge		Nat Wld Rfg		NWR			-
+Navajo Service Route		NSv Rte		NSvR			-
+Naval Air Station		NAS			-		-
+Naval Base		NB			-		-
+New Jersey Route		NJ Rte		NJRt			-
+Nursing Home		Nrs Hme		NrsHm			-
+Ocean		Ocean		O			-
+Oceano		Oceano		O		Ocean
+Office Building		Ofc Bldg		OfBl			-
+Office Center		Ofc Ctr 		OfCt			-
+Office Park		Ofc Park		OfPr			-
+Orphanage		Orph			-		-
+Outlet 		Outlet		Outl			-
+Overpass		Ovps			-		-
+Parish Road		Par Rd		ParR			-
+Park		Park			-		-
+Parkway		Pkwy		Pky			-
+Parque		Parque		Prqe		Park
+Pasaje		Pasaje		Pas		Passage
+Paseo		Paseo		Pso		Drive
+Paso		Paso			-	Strait
+Pass		Pass		Ps			-
+Passage		Psge		Pas			-
+Path		Path			-		-
+Peak		Peak		Pek			-
+Pike		Pike		Pke			-
+Pipeline		Pipe			-		-
+Pista		Pista		Psta		Track
+Place		Place		Pl			-
+Plaza		Plaza		Plz			-
+Point 		Point		Pt			-
+Pond		Pond		Pd			-
+Ponds		Ponds		Pd			-
+Port		Port		Prt			-
+Power Line		Pwr Line		PwrL			-
+Prairie		Prairie		Pr			-
+Preserve		Prsv			-		-
+Prison		Prison		Prsn			-
+Property Line		Prop Line		Prop			-
+Puente		Puente		Pte		Bridge
+Quarry		Qry			-		-
+Race		Race		Rc			-
+Rail		Rail		R			-
+Railroad		RR			-		-
+Railway		Ry			-		-
+Ramal		Ramal		Rml		Short street
+Ramp		Ramp		Rmp			-
+Rampa		Rampa		Rmp		Ramp
+Ranch Road		Ranch Rd			-		-
+Ranch to Market Road		R-M Rd		RMRd			-
+Rapids		Rapids		Rpds			-
+Ravine		Ravine		Rav			-
+Reformatory		Ref			-		-
+Refuge		Refuge		Rfg			-
+Reservation		Res			-		-
+Reservation Highway		Res Hwy		ResH			-
+Reserve		Rsv			-		-
+Reservoir		Rsvr			-		-
+Reservoirs		Rsvrs		Rsvr			-
+Resort 		Resort		Rsrt			-
+Ridge		Ridge		Rdg			-
+Rio		Rio		R		River
+River		River		R			-
+Road		Road		Rd			-
+Roca		Roca		Rc		Rock
+Rock		Rock		Rk			-
+Rooming House		Rmg Hse		RmHs			-
+Route		Route		Rte 			-
+Row		Row			-		-
+Rue		Rue			-		-
+Run		Run 			-		-
+Rural Route		R Rte		Rte			-
+Ruta 		Ruta			-	Route
+Sanatorium		Sanat		San			-
+Sanitarium		Sanit 		San			-
+School		School		Sch			-
+Sea		Sea			-		-
+Seashore		Seashore		Seas			-
+Seminary		Sem			-		-
+Sendero		Sndr			-	Path
+Service Road		Srv Rd		SrvR			-
+Service Route		Sv Rte		SvRt			-
+Shelter		Shltr		Shlr			-
+Shoal		Shoal		Shl			-
+Shopping Center		Shop Ctr		SC			-
+Shopping Mall		Shop Mall		SM			-
+Shopping Mart		Shop Mart 		SMt			-
+Shopping Plaza		Shop Plz		SP			-
+Shopping Square		Shop Sq		SS			-
+Skyway		Skwy			-		-
+Slough		Slough		Slu			-
+Sonda		Sonda		Sd		Sound
+Sorority		Soror		Sor			-
+Sound		Sound		Sd			-
+South Dakota Route or Road		SD		SD			-
+Speedway		Spdwy			-		-
+Spring		Spring		Spg			-
+Spur		Spur		Spr			-
+Square		Square		Sq			-
+State Forest Serv Road		St FS Rd		StFS			-
+State Highway		State Hwy		StHw			-
+State Link		St Link		StLk			-
+State Loop		State Lp		StLp			-
+State Road		State Rd		StRd			-
+State Route		State Rte		SR			-
+State Service Road		StSvRd		StSv			-
+State Spur		St Spr		StSp			-
+Station		Sta			-		-
+Strait		Strait		Strt			-
+Stream		Stream		Str			-
+Street		Street		St 			-
+Strip		Strip		Strp			-
+Swamp		Swamp		Swp			-
+Tank		Tank		Tk			-
+Tank Trail		Tk Trl		TkTr			-
+Terminal		Term			-		-
+Terrace		Ter			-		-
+Thoroughfare		Thoro		Thfr			-
+Throughway		Thwy			-		-
+Tower		Tower		Twr			-
+Town Highway		Town Hwy		TwnH			-
+Town Road		Town Rd		TwnR			-
+Township Highway		Twp Hwy		TwpH			-
+Township Road		Twp Rd		TwpR			-
+Trace		Trace			-		-
+Trafficway		Tfwy			-		-
+Trail		Trail		Trl			-
+Trailer Park		Trlr Pk		TrlP			-
+Tributary		Trib			-		-
+Tunel		Tunel		Tunl		Tunnel
+Tunnel		Tunnel		Tunl			-
+Turnpike		Tpke			-		-
+US Forest Service Road		USFS Rd		USFS			-
+Underpass		Unps		Unp			-
+United States Highway		US Hwy		USHw			-
+United States Loop		US Loop		USLp			-
+United States Route		US Rte		USRt			-
+Universidad		Univd		Uni		University
+University		Univ			-		-
+Unnamed Road		Un Rd		UnRd			-
+Valley		Valley		Vl			-
+Vereda		Vereda		Vrda		Trail
+Via		Via			-	Way
+Village		Vlge		Vlg			-
+Vista		Vista		Vis			-
+Walk		Walk		Wk			-
+Walkway		Wlkwy		Wkwy			-
+Wall		Wall		Wl			-
+Wash		Wash		Ws			-
+Waterway		Wtrwy		Wwy			-
+Way		Way 		Way 			-
+Wetland Mgmt District		Wetland Dist		WMD			-
+Wharf		Wharf		Whf			-
+Wild and Scenic River		W&S Rvr		W&SR			-
+Wild River		Wild Rvr		WldR			-
+Wildlife Mgmt Area		Wildlife Area		WMA			-
+Yard		Yard		Yd			-
+Yards		Yards		Yds			-
+Zanja		Zanja		Znja		Ditch
+
+
+
+

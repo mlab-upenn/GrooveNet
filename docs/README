@@ -1,0 +1,26 @@
+Copy the groovenetrc file into Qt's settings as shown below:
+
+cp groovenetrc /usr/lib/qt3/etc/settings/
+
+---------------------------------------------------
+Note:
+The first time a new map loads the simulator must unpack the tgrXXXXX.zip file and generate a XXXXX.MAP file. This takes a little time (~30 seconds). In the subsequent simulations runs the simulator will start instantly as the .MAP file is already created.
+
+--------------------------------------------------
+To make your own simulation test:
+If you are looking for an address to map in the major cities, you can try the following by right clicking on the map area once you Autogenerate Vehicles in a new simulation. This will bring up the appropriate map and you can add your vehicles by dragging your mouse over the map.
+
+New York City
+333 7th Ave, New York, NY, 10001
+
+Boston
+15 Beacon St, Boston, MA, 02108
+
+San Francisco
+460 Marina Blvd, San Francisco, CA, 94123
+
+Detroit
+550 Lafayette St, Detroit, MI, 48226
+
+Pittsburgh
+100 Forbes Ave, Pittsburgh, PA, 15213
