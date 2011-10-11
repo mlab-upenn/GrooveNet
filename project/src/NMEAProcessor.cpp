@@ -251,10 +251,10 @@ bool ParseNMEAMessage(const QString & strMsg, NMEAMessage * pMsg)
 			if ((*(++iterArg)).compare("W") == 0)
 				pMsg->sGPGLL.iLongitude *= -1;
 			pMsg->sGPGLL.fTimestamp = (*(++iterArg)).toDouble();
-			pMsg->sGPGLL.iValid = (char) ((*(++iterArg))[0]).toAscii();
+			pMsg->sGPGLL.iValid = (QChar)(*(++iterArg))[0];
 			break;
 		case NMEAMessageTypeGPGSA:
-			pMsg->sGPGSA.iAcquisitionMode = (char)(*(++iterArg))[0].toAscii();
+			pMsg->sGPGSA.iAcquisitionMode = (QChar)(*(++iterArg))[0];
 			pMsg->sGPGSA.iPositionMode = (unsigned char)(*(++iterArg)).toUShort();
 			for (i = 0; i < 12; i++)
 				pMsg->sGPGSA.pSatellites[i] = (unsigned char)(*(++iterArg)).toUShort();
@@ -285,7 +285,7 @@ bool ParseNMEAMessage(const QString & strMsg, NMEAMessage * pMsg)
 			break;
 		case NMEAMessageTypeGPRMC:
 			pMsg->sGPRMC.fTimestamp = (*(++iterArg)).toDouble();
-			pMsg->sGPRMC.iValid = (char)(*(++iterArg))[0].toAscii();
+			pMsg->sGPRMC.iValid = (QChar)(*(++iterArg))[0];
 			pMsg->sGPRMC.iLatitude = NMEAToTIGER((*(++iterArg)).toDouble());
 			if ((*(++iterArg)).compare("S") == 0)
 				pMsg->sGPRMC.iLatitude *= -1;
@@ -296,7 +296,7 @@ bool ParseNMEAMessage(const QString & strMsg, NMEAMessage * pMsg)
 			pMsg->sGPRMC.fHeading = (*(++iterArg)).toFloat();
 			pMsg->sGPRMC.iDate = (*(++iterArg)).toLong();
 			pMsg->sGPRMC.fMagVariation = (*(++iterArg)).toFloat();
-			pMsg->sGPRMC.iVariationSense = (char)(*(++iterArg))[0].toAscii();
+			pMsg->sGPRMC.iVariationSense = (QChar)(*(++iterArg))[0];
 			break;
 		case NMEAMessageTypeGPRRE:
 			pMsg->sGPRRE.nSatellites = (unsigned char)(*(++iterArg)).toUShort();
@@ -441,7 +441,7 @@ void NMEAProcessor::GetParams(std::map<QString, ModelParameter> & mapParams)
 bool NMEAProcessor::Open(const QString & strFilename, int iBaudRate, int iDataBits, int iStopBits, int iParity)
 {
 	struct termios sPTS;
-        static const int BAUD_RATES[30] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 4097, 4098, 4099, 4100, 4101, 4102, 4103, 4104, 4105, 4106, 4107, 4108, 4109, 4110, 4111};
+	static const int BAUD_RATES[30] = {B0, B50, B75, B110, B134, B150, B200, B300, B600, B1200, B2400, B4800, B9600, B19200, B38400, B57600, B115200, B230400, B460800, B500000, B576000, B921600, B1000000, B1152000, B1500000, B2000000, B2500000, B3000000, B3500000, B4000000};
 
 	tcflag_t ioFlags;
 

@@ -32,7 +32,7 @@
 #include "InfrastructureNodeRegistry.h"
 
 #include <qfile.h>
-#include <q3textstream.h>
+#include <qtextstream.h>
 #include <qcursor.h>
 #include <qapplication.h>
 #include <qmessagebox.h>
@@ -145,14 +145,14 @@ bool Simulator::internalAddNew(const std::map<QString, std::map<QString, QString
 	if (bSuccess)
 		setAdding.erase(iterModel->first);
 	else
-		bSuccess = (QMessageBox::warning(NULL, "GrooveNet", QString("Warning: Failed to create model \"%1\". Continue?").arg(iterModel->first), QMessageBox::Yes | QMessageBox::Escape, QMessageBox::No | QMessageBox::Default, Qt::NoButton) == 0);
+		bSuccess = (QMessageBox::warning(NULL, "GrooveNet", QString("Warning: Failed to create model \"%1\". Continue?").arg(iterModel->first), QMessageBox::Yes | QMessageBox::Escape, QMessageBox::No | QMessageBox::Default, QMessageBox::NoButton) == 0);
 	return bSuccess;
 }
 
 int Simulator::Load(const QString & strFilename)
 {
 	QFile file(strFilename);
-	Q3TextStream reader;
+	QTextStream reader;
 	QString line;
 	std::vector<std::pair<QString, QString> > vecPairs, vecDepends;
 	std::map<QString, QString> mapParams;
@@ -160,7 +160,7 @@ int Simulator::Load(const QString & strFilename)
 	int model_index, type_index, depends_index;
 	int result;
 
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	if (!file.open(IO_ReadOnly | IO_Translate))
 	{
 		errno = ENOENT;
 		return 0;
@@ -301,10 +301,10 @@ int Simulator::Load(const QString & strFilename)
 void Simulator::Save(const QString & strFilename)
 {
 	QFile file(strFilename);
-	Q3TextStream writer;
+	QTextStream writer;
 	unsigned int i;
 
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+	if (!file.open(IO_WriteOnly | IO_Truncate))
 		return;
 
 	writer.setDevice(&file);
@@ -332,7 +332,7 @@ void Simulator::Save(const QString & strFilename)
 	file.close();
 }
 
-bool Simulator::internalSave(Q3TextStream & writer, ModelTreeNode * pModelNode)
+bool Simulator::internalSave(QTextStream & writer, ModelTreeNode * pModelNode)
 {
 	std::list<ModelTreeNode *>::iterator iterReqModel;
 	QString strDepends;
@@ -576,7 +576,7 @@ void Simulator::run()
 		m_mapEvent1Log.clear();
 		m_msgCurrentTrack.iSeqNumber = (unsigned)-1;
 		m_msgCurrentTrack.ipCar = (unsigned)-1;
-		// TODO qApp->wakeUpGuiThread();
+		qApp->wakeUpGuiThread();
 
 		// perform simulation setup
 		for (i = 0; i < m_sSimSettings.vecMessages.size(); i++)
@@ -603,7 +603,7 @@ void Simulator::run()
 			}
 		}
 		m_ModelMgr.m_modelsMutex.unlock();
-		// TODO qApp->wakeUpGuiThread();
+		qApp->wakeUpGuiThread();
 
 		if (bMonteCarlo)
 		{
@@ -616,7 +616,7 @@ void Simulator::run()
 		{
 			sleep(1);
 			if (!qApp->tryLock()) {
-				// TODO qApp->wakeUpGuiThread();
+				qApp->wakeUpGuiThread();
 				continue;
 			}
 			if (!m_pMutexPause->tryLock()) {

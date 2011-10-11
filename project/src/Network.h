@@ -31,7 +31,7 @@
 #include <arpa/inet.h>
 
 #include <qthread.h>
-#include <QMutex>
+
 #include <vector>
 #include <map>
 

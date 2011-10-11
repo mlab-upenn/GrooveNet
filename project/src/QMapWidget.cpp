@@ -22,22 +22,16 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <q3popupmenu.h>
+#include <qpopupmenu.h>
 
 #include "QMapWidget.h"
-//Added by qt3to4:
-#include <QPaintEvent>
-#include <QResizeEvent>
-#include <QPixmap>
-#include <QMouseEvent>
-#include <QKeyEvent>
 
 #include "Settings.h"
 
 #include <qinputdialog.h>
 #include <qlineedit.h>
 
-QMapWidget::QMapWidget(QWidget * parent, const char * name, Qt::WFlags f)
+QMapWidget::QMapWidget(QWidget * parent, const char * name, WFlags f)
 : QWidget(parent, name, f | Qt::WNoAutoErase), m_eSelectionMode(SelectionModeNone)
 {
 	m_sPaintSettings.tLastChange = timeval0;
@@ -45,11 +39,11 @@ QMapWidget::QMapWidget(QWidget * parent, const char * name, Qt::WFlags f)
 	m_sPaintSettings.pOldEverythingBmp = NULL;
 	m_sPaintSettings.pMemoryDC = new QPainter();
 	InitMapDrawingSettings(&m_sDrawSettings);
-	m_pRightClickMenu = new Q3PopupMenu(this);
+	m_pRightClickMenu = new QPopupMenu(this);
 	m_pRightClickMenu->insertItem("Clear Selection", 0);
 	m_pRightClickMenu->insertItem("Recenter", 1);
 	m_pRightClickMenu->insertItem("Find Address...", 2);
-	setFocusPolicy(Qt::StrongFocus);
+	setFocusPolicy(QWidget::StrongFocus);
 }
 
 QMapWidget::~QMapWidget()
@@ -117,16 +111,16 @@ bool QMapWidget::processKey(int iQtKey, Qt::ButtonState eButtonState)
 	switch (iQtKey)
 	{
 	case Qt::Key_Left:
-		moveCenter(eButtonState & Qt::ControlModifier ? -1.f : -0.25f, 0.f);
+		moveCenter(eButtonState & Qt::ControlButton ? -1.f : -0.25f, 0.f);
 		return true;
 	case Qt::Key_Up:
-		moveCenter(0.f, eButtonState & Qt::ControlModifier ? -1.f : -0.25f);
+		moveCenter(0.f, eButtonState & Qt::ControlButton ? -1.f : -0.25f);
 		return true;
 	case Qt::Key_Right:
-		moveCenter(eButtonState & Qt::ControlModifier ? 1.f : 0.25f, 0.f);
+		moveCenter(eButtonState & Qt::ControlButton ? 1.f : 0.25f, 0.f);
 		return true;
 	case Qt::Key_Down:
-		moveCenter(0.f, eButtonState & Qt::ControlModifier ? 1.f : 0.25f);
+		moveCenter(0.f, eButtonState & Qt::ControlButton ? 1.f : 0.25f);
 		return true;
 	case Qt::Key_Plus:
 		zoom(-1);
@@ -215,8 +209,7 @@ void QMapWidget::paintEvent(QPaintEvent * e)
 			case SelectionModeRect:
 			{
 				QRect rFocus = QRect(MapLongLatToScreen(&m_sPaintSettings, m_ptSelectionBegin), MapLongLatToScreen(&m_sPaintSettings, m_ptSelectionEnd)).normalize();
-//				TODO m_sPaintSettings.pMemoryDC->drawWinFocusRect(rFocus);
-				m_sPaintSettings.pMemoryDC->drawRect(rFocus);
+				m_sPaintSettings.pMemoryDC->drawWinFocusRect(rFocus);
 				break;
 			}
 			case SelectionModePoint:

@@ -43,9 +43,6 @@
 #include "StringHelp.h"
 //#include <iostream.h>
 
-       #include <pcap.h> // for mac os x
-
-
 #define Max_Num_Adapter 10
 
 #define WAVE_TX_OPTION       25
@@ -113,8 +110,8 @@ Queue rx_pkt_queue = NULL;
 
 
 
-pcap_t * Txconn =  NULL;
-pcap_t * Rxconn =  NULL;
+pcap_t *Txconn = NULL;
+pcap_t *Rxconn = NULL;
 
 WRM_CONNECTION_STATUS ConnectionStatus = DISCONNECTED;
 
@@ -1014,7 +1011,7 @@ STATUS_TYPE OpenWinpcapDriver (const QString & strDeviceName)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
     /* Open the device */
-    if ( (Txconn = Rxconn = pcap_open_live(strDeviceName.toAscii(),
+    if ( (Txconn = Rxconn = pcap_open_live(strDeviceName,
         MAX_PACKET_SIZE /*snaplen*/,
         //PCAP_OPENFLAG_PROMISCUOUS flags,
         1 /*flags*/,

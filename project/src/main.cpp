@@ -23,11 +23,9 @@
  ***************************************************************************/
 
 #include <qapplication.h>
-#include <q3filedialog.h>
+#include <qfiledialog.h>
 #include <qcursor.h>
 #include <qsplashscreen.h>
-//Added by qt3to4:
-#include <QPixmap>
 
 #include "MainWindow.h"
 #include "MapDB.h"
@@ -91,7 +89,7 @@ int main( int argc, char ** argv )
 	pSplash->finish(g_pMainWindow);
 	qApp->restoreOverrideCursor();
 	a.connect( &a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()) );
-	g_pMainWindow->m_pFileNew->activate(QAction::Trigger);
+	g_pMainWindow->m_pFileNew->activate();
 
 	if (g_pMainWindow->isShown())
 		ret = a.exec();

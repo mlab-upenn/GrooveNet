@@ -25,28 +25,25 @@
 #include "QConfigureDialog.h"
 #include "QExpandableTableItem.h"
 #include "QSettingColorTableItem.h"
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
 #include "Simulator.h"
 
-#include <q3table.h>
-#include <q3header.h>
+#include <qtable.h>
+#include <qheader.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qcolordialog.h>
-#include <q3filedialog.h>
+#include <qfiledialog.h>
 
 #include "app16x16.xpm"
 
 QConfigureDialog::QConfigureDialog(QWidget *parent, const char *name)
 : QDialog(parent, name), m_Settings(*g_pSettings)
 {
-	Q3VBoxLayout * layout = new Q3VBoxLayout(this, 8, 8, "layout");
+	QVBoxLayout * layout = new QVBoxLayout(this, 8, 8, "layout");
 	QWidget * pButtonBox = new QWidget(this, "buttonbox");
-	Q3HBoxLayout * buttonBoxLayout = new Q3HBoxLayout(pButtonBox, 0, 8, "buttonbox.layout");
+	QHBoxLayout * buttonBoxLayout = new QHBoxLayout(pButtonBox, 0, 8, "buttonbox.layout");
 
-	m_pTableProperties = new Q3Table(0, 2, this);
+	m_pTableProperties = new QTable(0, 2, this);
 	connect(m_pTableProperties, SIGNAL(valueChanged(int, int)), this, SLOT(slotSettingsChanged(int, int)));
 	connect(m_pTableProperties, SIGNAL(doubleClicked(int, int, int, const QPoint& )), this, SLOT(slotTableDoubleClicked(int, int, int, const QPoint& )));
 	connect(m_pTableProperties, SIGNAL(clicked(int, int, int, const QPoint& )), this, SLOT(slotTableClicked(int, int, int, const QPoint& )));
@@ -85,7 +82,7 @@ QConfigureDialog::QConfigureDialog(QWidget *parent, const char *name)
 
 void QConfigureDialog::Setup()
 {
-	Q3Header * pHHeader = m_pTableProperties->horizontalHeader();
+	QHeader * pHHeader = m_pTableProperties->horizontalHeader();
 
 	m_pTableProperties->verticalHeader()->hide();
 	m_pTableProperties->setLeftMargin(0);
@@ -94,8 +91,8 @@ void QConfigureDialog::Setup()
 	pHHeader->setLabel(0, "Property");
 	pHHeader->setLabel(1, "Value");
 	m_pTableProperties->setSorting(false);
-	m_pTableProperties->setSelectionMode(Q3Table::SingleRow);
-	m_pTableProperties->setFocusStyle(Q3Table::FollowStyle);
+	m_pTableProperties->setSelectionMode(QTable::SingleRow);
+	m_pTableProperties->setFocusStyle(QTable::FollowStyle);
 	m_pTableProperties->setColumnReadOnly(0, true);
 	m_pTableProperties->setColumnReadOnly(1, false);
 	m_pTableProperties->setColumnStretchable(1, true);
@@ -114,9 +111,9 @@ void QConfigureDialog::UpdateTable()
 	QStringList::iterator iterCurrent, iterLast;
 	QString strGroupName, strKey;
 	std::map<QString, QExpandableTableItem *>::iterator iterGroup;
-	std::map<QString, Q3TableItem *>::iterator iterChild;
+	std::map<QString, QTableItem *>::iterator iterChild;
 	QExpandableTableItem * pCurrent;
-	Q3TableItem * pItem;
+	QTableItem * pItem;
 
 	for (i = 0; i < SETTINGS_NUM; i++)
 	{
@@ -217,7 +214,7 @@ void QConfigureDialog::slotSettingsChanged(int row __attribute__ ((unused)) , in
 
 void QConfigureDialog::slotTableDoubleClicked(int row, int col __attribute__ ((unused)) , int button __attribute__ ((unused)) , const QPoint & mousePos __attribute__ ((unused)) )
 {
-	Q3TableItem * pItem = m_pTableProperties->item(row, 0);
+	QTableItem * pItem = m_pTableProperties->item(row, 0);
 	if (pItem != NULL && pItem->rtti() == EXPANDABLETABLEITEM_RTTI_VALUE)
 	{
 		if (((QExpandableTableItem *)pItem)->IsExpanded())
@@ -229,7 +226,7 @@ void QConfigureDialog::slotTableDoubleClicked(int row, int col __attribute__ ((u
 
 void QConfigureDialog::slotTableClicked(int row, int col, int button, const QPoint & mousePos __attribute__ ((unused)) )
 {
-	Q3TableItem * pItem = m_pTableProperties->item(row, col);
+	QTableItem * pItem = m_pTableProperties->item(row, col);
 	if (pItem != NULL && button == Qt::RightButton)
 	{
 		switch (pItem->rtti())
@@ -238,7 +235,7 @@ void QConfigureDialog::slotTableClicked(int row, int col, int button, const QPoi
 		{
 			if (((QSettingTextTableItem *)pItem)->m_pSetting != NULL && ((QSettingTextTableItem *)pItem)->m_pSetting->GetType() == Setting::SettingTypeFile)
 			{
-				QString strFilename = Q3FileDialog::getOpenFileName(pItem->text(), QString::null, this, "filedialog", "GrooveNet - Choose Filename...");
+				QString strFilename = QFileDialog::getOpenFileName(pItem->text(), QString::null, this, "filedialog", "GrooveNet - Choose Filename...");
 				if (!strFilename.isNull()) {
 					pItem->setText(strFilename);
 					slotSettingsChanged(row, col);

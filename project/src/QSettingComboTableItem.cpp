@@ -26,8 +26,8 @@
 
 #include <qcombobox.h>
 
-QSettingComboTableItem::QSettingComboTableItem(Q3Table * parent, const QStringList & listStrings, bool bEditable, Setting * pSetting)
-: Q3ComboTableItem(parent, listStrings, bEditable), m_pSetting(pSetting)
+QSettingComboTableItem::QSettingComboTableItem(QTable * parent, const QStringList & listStrings, bool bEditable, Setting * pSetting)
+: QComboTableItem(parent, listStrings, bEditable), m_pSetting(pSetting)
 {
 	setReplaceable(false);
 }
@@ -62,9 +62,9 @@ void QSettingComboTableItem::setContentFromEditor(QWidget * w)
 		} else
 			sValue = m_pSetting->GetEnumValue(iCurrent);
 		if (m_pSetting->SetValue(sValue))
-			Q3ComboTableItem::setContentFromEditor(w);
+			QComboTableItem::setContentFromEditor(w);
 		else
 			table()->updateCell(row(), col());
 	} else
-		Q3ComboTableItem::setContentFromEditor(w);
+		QComboTableItem::setContentFromEditor(w);
 }

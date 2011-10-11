@@ -23,19 +23,16 @@
  ***************************************************************************/
 
 #include <qpushbutton.h>
-#include <q3buttongroup.h>
+#include <qbuttongroup.h>
 #include <qradiobutton.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
 #include <qcheckbox.h>
-#include <q3listbox.h>
-#include <q3table.h>
+#include <qlistbox.h>
+#include <qtable.h>
 #include <qcombobox.h>
 
 #include "QSimRunDialog.h"
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
 #include "StringHelp.h"
 #include "Logger.h"
 #include "QFileTableItem.h"
@@ -46,7 +43,7 @@
 
 #include "app16x16.xpm"
 
-QSimRunDialog::QSimRunDialog(QWidget * parent, const char * name, bool modal, Qt::WFlags f)
+QSimRunDialog::QSimRunDialog(QWidget * parent, const char * name, bool modal, WFlags f)
 : QDialog(parent, name, modal, f), m_tIncrement(timeval0), m_tDuration(timeval0), m_bProfile(false)
 {
 	unsigned int i;
@@ -58,32 +55,32 @@ QSimRunDialog::QSimRunDialog(QWidget * parent, const char * name, bool modal, Qt
 	QWidget * pProfileBox = new QWidget(this);
 	QWidget * pButtonBox = new QWidget(this);
 
-	Q3VBoxLayout * pLayout = new Q3VBoxLayout(this, 8, 8);
-	Q3HBoxLayout * pDurationBoxLayout = new Q3HBoxLayout(pDurationBox, 0, 8);
-	Q3HBoxLayout * pMessagesBoxLayout = new Q3HBoxLayout(pMessagesBox, 0, 8);
-	Q3VBoxLayout * pMessagesButtonsBoxLayout = new Q3VBoxLayout(pMessagesButtonsBox, 0, 8);
-	Q3HBoxLayout * pProfileBoxLayout = new Q3HBoxLayout(pProfileBox, 0, 8);
-	Q3HBoxLayout * pButtonBoxLayout = new Q3HBoxLayout(pButtonBox, 0, 8);
+	QVBoxLayout * pLayout = new QVBoxLayout(this, 8, 8);
+	QHBoxLayout * pDurationBoxLayout = new QHBoxLayout(pDurationBox, 0, 8);
+	QHBoxLayout * pMessagesBoxLayout = new QHBoxLayout(pMessagesBox, 0, 8);
+	QVBoxLayout * pMessagesButtonsBoxLayout = new QVBoxLayout(pMessagesButtonsBox, 0, 8);
+	QHBoxLayout * pProfileBoxLayout = new QHBoxLayout(pProfileBox, 0, 8);
+	QHBoxLayout * pButtonBoxLayout = new QHBoxLayout(pButtonBox, 0, 8);
 
 	setCaption("GrooveNet - Run Simulation...");
 	setIcon(app16x16_xpm);
 
-	m_groupSimType = new Q3ButtonGroup(3, Qt::Horizontal, "Simulation Type", this);
+	m_groupSimType = new QButtonGroup(3, Qt::Horizontal, "Simulation Type", this);
 	m_buttonRunOnce = new QRadioButton("Run Once", m_groupSimType);
 	m_buttonMonteCarlo = new QRadioButton("Monte Carlo", m_groupSimType);
 	m_spinTrials = new QSpinBox(1, 999999999, 1, m_groupSimType);
 	m_spinTrials->setSuffix(" trials");
-	m_groupTime = new Q3ButtonGroup(3, Qt::Horizontal, "Simulation Time", this);
+	m_groupTime = new QButtonGroup(3, Qt::Horizontal, "Simulation Time", this);
 	m_buttonRealTime = new QRadioButton("Real Time", m_groupTime);
 	m_buttonFastTime = new QRadioButton("Fixed Time Increments:", m_groupTime);
 	m_txtIncrement = new QLineEdit("0.", m_groupTime);
 	m_chkDuration = new QCheckBox("Duration:", pDurationBox);
 	m_txtDuration = new QLineEdit("0.", pDurationBox);
-	m_listMessages = new Q3ListBox(pMessagesBox);
+	m_listMessages = new QListBox(pMessagesBox);
 	m_buttonAddMsg = new QPushButton("Add...", pMessagesButtonsBox);
 	m_buttonEditMsg = new QPushButton("Edit...", pMessagesButtonsBox);
 	m_buttonRemoveMsg = new QPushButton("Remove", pMessagesButtonsBox);
-	m_tableLogFiles = new Q3Table(LOGFILES, 2, pListTableSplitter);
+	m_tableLogFiles = new QTable(LOGFILES, 2, pListTableSplitter);
 	m_chkProfile = new QCheckBox("Profile", pProfileBox);
 	m_tableLogFiles->verticalHeader()->hide();
 	m_tableLogFiles->setLeftMargin(0);
@@ -92,8 +89,8 @@ QSimRunDialog::QSimRunDialog(QWidget * parent, const char * name, bool modal, Qt
 	m_tableLogFiles->horizontalHeader()->setLabel(0, "Log File Type");
 	m_tableLogFiles->horizontalHeader()->setLabel(1, "Path");
 	m_tableLogFiles->setSorting(false);
-	m_tableLogFiles->setSelectionMode(Q3Table::SingleRow);
-	m_tableLogFiles->setFocusStyle(Q3Table::FollowStyle);
+	m_tableLogFiles->setSelectionMode(QTable::SingleRow);
+	m_tableLogFiles->setFocusStyle(QTable::FollowStyle);
 	m_tableLogFiles->setColumnReadOnly(0, true);
 	m_tableLogFiles->setColumnReadOnly(1, false);
 	m_tableLogFiles->setColumnStretchable(1, true);

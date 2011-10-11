@@ -33,7 +33,7 @@
 class QSettingFileTableItem : public QSettingTextTableItem
 {
 public:
-	QSettingFileTableItem(Q3Table * parent, Setting * pSetting = NULL);
+	QSettingFileTableItem(QTable * parent, Setting * pSetting = NULL);
 	virtual ~QSettingFileTableItem();
 
 	inline virtual int rtti() const { return SETTINGFILETABLEITEM_RTTI_VALUE; }

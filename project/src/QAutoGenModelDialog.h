@@ -26,17 +26,15 @@
 #define _QAUTOGENMODELDIALOG_H
 
 #include "QAutoGenDialog.h"
-//Added by qt3to4:
-#include <QLabel>
 
 class QLabel;
-class Q3TextEdit;
+class QTextEdit;
 
 class QAutoGenModelDialog : public QDialog
 {
 Q_OBJECT
 public:
-	QAutoGenModelDialog(const QString & strModelName, const QString & strModelType, QWidget * parent = NULL, const char * name = 0, Qt::WFlags f = 0);
+	QAutoGenModelDialog(const QString & strModelName, const QString & strModelType, QWidget * parent = NULL, const char * name = 0, WFlags f = 0);
 	virtual ~QAutoGenModelDialog();
 
 	virtual void InitializeModelParams();
@@ -47,7 +45,7 @@ public:
 	std::map<QString, QString> * m_pAssocModelTypeMap;
 	std::vector<std::pair<QString, QString> > * m_pAssocModelTypes;
 	QLabel * m_labelModel;
-	Q3TextEdit * m_txtPropertiesHelp;
+	QTextEdit * m_txtPropertiesHelp;
 
 protected slots:
 	virtual void slotPropertiesValueChanged(int row, int col);
@@ -55,10 +53,10 @@ protected slots:
 	virtual void accept();
 
 protected:
-	bool AddTableItem(Q3Table * pTable, int row, const QString & strParam, AutoGenParameter & param, bool bUpdateTypes = false, bool bDisable = false);
+	bool AddTableItem(QTable * pTable, int row, const QString & strParam, AutoGenParameter & param, bool bUpdateTypes = false, bool bDisable = false);
 
 	QPushButton * m_buttonProceed, * m_buttonCancel;
-	Q3Table * m_tableProperties;
+	QTable * m_tableProperties;
 	QString m_strModelName, m_strModelType;
 };
 

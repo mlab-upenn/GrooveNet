@@ -29,11 +29,9 @@
 
 #include <qpainter.h>
 #include <qlayout.h>
-//Added by qt3to4:
-#include <Q3HBoxLayout>
 
-QFileTableItem::QFileTableItem(Q3Table * parent)
-: Q3TableItem(parent, OnTyping)
+QFileTableItem::QFileTableItem(QTable * parent)
+: QTableItem(parent, OnTyping)
 {
 }
 
@@ -44,7 +42,7 @@ QFileTableItem::~QFileTableItem()
 QWidget * QFileTableItem::createEditor() const
 {
 	QWidget * pBox = new QWidget(table()->viewport());
-	Q3HBoxLayout * pBoxLayout = new Q3HBoxLayout(pBox);
+	QHBoxLayout * pBoxLayout = new QHBoxLayout(pBox);
 	QLineEdit * pEdit = new QLineEdit(pBox, "editor");
 	QFilePushButton * pButton = new QFilePushButton(pEdit, "...", pBox, "filebutton");
 	pBoxLayout->addWidget(pEdit, 1);
@@ -60,5 +58,5 @@ void QFileTableItem::setContentFromEditor(QWidget * w)
 	if (pEdit != NULL)
 		setText(pEdit->text());
 	else
-		Q3TableItem::setContentFromEditor(w);
+		QTableItem::setContentFromEditor(w);
 }

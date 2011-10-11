@@ -31,8 +31,6 @@
 #include "InfrastructureNodeRegistry.h"
 #include "CollisionPhysModel.h"
 #include "QMessageList.h"
-//Added by qt3to4:
-#include <Q3PointArray>
 
 #include "StringHelp.h"
 
@@ -802,7 +800,7 @@ void MapCarObject::DrawObject(const QRect & rBox, QPainter * pDC, MapObjectState
 	short iHeading;
 	float cos0, sin0;
 	QPoint ptCenter;
-	Q3PointArray pts(3);
+	QPointArray pts(3);
 
 	if (m_pCar == NULL)
 		return;
@@ -839,7 +837,7 @@ void MapCarObject::DrawObject(MapDrawingSettings * pSettings, MapObjectState eSt
 	short iHeading;
 	float cos0, sin0;
 	QPoint ptCenter;
-	Q3PointArray pts(3);
+	QPointArray pts(3);
 
 	if (m_pCar == NULL)
 		return;

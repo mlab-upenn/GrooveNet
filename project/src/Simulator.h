@@ -40,7 +40,7 @@
 #define PARAM_TYPE "TYPE"
 #define PARAM_DEPENDS "DEPENDS"
 
-class Q3TextStream;
+class QTextStream;
 
 #define EVENT_EVENTMESSAGE_OCCUR 348756
 
@@ -114,7 +114,7 @@ public:
 
 protected:
 	bool internalAddNew(const std::map<QString, std::map<QString, QString> > & mapModels, std::map<QString, std::map<QString, QString> >::const_iterator iterModel, std::set<QString> & setAdded, std::set<QString> & setAdding);
-	bool internalSave(Q3TextStream & writer, ModelTreeNode * pModelNode);
+	bool internalSave(QTextStream & writer, ModelTreeNode * pModelNode);
 
 	void run();
 
