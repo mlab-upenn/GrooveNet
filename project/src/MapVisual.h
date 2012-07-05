@@ -28,15 +28,6 @@
 #include "Visualizer.h"
 #include "MapDB.h"
 #include "MapObjects.h"
-//Added by qt3to4:
-#include <QResizeEvent>
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QMouseEvent>
-#include <QDragMoveEvent>
-#include <QKeyEvent>
-#include <QPaintEvent>
-#include <QFocusEvent>
 
 #define MAPVISUAL_NAME "MapVisual"
 

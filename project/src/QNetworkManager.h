@@ -27,9 +27,6 @@
 
 #include <qwidget.h>
 #include <qmutex.h>
-//Added by qt3to4:
-#include <Q3PopupMenu>
-#include <QLabel>
 
 #include <arpa/inet.h>
 
@@ -38,8 +35,8 @@
 class QLabel;
 class QLineEdit;
 class QPushButton;
-class Q3PopupMenu;
-class Q3ListBox;
+class QPopupMenu;
+class QListBox;
 
 class QNetworkManager : public QWidget
 {
@@ -71,13 +68,13 @@ protected:
 	QLineEdit * m_txtClientsAddVehicle;
 	QPushButton * m_btnClientsAddConnect;
 	QPushButton * m_btnClientsAddDisconnect;
-	Q3ListBox * m_listClients;
+	QListBox * m_listClients;
 	QWidget * m_boxNetwork;
 	QPushButton * m_btnNetworkInit;
 	QPushButton * m_btnNetworkClose;
 	QPushButton * m_btnNetworkServer;
-	Q3PopupMenu * m_pNetworkServerMenu;
-	Q3PopupMenu * m_pNetworkClientMenu;
+	QPopupMenu * m_pNetworkServerMenu;
+	QPopupMenu * m_pNetworkClientMenu;
 
 	QMutex m_mutexClients;
 };

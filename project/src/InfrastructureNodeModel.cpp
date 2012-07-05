@@ -493,10 +493,10 @@ void MapInfrastructureNodeObject::DrawObject(const QRect & rBox, QPainter * pDC,
 
 	if (m_pNode->HasMessage(g_pSimulator->m_msgCurrentTrack)) {
 		pDC->setPen("red");
-		pDC->setBrush(Qt::red);
+		pDC->setBrush("red");
 	} else {
-		pDC->setPen(Qt::black);
-		pDC->setBrush(Qt::black);
+		pDC->setPen("black");
+		pDC->setBrush("black");
 	}
 	pDC->drawRect(ptCenter.x() - MAPINFRASTRUCTURENODEOBJECT_SQUARE_SIDE / 2, ptCenter.y() - MAPINFRASTRUCTURENODEOBJECT_SQUARE_SIDE / 2, MAPINFRASTRUCTURENODEOBJECT_SQUARE_SIDE, MAPINFRASTRUCTURENODEOBJECT_SQUARE_SIDE);
 	pDC->setBrush(brushOld);
@@ -519,10 +519,10 @@ void MapInfrastructureNodeObject::DrawObject(MapDrawingSettings * pSettings, Map
 
 	if (m_pNode->HasMessage(g_pSimulator->m_msgCurrentTrack)) {
 		pSettings->pMemoryDC->setPen("red");
-		pSettings->pMemoryDC->setBrush(Qt::red);
+		pSettings->pMemoryDC->setBrush("red");
 	} else {
-		pSettings->pMemoryDC->setPen(Qt::black);
-		pSettings->pMemoryDC->setBrush(Qt::black);
+		pSettings->pMemoryDC->setPen("black");
+		pSettings->pMemoryDC->setBrush("black");
 	}
 	pSettings->pMemoryDC->drawRect(ptAt.x() - MAPINFRASTRUCTURENODEOBJECT_SQUARE_SIDE / 2, ptAt.y() - MAPINFRASTRUCTURENODEOBJECT_SQUARE_SIDE / 2, MAPINFRASTRUCTURENODEOBJECT_SQUARE_SIDE, MAPINFRASTRUCTURENODEOBJECT_SQUARE_SIDE);
 	pSettings->pMemoryDC->setBrush(brushOld);

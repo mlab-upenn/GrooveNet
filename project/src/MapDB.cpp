@@ -38,9 +38,6 @@
 #include <qapplication.h>
 #include <qstringlist.h>
 #include <qcursor.h>
-//Added by qt3to4:
-#include <QPixmap>
-#include <Q3PointArray>
 
 #define SQUARES_PER_COUNTY 100
 #define SQUARES_PER_STATE 1600
@@ -2860,11 +2857,11 @@ void MapDB::DrawMapFeatures(MapDrawingSettings * pSettings)
 	// fill in water
 	if (pSettings->bFillInWater) {
 		pLevelDetails = &pSettings->vecLevelDetails[pSettings->iDetailLevel][RecordTypeWater];
-		//TODO pSettings->pMemoryDC->setRasterOp(Qt::XorROP);
+		pSettings->pMemoryDC->setRasterOp(Qt::XorROP);
 		clrLine = pSettings->clrBackground.rgb() ^ pLevelDetails->clrLine.rgb();
 		iWidth = pLevelDetails->iWidth;
 		iStyle = pLevelDetails->iStyle;
-		Q3PointArray waterPoly;
+		QPointArray waterPoly;
 		QPoint ptWater;
 		int iSeg2;
 		oldPen = pSettings->pMemoryDC->pen();
@@ -2922,7 +2919,7 @@ void MapDB::DrawMapFeatures(MapDrawingSettings * pSettings)
 			}
 		}
 
-		// TODO pSettings->pMemoryDC->setRasterOp(Qt::CopyROP);
+		pSettings->pMemoryDC->setRasterOp(Qt::CopyROP);
 		pSettings->pMemoryDC->setPen(oldPen);
 		pSettings->pMemoryDC->setBrush(oldBrush);
 	}
@@ -3042,7 +3039,7 @@ void MapDB::DrawMapFeatures(MapDrawingSettings * pSettings)
 		fnt = QFont("Helvetica", iFontSize, QFont::Normal);
 		oldFont = pSettings->pMemoryDC->font();
 		pSettings->pMemoryDC->setFont(fnt);
-		szText = pSettings->pMemoryDC->fontMetrics().size(Qt::TextSingleLine, strText);
+		szText = pSettings->pMemoryDC->fontMetrics().size(Qt::SingleLine, strText);
 
 		ptStart = itLabels->second.ptStart;
 		ptEnd = itLabels->second.ptEnd;
@@ -3061,7 +3058,7 @@ void MapDB::DrawMapFeatures(MapDrawingSettings * pSettings)
 			penOutline = QPen(QColor(0, 0, 0), 1, Qt::SolidLine);
 			fEllipseScaling = 1.3;
 			strRouteNumber = strText.mid(2);
-			szText = pSettings->pMemoryDC->fontMetrics().size(Qt::TextSingleLine, strRouteNumber);
+			szText = pSettings->pMemoryDC->fontMetrics().size(Qt::SingleLine, strRouteNumber);
 
 			iEllipseWidth = (int) (szText.width() * fEllipseScaling);
 			iEllipseHeight = (int) (szText.height() * fEllipseScaling);
@@ -3101,7 +3098,7 @@ void MapDB::DrawMapFeatures(MapDrawingSettings * pSettings)
 			fSymbolScaling = 1.2;
 
 			strRouteNumber = strText.mid(3);
-			szText = pSettings->pMemoryDC->fontMetrics().size(Qt::TextSingleLine, strRouteNumber);
+			szText = pSettings->pMemoryDC->fontMetrics().size(Qt::SingleLine, strRouteNumber);
 
 			iSymbolWidth = (int) (szText.width() * fSymbolScaling);
 			iSymbolHeight = (int) (szText.height() * fSymbolScaling);
@@ -3132,7 +3129,7 @@ void MapDB::DrawMapFeatures(MapDrawingSettings * pSettings)
 			fEllipseScaling = 1.2;
 
 			strRouteNumber = strText.mid(3);
-			szText = pSettings->pMemoryDC->fontMetrics().size(Qt::TextSingleLine, strRouteNumber);
+			szText = pSettings->pMemoryDC->fontMetrics().size(Qt::SingleLine, strRouteNumber);
 
 			iEllipseWidth = (int) (szText.width() * fEllipseScaling);
 			iEllipseHeight = (int) (szText.height() * fEllipseScaling);
@@ -3194,10 +3191,10 @@ void MapDB::DrawMapCompass(MapDrawingSettings * pSettings)
 
 	pSettings->pMemoryDC->setFont(fnt);
 
-	szN = pSettings->pMemoryDC->fontMetrics().size(Qt::TextSingleLine, strNKeyLabel);
-	szW = pSettings->pMemoryDC->fontMetrics().size(Qt::TextSingleLine, strWKeyLabel);
-	szS = pSettings->pMemoryDC->fontMetrics().size(Qt::TextSingleLine, strSKeyLabel);
-	szE = pSettings->pMemoryDC->fontMetrics().size(Qt::TextSingleLine, strEKeyLabel);
+	szN = pSettings->pMemoryDC->fontMetrics().size(Qt::SingleLine, strNKeyLabel);
+	szW = pSettings->pMemoryDC->fontMetrics().size(Qt::SingleLine, strWKeyLabel);
+	szS = pSettings->pMemoryDC->fontMetrics().size(Qt::SingleLine, strSKeyLabel);
+	szE = pSettings->pMemoryDC->fontMetrics().size(Qt::SingleLine, strEKeyLabel);
 
 	int iCompassRadius = 6;
 	int iCompassArrowLength = 15;
@@ -3214,7 +3211,7 @@ void MapDB::DrawMapCompass(MapDrawingSettings * pSettings)
 	int iWTextX = iCompassX - iCompassArrowLength - szW.width();
 	int iWTextY = iCompassY - szW.height() / 2 + pSettings->pMemoryDC->fontMetrics().ascent();
 
-	Q3PointArray pts(8);
+	QPointArray pts(8);
 	// top left
 	pts.setPoint(0, (int) (iCompassX - iArrowRadius * ::sqrt(2) / 2), (int) (iCompassY - iArrowRadius * ::sqrt(2) / 2));
 	// top
@@ -3298,7 +3295,7 @@ void MapDB::DrawMapKey(MapDrawingSettings * pSettings)
 	oldPen = pSettings->pMemoryDC->pen();
 	pSettings->pMemoryDC->setPen(QColor(0, 0, 0));
 
-	QSize szText = pSettings->pMemoryDC->fontMetrics().size(Qt::TextSingleLine, strLabel);
+	QSize szText = pSettings->pMemoryDC->fontMetrics().size(Qt::SingleLine, strLabel);
 
 	pSettings->pMemoryDC->drawText(iKeyX + iKeyW - szText.width(), iKeyY - szText.height() + pSettings->pMemoryDC->fontMetrics().ascent(), strLabel);
 
@@ -3725,7 +3722,7 @@ QString GetDataPath(const QString & strFilename, const QString & strURL, bool do
 			strRtn = commonDir.absFilePath(strFilename);
 	}
 
-	if ((strRtn.right(1) == "\\") || (strRtn.right(1) == "/"))
+	if (strRtn.right(1) == '\\' || strRtn.right(1) == '/')
 		strRtn.left(strRtn.length()-1);
 
 	return strRtn;

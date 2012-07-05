@@ -26,7 +26,7 @@
 #define _SETTINGS_H
 
 #include <qsettings.h>
-#include <q3table.h>
+#include <qtable.h>
 
 #define SETTINGS_NUM_START 0
 
@@ -231,8 +231,8 @@ public:
 	inline QString GetLabel() const { return m_strKey.mid(m_strKey.findRev('/')+1); }
 	inline const SettingData & GetEnumValue(unsigned int i) { return m_vecEnum[i]; }
 	
-	Q3TableItem * CreateItem(Q3Table * pTable);
-	void UpdateItem(Q3TableItem * pItem);
+	QTableItem * CreateItem(QTable * pTable);
+	void UpdateItem(QTableItem * pItem);
 
 	QStringList m_listEnumStrings;
 

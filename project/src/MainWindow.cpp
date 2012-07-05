@@ -32,27 +32,23 @@
 #include "QSimRunDialog.h"
 
 #include <qapplication.h>
-#include <q3popupmenu.h>
+#include <qpopupmenu.h>
 #include <qmenubar.h>
-#include <q3accel.h>
-#include <q3filedialog.h>
+#include <qaccel.h>
+#include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qcursor.h>
 #include <qstatusbar.h>
 #include <qlayout.h>
-//Added by qt3to4:
-#include <QCloseEvent>
-#include <QPixmap>
-#include <QLabel>
 
 #include "app32x32.xpm"
 #include "fileopen.xpm"
 #include "filesave.xpm"
 
 MainWindow::MainWindow()
-    : Q3MainWindow( 0, "MainWindow", Qt::WDestructiveClose )
+    : QMainWindow( 0, "MainWindow", WDestructiveClose )
 {
-	Q3DockWindow * pNMWindow;
+	QDockWindow * pNMWindow;
 	std::map<QString, ServerCreator>::iterator iterCreator;
 
 	m_pCentralWidget = new QWorkspace(this, "CENTRALWIDGET");
@@ -63,21 +59,21 @@ MainWindow::MainWindow()
 	setCentralWidget(m_pCentralWidget);
 
 	// create menus
-	m_pFileMenu = new Q3PopupMenu(this, "File Menu");
-	m_pFileNew = new QAction("&New...", Q3Accel::stringToKey("Ctrl+N"), this, "file.new");
+	m_pFileMenu = new QPopupMenu(this, "File Menu");
+	m_pFileNew = new QAction("&New...", QAccel::stringToKey("Ctrl+N"), this, "file.new");
 	m_pFileNew->setToolTip("Create a new simulation file, ending the current simulation");
 	connect(m_pFileNew, SIGNAL(activated()), this, SLOT(OnFileNew()));
 	m_pFileNew->addTo(m_pFileMenu);
-	m_pFileEdit = new QAction("&Edit...", Q3Accel::stringToKey("Ctrl+E"), this, "file.edit");
+	m_pFileEdit = new QAction("&Edit...", QAccel::stringToKey("Ctrl+E"), this, "file.edit");
 	m_pFileEdit->setToolTip("Edit the current simulation file, ending the current simulation");
 	connect(m_pFileEdit, SIGNAL(activated()), this, SLOT(OnFileEdit()));
 	m_pFileEdit->setEnabled(false);
 	m_pFileEdit->addTo(m_pFileMenu);
-	m_pFileOpen = new QAction(QPixmap(fileopen), "&Open...", Q3Accel::stringToKey("Ctrl+O"), this, "file.open");
+	m_pFileOpen = new QAction(QPixmap(fileopen), "&Open...", QAccel::stringToKey("Ctrl+O"), this, "file.open");
 	m_pFileOpen->setToolTip("Open a simulation file, ending the current simulation");
 	connect(m_pFileOpen, SIGNAL(activated()), this, SLOT(OnFileOpen()));
 	m_pFileOpen->addTo(m_pFileMenu);
-	m_pFileSave = new QAction(QPixmap(filesave), "&Save As...", Q3Accel::stringToKey("Ctrl+S"), this, "file.save");
+	m_pFileSave = new QAction(QPixmap(filesave), "&Save As...", QAccel::stringToKey("Ctrl+S"), this, "file.save");
 	m_pFileSave->setToolTip("Save the current setup to a simulation file (this ends any running simulation)");
 	connect(m_pFileSave, SIGNAL(activated()), this, SLOT(OnFileSave()));
 	m_pFileSave->setEnabled(false);
@@ -87,12 +83,12 @@ MainWindow::MainWindow()
 	m_pFileConfig->setToolTip("Edit the current configuration");
 	connect(m_pFileConfig, SIGNAL(activated()), this, SLOT(OnFileConfig()));
 	m_pFileConfig->addTo(m_pFileMenu);
-	m_pFileExit = new QAction("E&xit...", Q3Accel::stringToKey("Ctrl+Q"), this, "file.exit");
+	m_pFileExit = new QAction("E&xit...", QAccel::stringToKey("Ctrl+Q"), this, "file.exit");
 	m_pFileExit->setToolTip("Exit the program");
 	connect(m_pFileExit, SIGNAL(activated()), this, SLOT(OnFileExit()));
 	m_pFileExit->addTo(m_pFileMenu);
 
-	m_pSimMenu = new Q3PopupMenu(this, "Sim Menu");
+	m_pSimMenu = new QPopupMenu(this, "Sim Menu");
 	m_pSimRun = new QAction("&Run...", QKeySequence(Qt::Key_F2), this, "sim.run");
 	m_pSimRun->setToolTip("Start a new simulation");
 	connect(m_pSimRun, SIGNAL(activated()), this, SLOT(OnSimRun()));
@@ -114,7 +110,7 @@ MainWindow::MainWindow()
 	connect(m_pSimStop, SIGNAL(activated()), this, SLOT(OnSimStop()));
 	m_pSimStop->addTo(m_pSimMenu);
 
-	m_pNetMenu = new Q3PopupMenu(this, "Net Menu");
+	m_pNetMenu = new QPopupMenu(this, "Net Menu");
 	m_pNetInit = new QAction("&Initialize", QKeySequence(), this, "net.init");
 	m_pNetInit->setToolTip("Initialize network devices and connections");
 	m_pNetInit->setEnabled(true);
@@ -128,13 +124,13 @@ MainWindow::MainWindow()
 	m_pNetServer = new QAction("&Stop Server", QKeySequence(), this, "net.server");
 	m_pNetServer->setToolTip("Stop GrooveNet server");
 	connect(m_pNetServer, SIGNAL(activated()), this, SLOT(OnNetServer()));
-	m_pNetServerMenu = new Q3PopupMenu(this, "startserver");
+	m_pNetServerMenu = new QPopupMenu(this, "startserver");
 	connect(m_pNetServerMenu, SIGNAL(activated(int)), this, SLOT(OnNetServer(int)));
 	for (iterCreator = g_mapServerCreators.begin(); iterCreator != g_mapServerCreators.end(); ++iterCreator)
 		m_pNetServerMenu->insertItem(iterCreator->first);
 	m_iNetServerMenuID = m_pNetMenu->insertItem("&Start Server", m_pNetServerMenu);
 
-	m_pWindowMenu = new Q3PopupMenu(this, "Window Menu");
+	m_pWindowMenu = new QPopupMenu(this, "Window Menu");
 	m_pWindowCascade = new QAction("&Cascade", QKeySequence(), this, "window.cascade");
 	m_pWindowCascade->setToolTip("Cascade all open windows");
 	connect(m_pWindowCascade, SIGNAL(activated()), m_pCentralWidget, SLOT(cascade()));
@@ -167,7 +163,7 @@ MainWindow::MainWindow()
 	pNMWindow->setWidget(m_pNetworkManager);
 	addDockWindow(pNMWindow, Qt::DockBottom, true);
 */
-        tabsContainer = new Q3ToolBar(this);
+        tabsContainer = new QToolBar(this);
         tabsWidget = new QTabWidget(tabsContainer, "tabs");
         tabsWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         tabsWidget->setMargin(8);
@@ -213,7 +209,7 @@ void MainWindow::OnFileOpen()
 {
 	QString strSimFile;
 
-	strSimFile = Q3FileDialog::getOpenFileName(QString::null, "Simulation Files (*.sim)", g_pMainWindow, "choose simulator dialog", "Open Simulation Configuration File...");
+	strSimFile = QFileDialog::getOpenFileName(QString::null, "Simulation Files (*.sim)", g_pMainWindow, "choose simulator dialog", "Open Simulation Configuration File...");
 	if (!strSimFile.isEmpty())
 	{
 		qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -229,14 +225,14 @@ void MainWindow::OnFileSave()
 
 	if (g_pSimulator->running())
 	{
-		if (QMessageBox::question(this, "GrooveNet", "Saving the configuration requires that the currently running simulation be halted. Continue?", QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape, Qt::NoButton) == 0) {
+		if (QMessageBox::question(this, "GrooveNet", "Saving the configuration requires that the currently running simulation be halted. Continue?", QMessageBox::Yes | QMessageBox::Default, QMessageBox::No | QMessageBox::Escape, QMessageBox::NoButton) == 0) {
 			while (!g_pSimulator->wait(MAX_DEADLOCK))
 				g_pSimulator->terminate();
 		} else
 			return;
 	}
 
-	strSimFile = Q3FileDialog::getSaveFileName(QString::null, "Simulation Files (*.sim);;All Files (*)", g_pMainWindow, "write simulator dialog", "Save Simulation Configuration File...");
+	strSimFile = QFileDialog::getSaveFileName(QString::null, "Simulation Files (*.sim);;All Files (*)", g_pMainWindow, "write simulator dialog", "Save Simulation Configuration File...");
 	if (!strSimFile.isEmpty())
 	{
 		qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -334,7 +330,7 @@ void MainWindow::OnNetServer(int id)
 void MainWindow::closeEvent(QCloseEvent * e)
 {
 	int ret;
-	ret = QMessageBox::question(this, "GrooveNet", "Are you sure you want to exit?", QMessageBox::Yes | QMessageBox::Escape, QMessageBox::No | QMessageBox::Default, Qt::NoButton);
+	ret = QMessageBox::question(this, "GrooveNet", "Are you sure you want to exit?", QMessageBox::Yes | QMessageBox::Escape, QMessageBox::No | QMessageBox::Default, QMessageBox::NoButton);
 	switch (ret) {
 	case 0:
 		e->accept();

@@ -26,9 +26,6 @@
 #define _QSIMCREATEDIALOG_H
 
 #include <qdialog.h>
-//Added by qt3to4:
-#include <QLabel>
-#include <Q3PopupMenu>
 
 #include "Model.h"
 
@@ -38,18 +35,18 @@
 
 class QTabWidget;
 class QPushButton;
-class Q3ListBox;
-class Q3Table;
-class Q3PopupMenu;
+class QListBox;
+class QTable;
+class QPopupMenu;
 class QLabel;
 class QLineEdit;
-class Q3TextEdit;
+class QTextEdit;
 
 class QSimCreateDialog : public QDialog
 {
 Q_OBJECT
 public:
-	QSimCreateDialog(QWidget * parent = NULL, const char * name = 0, bool modal = false, Qt::WFlags f = 0);
+	QSimCreateDialog(QWidget * parent = NULL, const char * name = 0, bool modal = false, WFlags f = 0);
 	virtual ~QSimCreateDialog();
 
 	void AddExistingModels();
@@ -98,18 +95,18 @@ protected:
 	in_addr_t GetNextIPAddress(in_addr_t ipStart);
 	QString GetNextModelName(const QString & strBase);
 	QString GetModelName(const QString & strLast = QString::null);
-	void AddTableItem(Q3Table * pTable, int row, int col, const QString & strValue, const ModelParameter * pParam);
+	void AddTableItem(QTable * pTable, int row, int col, const QString & strValue, const ModelParameter * pParam);
 	bool ValidateTableItem(const QString & strValue, const ModelParameter * pParam);
 	void RemoveAssocModels(const std::set<QString> & setModelNames);
 
 	QTabWidget * m_tabsTabs;
 	QPushButton * m_buttonOK, * m_buttonCancel, * m_buttonVehicleAdd, * m_buttonVehicleRemove, * m_buttonVehicleDuplicate, * m_buttonInfrastructureNodeAdd, * m_buttonInfrastructureNodeRemove, * m_buttonInfrastructureNodeDuplicate, * m_buttonModelAdd, * m_buttonModelRemove, * m_buttonModelDuplicate, * m_buttonVehicleRemoveAll, * m_buttonVehicleAutoGen, * m_buttonInfrastructureNodeRemoveAll, * m_buttonInfrastructureNodeAutoGen, * m_buttonModelRemoveAll;
-	Q3ListBox * m_listVehicles, * m_listInfrastructureNodes, * m_listModels;
+	QListBox * m_listVehicles, * m_listInfrastructureNodes, * m_listModels;
 	QLabel * m_lblVehicleName, * m_lblInfrastructureNodeName, * m_lblModelName;
 	QLineEdit * m_txtVehicleName, * m_txtInfrastructureNodeName, * m_txtModelName;
-	Q3Table * m_tableVehicleProperties, * m_tableInfrastructureNodeProperties, * m_tableModelProperties;
-	Q3TextEdit * m_txtVehiclePropertiesHelp, * m_txtInfrastructureNodePropertiesHelp, * m_txtModelPropertiesHelp;
-	Q3PopupMenu * m_pVehiclesAddMenu, * m_pInfrastructureNodesAddMenu, * m_pModelsAddMenu;
+	QTable * m_tableVehicleProperties, * m_tableInfrastructureNodeProperties, * m_tableModelProperties;
+	QTextEdit * m_txtVehiclePropertiesHelp, * m_txtInfrastructureNodePropertiesHelp, * m_txtModelPropertiesHelp;
+	QPopupMenu * m_pVehiclesAddMenu, * m_pInfrastructureNodesAddMenu, * m_pModelsAddMenu;
 
 	std::map<QString, std::map<QString, ModelParameter> > m_mapModelParams;
 	std::vector<QString> m_vecModelTypes;

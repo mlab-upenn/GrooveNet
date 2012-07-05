@@ -30,11 +30,8 @@
 #include <qpainter.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-//Added by qt3to4:
-#include <QPixmap>
-#include <Q3HBoxLayout>
 
-QSettingColorTableItem::QSettingColorTableItem(Q3Table * parent, Setting * pSetting)
+QSettingColorTableItem::QSettingColorTableItem(QTable * parent, Setting * pSetting)
 : QSettingTextTableItem(parent, pSetting)
 {
 	setPixmap(CreatePixmap());
@@ -71,7 +68,7 @@ void QSettingColorTableItem::setText(const QString & str)
 QWidget * QSettingColorTableItem::createEditor() const
 {
 	QWidget * pBox = new QWidget(table()->viewport());
-	Q3HBoxLayout * pBoxLayout = new Q3HBoxLayout(pBox);
+	QHBoxLayout * pBoxLayout = new QHBoxLayout(pBox);
 	QLineEdit * pEdit = new QLineEdit(pBox, "editor");
 	QColorPushButton * pButton = new QColorPushButton(pEdit, "...", pBox, "colorbutton");
 	pBoxLayout->addWidget(pEdit, 1);

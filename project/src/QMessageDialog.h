@@ -27,18 +27,16 @@
 
 #include <arpa/inet.h>
 #include <qdialog.h>
-//Added by qt3to4:
-#include <QLabel>
 #include <vector>
 
 #include "Message.h"
 
 class QRadioButton;
-class Q3ButtonGroup;
+class QButtonGroup;
 class QPushButton;
 class QComboBox;
 class QSpinBox;
-class Q3ListBox;
+class QListBox;
 class QLabel;
 class QLineEdit;
 
@@ -50,7 +48,7 @@ class QMessageDialog : public QDialog
 {
 Q_OBJECT
 public:
-	QMessageDialog(in_addr_t ipCar = 0, QWidget * parent = NULL, const char * name = 0, Qt::WFlags f = 0);
+	QMessageDialog(in_addr_t ipCar = 0, QWidget * parent = NULL, const char * name = 0, WFlags f = 0);
 	virtual ~QMessageDialog();
 
 	void LoadMessages();
@@ -65,7 +63,7 @@ public:
 
 	QComboBox * m_comboMsgSource;
 	QRadioButton * m_buttonEmergency, * m_buttonWarning;
-	Q3ButtonGroup * m_groupMsgType;
+	QButtonGroup * m_groupMsgType;
 	QComboBox * m_comboMsgText, * m_comboMsgRegionType;
 	QSpinBox * m_spinMsgLifetime;
 	QLabel * m_labelMsgRegionType, * m_labelDest, * m_labelTXTime;

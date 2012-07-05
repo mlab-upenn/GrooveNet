@@ -1,8 +1,0 @@
-[Logging started at 10/10/2009 04:49:30 PM]
-Loading state information...Successful
-Loading county information...Successful
-Loading zip code information...Successful
-Loading abbreviations...Successful
-Opening Network Interface...Successful
-Starting UDP Server...Successful
-Loading map "/home/daniel/Desktop/groovenet/mapdata/42003.MAP"...Successful

@@ -29,24 +29,21 @@
 #include <qlineedit.h>
 
 #include <qlayout.h>
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
 
 #include "app16x16.xpm"
 
 #include "QBoundingRegionConfDialog.h"
 #include "StringHelp.h"
 
-QBoundingRegionConfDialog::QBoundingRegionConfDialog(const SafetyPacket::BoundingRegion & sBoundingRegion, QWidget * parent, const char * name, Qt::WFlags f)
+QBoundingRegionConfDialog::QBoundingRegionConfDialog(const SafetyPacket::BoundingRegion & sBoundingRegion, QWidget * parent, const char * name, WFlags f)
 : QDialog(parent, name, f), m_sBoundingRegion(sBoundingRegion)
 {
 	QWidget * pParamBox = new QWidget(this);
 	QWidget * pButtonBox = new QWidget(this);
 
-	Q3VBoxLayout * pLayout = new Q3VBoxLayout(this, 8, 8);
-	Q3HBoxLayout * pParamBoxLayout = new Q3HBoxLayout(pParamBox, 0, 8);
-	Q3HBoxLayout * pButtonBoxLayout = new Q3HBoxLayout(pButtonBox, 0, 8);
+	QVBoxLayout * pLayout = new QVBoxLayout(this, 8, 8);
+	QHBoxLayout * pParamBoxLayout = new QHBoxLayout(pParamBox, 0, 8);
+	QHBoxLayout * pButtonBoxLayout = new QHBoxLayout(pButtonBox, 0, 8);
 
 	setCaption("GrooveNet - Configure Message Bounding Region...");
 	setIcon(app16x16_xpm);

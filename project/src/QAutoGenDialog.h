@@ -26,16 +26,14 @@
 #define _QAUTOGENDIALOG_H
 
 #include <qdialog.h>
-//Added by qt3to4:
-#include <QLabel>
 
 class QMapWidget;
 class QPushButton;
 class QComboBox;
 class QSpinBox;
 class QLabel;
-class Q3TextEdit;
-class Q3Table;
+class QTextEdit;
+class QTable;
 
 #include "Model.h"
 #include "Coords.h"
@@ -66,7 +64,7 @@ class QAutoGenDialog : public QDialog
 {
 Q_OBJECT
 public:
-	QAutoGenDialog(QWidget * parent = NULL, const char * name = 0, Qt::WFlags f = 0);
+	QAutoGenDialog(QWidget * parent = NULL, const char * name = 0, WFlags f = 0);
 	virtual ~QAutoGenDialog();
 
 	void SetParams(std::map<QString, std::map<QString, ModelParameter> > * pMapParams, std::vector<QString> * pVecModelTypes, const QString & strModelBaseType);
@@ -87,7 +85,7 @@ protected slots:
 	virtual void accept();
 
 protected:
-	bool AddTableItem(Q3Table * pTable, int row, AutoGenParameter & param, bool bUpdateTypes = false);
+	bool AddTableItem(QTable * pTable, int row, AutoGenParameter & param, bool bUpdateTypes = false);
 	void AddParameterFromModel(const QString & strParam, const ModelParameter & modelValue, AutoGenParameter & param);
 	QString GetAssocModel(const QString & strParam, const QString & strType, std::map<QString, QString> & mapAssocModels, const std::map<QString, QString> & mapAssocModelTypes, std::map<QString, std::map<QString, AutoGenParameter> > & mapAssocParams, unsigned int iVehicle);
 	QString GetRandomParameter(const QString & strParam, const QString & strValue, const ModelParameter & param);
@@ -100,8 +98,8 @@ protected:
 	QPushButton * m_buttonOK, * m_buttonCancel;
 	QComboBox * m_comboVehicleType, * m_comboRegionIDs, * m_comboRegionType;
 	QSpinBox * m_txtVehicles;
-	Q3Table * m_tableProperties;
-	Q3TextEdit * m_txtPropertiesHelp;
+	QTable * m_tableProperties;
+	QTextEdit * m_txtPropertiesHelp;
 	std::map<QString, std::map<QString, ModelParameter> > * m_pMapParams;
 	std::map<QString, unsigned int> m_mapModelIndexes;
 	std::vector<QString> * m_pVecModelTypes;

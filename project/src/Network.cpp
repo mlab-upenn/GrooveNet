@@ -30,7 +30,7 @@
 #include "StringHelp.h"
 #include "UDP.h"
 #include "TCP.h"
-#include "Denso.h"
+//#include "Denso.h"
 #include "Simulator.h"
 #include "MainWindow.h"
 #include "CarRegistry.h"
@@ -653,13 +653,6 @@ bool Server::FillFDs(fd_set * pFDs) const
 	return !m_vecConnections.empty();
 }
 
-# define TEMP_FAILURE_RETRY(expression)\
-(__extension__ \
-({ long int __result; \
-do __result = (long int) (expression); \
-while (__result == -1L && errno == EINTR);\
-__result; }))
-
 bool Server::Select(fd_set * pFDs, struct timeval tWait)
 {
 	return TEMP_FAILURE_RETRY(::select(FD_SETSIZE, pFDs, NULL, NULL, &tWait)) > 0;
@@ -1092,7 +1085,7 @@ void HybridClient::run()
 		htonl(inet_addr(g_pSettings->m_sSettings[SETTINGS_HYBRIDNETWORK_IP_NUM].GetValue().strValue));
 	serveraddr.sin_port = htons(40005);
 
-	if(::connect(clientfd, (sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
+	if(connect(clientfd, (sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
 	{
 		g_pLogger->LogInfo(QString("Hybrid Network Error: Couldn't Connect"));
 		return;

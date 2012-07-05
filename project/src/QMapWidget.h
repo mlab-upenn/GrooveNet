@@ -26,16 +26,10 @@
 #define _QMAPWIDGET_H
 
 #include <qwidget.h>
-//Added by qt3to4:
-#include <QResizeEvent>
-#include <QMouseEvent>
-#include <QKeyEvent>
-#include <Q3PopupMenu>
-#include <QPaintEvent>
 
 #include "MapDB.h"
 
-class Q3PopupMenu;
+class QPopupMenu;
 
 class QMapWidget : public QWidget
 {
@@ -50,7 +44,7 @@ public:
 		SelectionModeRecords
 	} SelectionMode;
 
-	QMapWidget(QWidget * parent = NULL, const char * name = 0, Qt::WFlags f = 0);
+	QMapWidget(QWidget * parent = NULL, const char * name = 0, WFlags f = 0);
 	virtual ~QMapWidget();
 
 	inline virtual void SetSelectionMode(SelectionMode eMode)
@@ -153,7 +147,7 @@ protected slots:
 protected:
 	MapDrawingSettings m_sDrawSettings, m_sPaintSettings;
 	QMutex m_mutexSettings;
-	Q3PopupMenu * m_pRightClickMenu;
+	QPopupMenu * m_pRightClickMenu;
 	SelectionMode m_eSelectionMode;
 	Coords m_ptSelectionBegin, m_ptSelectionEnd;
 	std::set<unsigned int> m_setRecords;

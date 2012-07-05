@@ -26,22 +26,19 @@
 #include <qcombobox.h>
 #include <qspinbox.h>
 #include <qlabel.h>
-#include <q3textedit.h>
-#include <q3table.h>
+#include <qtextedit.h>
+#include <qtable.h>
 #include <qapplication.h>
 #include <qcursor.h>
 
 #include "QAutoGenModelDialog.h"
 #include "QFileTableItem.h"
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
 #include "Simulator.h"
 #include "SimModel.h"
 #include "StringHelp.h"
 
 #include <qlayout.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <qsplitter.h>
 
 #include "app16x16.xpm"
@@ -50,21 +47,21 @@
 #define COMBOITEM_RANDOM "Random"
 #define COMBOITEM_FILE "File"
 
-QAutoGenModelDialog::QAutoGenModelDialog(const QString & strModelName, const QString & strModelType, QWidget * parent, const char * name, Qt::WFlags f)
+QAutoGenModelDialog::QAutoGenModelDialog(const QString & strModelName, const QString & strModelType, QWidget * parent, const char * name, WFlags f)
 : QDialog(parent, name, f), m_pVecModelTypes(NULL), m_pModelParams(NULL), m_pParams(NULL), m_pAssocModelTypeMap(NULL), m_pAssocModelTypes(NULL), m_strModelName(strModelName), m_strModelType(strModelType)
 {
 	QSplitter * splitterDivider = new QSplitter(Qt::Vertical, this);
 	QWidget * pButtonBox = new QWidget(this);
 
-	Q3VBoxLayout * pLayout = new Q3VBoxLayout(this, 8, 8);
-	Q3HBoxLayout * pButtonLayout = new Q3HBoxLayout(pButtonBox, 0, 8);
+	QVBoxLayout * pLayout = new QVBoxLayout(this, 8, 8);
+	QHBoxLayout * pButtonLayout = new QHBoxLayout(pButtonBox, 0, 8);
 
 	setCaption("GrooveNet - Specify Model Parameters...");
 	setIcon(app16x16_xpm);
 
 	m_labelModel = new QLabel(QString("Model: [%1] %2").arg(strModelType).arg(strModelName), this);
-	m_tableProperties = new Q3Table(0, 3, splitterDivider);
-	m_txtPropertiesHelp = new Q3TextEdit("", QString::null, splitterDivider);
+	m_tableProperties = new QTable(0, 3, splitterDivider);
+	m_txtPropertiesHelp = new QTextEdit("", QString::null, splitterDivider);
 	m_buttonProceed = new QPushButton("&Proceed", pButtonBox);
 	m_buttonCancel = new QPushButton("&Cancel", pButtonBox);
 
@@ -81,8 +78,8 @@ QAutoGenModelDialog::QAutoGenModelDialog(const QString & strModelName, const QSt
 	m_tableProperties->horizontalHeader()->setLabel(1, "Type");
 	m_tableProperties->horizontalHeader()->setLabel(2, "Value");
 	m_tableProperties->setSorting(false);
-	m_tableProperties->setSelectionMode(Q3Table::SingleRow);
-	m_tableProperties->setFocusStyle(Q3Table::FollowStyle);
+	m_tableProperties->setSelectionMode(QTable::SingleRow);
+	m_tableProperties->setFocusStyle(QTable::FollowStyle);
 	m_tableProperties->setColumnReadOnly(0, true);
 	m_tableProperties->setColumnReadOnly(1, false);
 	m_tableProperties->setColumnReadOnly(2, false);
@@ -134,7 +131,7 @@ void QAutoGenModelDialog::slotPropertiesValueChanged(int row, int col)
 	{
 		if (col == 1 && m_tableProperties->item(row, 1) != NULL)
 		{
-			QString strText = ((Q3ComboTableItem *)m_tableProperties->item(row, 1))->currentText();
+			QString strText = ((QComboTableItem *)m_tableProperties->item(row, 1))->currentText();
 			switch (iterParam->second.eType & (~AutoGenParamTypeNoRandom))
 			{
 			case AutoGenParamTypeFixed:
@@ -189,7 +186,7 @@ void QAutoGenModelDialog::accept()
 	QDialog::accept();
 }
 
-bool QAutoGenModelDialog::AddTableItem(Q3Table * pTable, int row, const QString & strParam, AutoGenParameter & param, bool bUpdateTypes, bool bDisable)
+bool QAutoGenModelDialog::AddTableItem(QTable * pTable, int row, const QString & strParam, AutoGenParameter & param, bool bUpdateTypes, bool bDisable)
 {
 	QStringList listOptions;
 	int iSep;
@@ -215,8 +212,8 @@ bool QAutoGenModelDialog::AddTableItem(Q3Table * pTable, int row, const QString 
 			else
 			{ // enumeration
 				QStringList listCombo = QStringList::split(';', param.strAuxData, false);
-				pTable->setItem(row, 2, new Q3ComboTableItem(pTable, listCombo, false));
-				((Q3ComboTableItem *)pTable->item(row, 2))->setCurrentItem(param.strValue);
+				pTable->setItem(row, 2, new QComboTableItem(pTable, listCombo, false));
+				((QComboTableItem *)pTable->item(row, 2))->setCurrentItem(param.strValue);
 				param.strValue = pTable->text(row, 2);
 			}
 		}
@@ -245,10 +242,10 @@ bool QAutoGenModelDialog::AddTableItem(Q3Table * pTable, int row, const QString 
 				listOptions.push_back((*m_pVecModelTypes)[i]);
 		}
 		listOptions.push_back(NULLMODEL_NAME);
-		pTable->setItem(row, 2, new Q3ComboTableItem(pTable, listOptions, false));
+		pTable->setItem(row, 2, new QComboTableItem(pTable, listOptions, false));
 		if (m_pAssocModelTypeMap->find(strParam) != m_pAssocModelTypeMap->end())
 			param.strValue = (*m_pAssocModelTypeMap)[strParam];
-		((Q3ComboTableItem *)pTable->item(row, 2))->setCurrentItem(param.strValue);
+		((QComboTableItem *)pTable->item(row, 2))->setCurrentItem(param.strValue);
 		param.strValue = pTable->text(row, 2);
 		listOptions.clear();
 		listOptions.push_back(COMBOITEM_FIXED);
@@ -263,8 +260,8 @@ bool QAutoGenModelDialog::AddTableItem(Q3Table * pTable, int row, const QString 
 	if (bUpdateTypes)
 	{
 		if (!listOptions.empty()) {
-			pTable->setItem(row, 1, new Q3ComboTableItem(pTable, listOptions, false));
-			((Q3ComboTableItem *)pTable->item(row, 1))->setCurrentItem(strCurrent);
+			pTable->setItem(row, 1, new QComboTableItem(pTable, listOptions, false));
+			((QComboTableItem *)pTable->item(row, 1))->setCurrentItem(strCurrent);
 		} else
 			pTable->clearCell(row, 1);
 	}

@@ -22,10 +22,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <q3popupmenu.h>
+#include <qpopupmenu.h>
 #include <qradiobutton.h>
-#include <q3listbox.h>
-#include <q3buttongroup.h>
+#include <qlistbox.h>
+#include <qbuttongroup.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qapplication.h>
@@ -90,7 +90,7 @@ void CarListVisual::UpdateTable()
 			if (pairObjectRow.second)
 			{
 				pTable->insertRows(pairObjectRow.first->second);
-				pTable->setItem(pairObjectRow.first->second, 0, new QMapObjectTableItem(NULL, Q3TableItem::Never, iterObject->second == NULL ? -1 : iterObject->second->GetMapObjectID()));
+				pTable->setItem(pairObjectRow.first->second, 0, new QMapObjectTableItem(NULL, QTableItem::Never, iterObject->second == NULL ? -1 : iterObject->second->GetMapObjectID()));
 			}
 			else
 			{
@@ -114,7 +114,7 @@ void CarListVisual::UpdateTable()
 			if (pairObjectRow.second)
 			{
 				pTable->insertRows(pairObjectRow.first->second);
-				pTable->setItem(pairObjectRow.first->second, 0, new QMapObjectTableItem(NULL, Q3TableItem::Never, iterNodeObject->second == NULL ? -1 : iterNodeObject->second->GetMapObjectID()));
+				pTable->setItem(pairObjectRow.first->second, 0, new QMapObjectTableItem(NULL, QTableItem::Never, iterNodeObject->second == NULL ? -1 : iterNodeObject->second->GetMapObjectID()));
 			}
 			else
 			{
@@ -164,7 +164,7 @@ int CarListVisual::Init(const std::map<QString, QString> & mapParams)
 
 	pTable->setNumCols(7);
 
-	Q3Header * pHHeader = pTable->horizontalHeader();
+	QHeader * pHHeader = pTable->horizontalHeader();
 	pHHeader->setMovingEnabled(false);
 	pHHeader->setLabel(0, "");
 	pTable->setColumnWidth(0, 32);
@@ -182,16 +182,16 @@ int CarListVisual::Init(const std::map<QString, QString> & mapParams)
 	pTable->setColumnWidth(6, 90);
 	pTable->verticalHeader()->hide();
 	pTable->setColumnMovingEnabled(false);
-	pTable->setFocusStyle(Q3Table::FollowStyle);
+	pTable->setFocusStyle(QTable::FollowStyle);
 	pTable->setLeftMargin(0);
 	pTable->setReadOnly(true);
 	pTable->setRowMovingEnabled(false);
-	pTable->setSelectionMode(Q3Table::SingleRow);
+	pTable->setSelectionMode(QTable::SingleRow);
 	pTable->setShowGrid(true);
 	pTable->setSorting(false);
 	pTable->SetDragObjectCreator(CarListVisualDragObjectCreator, this);
 	pTable->setDragEnabled(true);
-	m_pRightClickMenu = new Q3PopupMenu(pTable);
+	m_pRightClickMenu = new QPopupMenu(pTable);
 	m_pRightClickMenu->insertItem("Send Message...", 0);
 
 	UpdateTable();
@@ -289,10 +289,10 @@ void CarListVisual::GetParams(std::map<QString, ModelParameter> & mapParams)
 	TableVisualizer::GetParams(mapParams);
 }
 
-Q3DragObject * CarListVisualDragObjectCreator(TableVisualizer * pTableVisualizer)
+QDragObject * CarListVisualDragObjectCreator(TableVisualizer * pTableVisualizer)
 {
 	CarListVisual * pCarList = (CarListVisual *)pTableVisualizer;
-	Q3DragObject * pDragObject = NULL;
+	QDragObject * pDragObject = NULL;
 	std::map<in_addr_t, int>::iterator iterRow;
 	std::map<in_addr_t, CarModel *> * pCarRegistry;
 	std::map<in_addr_t, InfrastructureNodeModel *> * pNodeRegistry;
@@ -310,11 +310,11 @@ Q3DragObject * CarListVisualDragObjectCreator(TableVisualizer * pTableVisualizer
 			iterNode = pNodeRegistry->find(iterRow->first);
 			if (iterCar != pCarRegistry->end() && iterCar->second != NULL)
 			{
-				pDragObject = new Q3TextDrag("OBJECT:" + iterCar->second->GetModelName(), ((QTableVisualizer *)pCarList->GetWidget())->m_pTable);
+				pDragObject = new QTextDrag("OBJECT:" + iterCar->second->GetModelName(), ((QTableVisualizer *)pCarList->GetWidget())->m_pTable);
 			}
 			else if (iterNode != pNodeRegistry->end() && iterNode->second != NULL)
 			{
-				pDragObject = new Q3TextDrag("OBJECT:" + iterNode->second->GetModelName(), ((QTableVisualizer *)pCarList->GetWidget())->m_pTable);
+				pDragObject = new QTextDrag("OBJECT:" + iterNode->second->GetModelName(), ((QTableVisualizer *)pCarList->GetWidget())->m_pTable);
 			}
 			g_pInfrastructureNodeRegistry->releaseLock();
 			g_pCarRegistry->releaseLock();
