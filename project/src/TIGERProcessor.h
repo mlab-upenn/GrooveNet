@@ -103,24 +103,36 @@ public:
 	bool LoadTypeP(const QString & strFilename);	
 	/*	Load TIGER data set */
 	bool LoadSet(const QString & strBaseName);	
+	/*	Load OSM data		*/	
+	bool LoadTypeOSM(const QString & strFilename);
+	bool LoadSetOSM(const QString & strBaseName);
 
 	/*	Write TIGER data */
 	bool WriteMap(const QString & fileName);
+	
+	bool WriteOSMMap(const QString & fileName);
 
 	/*	Enumerate vertices from endpoints of records, also do other preprocessing */
 	void EnumerateVertices();
+	void EnumerateOSMvertices();
 	/*	Fix zip codes of records that do not have zip codes specified */
 	void FixZipCodes();
 	/*	Add string to string list, return index of string in list */
 	unsigned int AddString(const QString & str);
+	unsigned int AddOSMString(const QString & str);
+	long getCoord(char * str, int strLen);
+//	char * GetKeyName(char *);
+	
 
 protected:
 	std::vector<QString> m_Strings;
+	std::vector<QString> m_OSMStrings;
 	QString stateName;
 	// county code
 	int countyCode;
 	// bounding rectangle
 	Rect boundingRect;
+	Rect osmBoundingRect;
 
 	// coordinates -> vertex #
 	std::map<Coords, unsigned int> m_mapCoordinateToVertex;	
@@ -131,16 +143,30 @@ protected:
 
 	// the records themselves
 	MapRecord * m_pRecords;
+	
+	OSMRecord * m_pOSMRecords;
 
 	// the number of records
 	unsigned int m_nRecords;
 
+	unsigned int m_nOSMRecords;
 	// some temporary variables used during the loading process
 	std::map<unsigned int, unsigned int> m_mapTLIDtoRecord;	
 	std::map<unsigned int, std::list<std::pair<unsigned int, bool> > > m_mapPolyIDtoRecords;
 	std::map<unsigned int, std::vector<unsigned int> > m_mapAdditionalNameIDtoRecord;	
 	std::map<QString, unsigned int> m_mapStringsToIndex; // temporary variable
+	
+	//OSM map processing variables
+	std::map<unsigned long, Coords> m_mapNodeIDandCoord;
+	std::map<unsigned long,unsigned int> m_osmWayIDtoRecord;
+	std::map<QString, unsigned int> m_osmMapStringsToIndex;
+	std::map<Coords, unsigned int> m_mapOSMCoordinateToVertex;	
+
+	std::vector<Vertex> m_OSMVertices;
+	
+	
 	Coords * areaLeft, * areaRight, * areaTop, * areaBottom;
+	Coords * areaOSMLeft, * areaOSMRight, * areaOSMTop, * areaOSMBottom;
 };
 
 /*	Write memory buffer to file */

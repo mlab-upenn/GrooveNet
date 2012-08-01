@@ -20,6 +20,7 @@
 #include "Coords.h"
 
 #include "Global.h"
+#include <vector>
 
 Coords::Coords()
 : m_iLong(0), m_iLat(0)
@@ -142,6 +143,17 @@ Rect Rect::BoundingRect(Coords * coords, int numCoords)
 	return Rect(left->m_iLong, top->m_iLat, right->m_iLong, bottom->m_iLat);
 }
 
+Rect Rect::BoundingRect(std::vector<Coords> coords, int numCoords)
+{
+  if (numCoords == 0) return Rect(0,0,0,0);
+  std::vector<Coords> left = coords, top = coords, right = coords, bottom = coords;
+  int i;
+  for(i = 1; i <numCoords; i++)
+  {
+   
+   
+  }
+}
 Rect Rect::BoundingRect(std::list<Coords>::const_iterator begin, std::list<Coords>::const_iterator end)
 {
 	if (begin == end) return Rect(0,0,0,0);

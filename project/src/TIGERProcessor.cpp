@@ -109,9 +109,13 @@ void ReadString(char * dest, int fd, const unsigned int destLength)
 	dest[index] = 0;
 }
 
+
 TIGERProcessor::TIGERProcessor(){
 	m_nRecords = 0;
 	m_pRecords = NULL;
+	
+	m_nOSMRecords = 0;
+	m_pOSMRecords = NULL;
 }
 
 TIGERProcessor::~TIGERProcessor(){
@@ -121,7 +125,7 @@ TIGERProcessor::~TIGERProcessor(){
 void TIGERProcessor::Cleanup()
 {
 	unsigned int iRec;
-
+	//printf("cleanup begin!\r\n");
 	for (iRec = 0; iRec < m_nRecords; iRec++)
 	{
 		if (m_pRecords[iRec].pAddressRanges != NULL) delete[] m_pRecords[iRec].pAddressRanges;
@@ -146,6 +150,30 @@ void TIGERProcessor::Cleanup()
 	m_Vertices.clear();
 
 	m_nRecords = 0;
+	
+	//printf("OSM cleanup begin!\r\n");
+//OSM map
+/*	for (iRec = 0; iRec < m_nOSMRecords; iRec++)
+	{
+		if (m_pOSMRecords[iRec].pAddressRanges != NULL) delete[] m_pOSMRecords[iRec].pAddressRanges;
+		if (m_pOSMRecords[iRec].pFeatureNames != NULL) delete[] m_pOSMRecords[iRec].pFeatureNames;
+		if (m_pOSMRecords[iRec].pFeatureTypes != NULL) delete[] m_pOSMRecords[iRec].pFeatureTypes;
+		if (m_pOSMRecords[iRec].pShapePoints != NULL) delete[] m_pOSMRecords[iRec].pShapePoints;
+		if (m_pOSMRecords[iRec].pVertices != NULL) delete[] m_pOSMRecords[iRec].pVertices;
+	}
+*/
+	if (m_pOSMRecords != NULL) {
+		delete[] m_pOSMRecords;
+		m_pOSMRecords = NULL;
+	}
+	m_OSMVertices.clear();
+	m_mapOSMCoordinateToVertex.clear();
+	m_osmWayIDtoRecord.clear();
+	m_mapNodeIDandCoord.clear();
+	m_OSMStrings.clear();
+	m_osmMapStringsToIndex.clear();
+	m_nOSMRecords = 0;
+	//printf("cleanup finished\r\n");
 }
 
 bool TIGERProcessor::LoadType1(const QString & strFilename)
@@ -174,6 +202,7 @@ bool TIGERProcessor::LoadType1(const QString & strFilename)
 	{
 		psOldSegments = m_pRecords;
 	}
+//	printf("m_NRecords :%d\r\n",m_nRecords);
 	m_pRecords = new MapRecord[m_nRecords + nNewRecords];
 	if (m_nRecords)
 	{
@@ -740,6 +769,262 @@ bool TIGERProcessor::LoadTypeP(const QString & strFilename)
 	return false;
 }
 
+
+bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
+{
+  printf("osm init start\r\n");
+	FILE * hFile;
+	char szLine[256];
+	unsigned long numOSMRecords = 0;
+
+	hFile = fopen(strFilename, "rb");
+	if (!hFile)
+	{
+		g_pLogger->LogError("GrooveNet - Error", QString("Error opening %1 (type 1)!").arg(strFilename));
+		return true;
+	}
+	fgets(szLine,sizeof(szLine),hFile);
+	while(!feof(hFile))
+	{	  
+	  if(strstr(szLine,"</way>")!=NULL)
+	    numOSMRecords++;
+	  fgets(szLine,sizeof(szLine),hFile);
+	//  printf("record Num :%ld\r\n",numOSMRecords);
+	}
+	printf("Osm count done\r\n");
+	m_pOSMRecords = new OSMRecord[numOSMRecords];
+	fseek(hFile, 0, SEEK_SET);
+	char nodeID[11];
+	char latTemp[12];
+	char lonTemp[12];
+
+	char wayID[11];
+	long wayIDnum;
+	printf("osm init done");
+
+	
+	long numNode = 0;;
+	Coords  nodeCoord;
+	RecordTypes eOSMRT;
+	char tagRawKey[32];
+	char tagValue[32];
+	int tagValueDigitCnt = 0;
+	
+	fgets(szLine,sizeof(szLine),hFile);
+	while(!feof(hFile))
+	{
+	//  printf("processing\r\n");
+	  if(strstr(szLine,"<node id")!=NULL)
+	  {
+	    strcpy(nodeID,ExtractField(strstr(szLine,"<node id"),11,20));
+	    strcpy(latTemp,ExtractField(strstr(szLine,"lat="),6,16));
+	    strcpy(lonTemp,ExtractField(strstr(szLine,"lon="),6,16));
+	    
+	    //latPos = strstr(szLine,"lat=");
+	  //  lonPos = strstr(szLine,"lon=");
+	//    nodeIDPos = strstr(szLine,"<node id");
+	//    strncpy(nodeID,nodeIDPos+10,10);
+	    nodeID[10] = '\0';
+	    latTemp[11] = '\0';
+	    lonTemp[11] = '\0';
+	    nodeCoord.m_iLat = getCoord(latTemp,11);
+	    nodeCoord.m_iLong = getCoord(lonTemp,11);
+	    m_mapNodeIDandCoord.insert(std::pair<unsigned long,Coords>(atol(nodeID),nodeCoord));
+	    numNode++;
+//	    printf("numNode:%ld\r\n",numNode);
+	    fgets(szLine,sizeof(szLine),hFile);
+	    
+	//    printf("nodeID:%s\r\n",nodeID);
+	/*    printf("nodeID: %s\r\n",nodeID);
+	    printf("latStr: %s	",latTemp);
+	    printf("lonStr: %s\r\n",lonTemp);
+	    
+	    printf("nodeID: %ld\r\n",atol(nodeID));
+	    printf("latNum: %ld	",getCoord(latTemp,11));
+	    printf("lonNum: %ld\r\n",getCoord(lonTemp,11));
+	    printf("------------------------------------\r\n");
+	  */  
+	  }
+	  else if(strstr(szLine,"<way id")!=NULL)
+	  {
+	   // printf("processing ways\r\n");
+	    strcpy(wayID,ExtractField(strstr(szLine,"<way id="),10,20));
+	    wayID[10] = '\0';
+	    wayIDnum = atol(wayID);
+	    eOSMRT = RecordTypeDefault;
+	 //   printf("wayIDstr:%s\r\n",wayID);
+	  //  printf("wayIDnum:%ld\r\n",wayIDnum);
+	    m_osmWayIDtoRecord.insert(std::pair<unsigned long, unsigned int>(wayIDnum,m_nOSMRecords));
+	 //   printf("wayID to Record insert done\r\n");
+	    m_pOSMRecords[m_nOSMRecords].nOSMShapePoints = 0;
+	 //   printf("wayID to Record done\r\n");
+	   
+	    fgets(szLine,sizeof(szLine),hFile);
+	    while(strstr(szLine,"</way>") == NULL)
+	    {
+	     // printf("Within Way start\r\n");
+
+	      if(strstr(szLine,"<nd ref")!= NULL)
+	      {
+		
+		strcpy(nodeID,ExtractField(strstr(szLine,"<nd ref"),10,19));
+		nodeID[10] = '\0';
+		m_pOSMRecords[m_nOSMRecords].vOSMShapePoints.push_back((*m_mapNodeIDandCoord.find(atol(nodeID))).second);
+		m_pOSMRecords[m_nOSMRecords].nOSMShapePoints++;
+		fgets(szLine,sizeof(szLine),hFile);
+	      }
+	      else if(strstr(szLine," k=\"name"))//OSM feature name and feature type
+	      {
+		strcpy(tagValue,ExtractField(strstr(szLine,"v="),4,32));
+		
+		m_pOSMRecords[m_nOSMRecords].pOSMFeatureNames = new unsigned int[1];
+		m_pOSMRecords[m_nOSMRecords].pOSMFeatureTypes = new unsigned int[1];
+		m_pOSMRecords[m_nOSMRecords].pOSMFeatureNames[0] = AddOSMString(QString(tagValue).stripWhiteSpace().remove("\"/>"));
+		m_pOSMRecords[m_nOSMRecords].pOSMFeatureTypes[0] = AddOSMString(QString("    ").stripWhiteSpace().remove("\"/>"));
+		m_pOSMRecords[m_nOSMRecords].nOSMFeatureNames = 1;
+		fgets(szLine,sizeof(szLine),hFile);	       
+		
+	      }
+	      /*OSM road type*/
+	      else if(strstr(szLine,"k=\"highway"))
+	      {
+	//	printf("processing highway tag\r\n");
+		if(strstr(szLine,"residential"))
+		{
+		  eOSMRT = RecordTypeTwoWaySmallRoad;
+		}
+		else if(strstr(szLine,"motorway"))
+		{
+		  eOSMRT = RecordTypeTwoWayHighway;
+		}
+		else if(strstr(szLine,"primary"))
+		{
+		  eOSMRT = RecordTypeTwoWayPrimary;
+		}
+		else if (strstr(szLine,"secondary"))
+		{
+		  eOSMRT = RecordTypeTwoWayLargeRoad;
+		}	
+		else if (strstr(szLine,"k=\"boundary"))
+		{
+		  eOSMRT = RecordTypeInvisibleLandBoundary;
+		}
+		
+		fgets(szLine,sizeof(szLine),hFile);
+	      }
+	      else if(strstr(szLine,"k=\"oneway\" v=\"yes\""))
+	      {
+	//	printf("2 or 1 way tags\r\n");
+		switch(eOSMRT)
+		{
+		  case RecordTypeTwoWaySmallRoad:
+		    eOSMRT = RecordTypeOneWaySmallRoad;
+		    break;
+		  case RecordTypeTwoWayHighway:
+		    eOSMRT = RecordTypeOneWayHighway;
+		    break;
+		  case RecordTypeTwoWayPrimary:
+		    eOSMRT = RecordTypeOneWayPrimary;
+		    break;
+		  case RecordTypeTwoWayLargeRoad:
+		    eOSMRT = RecordTypeOneWayLargeRoad;
+		    break;
+		  default:
+		    break;
+		}
+		fgets(szLine,sizeof(szLine),hFile);		
+	      }
+	      else if(strstr(szLine,"k=\"waterway"))
+	      {
+		eOSMRT = RecordTypeWater;
+		fgets(szLine,sizeof(szLine),hFile);
+	      }
+	      else if(strstr(szLine,"k=\"railway"))
+	      {
+		eOSMRT = RecordTypeRailroad;
+		fgets(szLine,sizeof(szLine),hFile);
+	      }
+	     
+	      else
+		fgets(szLine,sizeof(szLine),hFile);
+	     
+	      
+	    }
+	    
+	    m_pOSMRecords[m_nOSMRecords].pOSMShapePoints = new Coords[m_pOSMRecords[m_nOSMRecords].nOSMShapePoints];
+	    for(unsigned int i = 0 ; i < m_pOSMRecords[m_nOSMRecords].nOSMShapePoints; i++)
+	    {
+	      m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i] = m_pOSMRecords[m_nOSMRecords].vOSMShapePoints[i];
+	    }
+	    m_pOSMRecords[m_nOSMRecords].eOSMRecordType = eOSMRT;
+	    if(m_pOSMRecords[m_nOSMRecords].eOSMRecordType == RecordTypeInvisibleLandBoundary)
+	    {
+	      for(unsigned int i = 0; i < m_pOSMRecords[m_nOSMRecords].nOSMShapePoints; i++)
+	      {
+		if(!areaOSMLeft)
+		  areaOSMLeft = new Coords(m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i]);
+		else if(areaOSMLeft->m_iLong > m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i].m_iLong)
+		  *areaOSMLeft = m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i];
+		if(!areaOSMRight)
+		  areaOSMRight = new Coords(m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i]);
+		else if(areaOSMRight->m_iLong < m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i].m_iLong)
+		  *areaOSMRight= m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i];
+		if(!areaOSMTop)
+		  areaOSMTop = new Coords(m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i]);
+		else if(areaOSMTop->m_iLat < m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i].m_iLat)
+		  *areaOSMTop = m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i];
+		if(!areaOSMBottom)
+		  areaOSMBottom = new Coords(m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i]);
+		else if(areaOSMBottom->m_iLat > m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i].m_iLat)
+		  *areaOSMBottom = m_pOSMRecords[m_nOSMRecords].pOSMShapePoints[i];
+		
+			
+		  
+	      }
+	    }
+	    m_nOSMRecords++ ;
+	  
+	    
+	  }
+	
+	  else
+	    fgets(szLine,sizeof(szLine),hFile);
+	  
+	  
+	}
+	
+/*	std::map<unsigned long, Coords>::iterator nodeItr;
+	nodeItr = m_mapNodeID.find(1558356649);
+	printf("node %ld\r\n",(*nodeItr).first);
+	printf("->>");
+	printf("Lat :%ld, Long :%ld\r\n",(*nodeItr).second.m_iLat,(*nodeItr).second.m_iLong);
+*/
+	std::map<unsigned long, unsigned int>::iterator wayIDItr;
+	wayIDItr = m_osmWayIDtoRecord.begin();
+	printf("numNodes: %ld\r\n",numNode);
+	printf("numWays: %d\r\n",m_nOSMRecords);
+	for(unsigned int i = 0; i < m_nOSMRecords;i++)
+	{
+	 
+	  printf("Way ID: %ld\r\n",(*wayIDItr).first);
+	  printf("Way Connections: %d\r\n",m_pOSMRecords[i].nOSMShapePoints);
+	  for(unsigned int j =0; j < m_pOSMRecords[i].nOSMShapePoints;j++)
+	  {
+	    printf("%ld	%ld\r\n",m_pOSMRecords[i].vOSMShapePoints.at(j).m_iLat,m_pOSMRecords[i].vOSMShapePoints.at(j).m_iLong);
+	  }
+	  printf("-------------------------------------------------------\r\n");
+	  wayIDItr.operator++();
+	  
+	  
+
+	  
+	}
+	fclose(hFile);
+	return false;
+
+	
+}
+
 bool TIGERProcessor::LoadSet(const QString & strBaseName)
 {
 	int iCode;
@@ -757,7 +1042,7 @@ bool TIGERProcessor::LoadSet(const QString & strBaseName)
 	LoadType6(dir.absFilePath(strBase + ".RT6"));
 	LoadTypeI(dir.absFilePath(strBase + ".RTI"));
 	LoadTypeP(dir.absFilePath(strBase + ".RTP"));
-
+	LoadTypeOSM((dir.absFilePath("pittsburgh.osm")));
 	if (areaLeft && areaTop && areaRight && areaBottom)
 		boundingRect = Rect(areaLeft->m_iLong, areaTop->m_iLat, areaRight->m_iLong, areaBottom->m_iLat);
 	else
@@ -781,6 +1066,43 @@ bool TIGERProcessor::LoadSet(const QString & strBaseName)
 	}
 	Cleanup();
 	return false;
+}
+bool TIGERProcessor::LoadSetOSM(const QString& strBaseName)
+{
+	int iCode;
+	QFileInfo fi(strBaseName);	// strBaseName is some file...
+
+	QString strBase = fi.baseName(true);
+	QDir dir = fi.dir();
+	countyCode = iCode = atoi(strBase.right(5));
+
+	areaOSMLeft = areaOSMTop = areaOSMRight = areaOSMBottom = 0;
+	
+	LoadTypeOSM((dir.absFilePath("pittsburgh.osm")));
+	if (areaOSMLeft && areaOSMTop && areaOSMRight && areaOSMBottom)
+		osmBoundingRect = Rect(areaOSMLeft->m_iLong, areaOSMTop->m_iLat, areaOSMRight->m_iLong, areaOSMBottom->m_iLat);
+	else
+		osmBoundingRect = Rect(0, 0, 0, 0);
+	if (areaOSMLeft != 0) delete areaOSMLeft;
+	if (areaOSMRight != 0) delete areaOSMRight;
+	if (areaOSMTop != 0) delete areaOSMTop;
+	if (areaOSMBottom != 0) delete areaOSMBottom;
+
+	EnumerateOSMvertices();
+	//FixZipCodes();
+	QString codeString;
+	codeString.sprintf("%05d", iCode);
+	if (!WriteMap(dir.absFilePath(QString("%1.MAP").arg(codeString)))) {
+		QStringList files = dir.entryList(QString("TGR%1.*").arg(codeString), QDir::Files|QDir::Readable);
+		QStringList::iterator filesIterator = files.begin();
+		while (filesIterator != files.end()) {
+			dir.remove(*filesIterator);
+			++filesIterator;
+		}
+	}
+	Cleanup();
+	return false;
+
 }
 
 bool TIGERProcessor::WriteMap(const QString & fileName)
@@ -860,6 +1182,83 @@ bool TIGERProcessor::WriteMap(const QString & fileName)
 	close(hFile);
 	return false;
 }
+bool TIGERProcessor::WriteOSMMap(const QString& fileName)
+{
+	int hFile = open(fileName, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+	if (hFile == -1) return true;
+
+	unsigned int i, j, numVertices, numStrings, numPolys, numPoints;
+	unsigned char recordFlags;
+	unsigned short numNeighbors;
+	std::vector<Coords> coords;
+	std::map<Coords, unsigned int>::iterator iterCoords;
+	std::map<unsigned int, unsigned int>::iterator iterEdges;
+	std::list<std::pair<Rect, std::list<Coords> > >::iterator poly;
+	std::list<Coords>::iterator polyPoint;
+	coords.resize(m_OSMVertices.size());
+	for (iterCoords = m_mapOSMCoordinateToVertex.begin(); iterCoords != m_mapOSMCoordinateToVertex.end(); ++iterCoords)
+		coords[iterCoords->second] = iterCoords->first;
+
+	WriteMemory(&countyCode, hFile, sizeof(int));
+	WriteRect(&osmBoundingRect, hFile);
+	numStrings = m_OSMStrings.size();
+	WriteMemory(&numStrings, hFile, sizeof(unsigned int));
+	for (i = 0; i < numStrings; i++) {
+		WriteString(m_OSMStrings[i], hFile, m_OSMStrings[i].length());
+	}
+	numVertices = m_OSMVertices.size();
+	WriteMemory(&numVertices, hFile, sizeof(unsigned int));
+	for (i = 0; i < numVertices; i++) {
+		WriteCoords(&coords[i], hFile);
+		numNeighbors = m_OSMVertices[i].mapEdges.size();
+		WriteMemory(&numNeighbors, hFile, sizeof(unsigned short));
+		for (iterEdges = m_OSMVertices[i].mapEdges.begin(); iterEdges != m_OSMVertices[i].mapEdges.end(); ++iterEdges)
+		{
+			WriteMemory(&iterEdges->second, hFile, sizeof(unsigned int));
+			WriteMemory(&iterEdges->first, hFile, sizeof(unsigned int));
+		}
+		numNeighbors = m_OSMVertices[i].vecRoads.size();
+		WriteMemory(&numNeighbors, hFile, sizeof(unsigned short));
+		for (j = 0; j < numNeighbors; j++)
+			WriteMemory(&m_OSMVertices[i].vecRoads[j], hFile, sizeof(unsigned int));
+	}
+	WriteMemory(&m_nOSMRecords, hFile, sizeof(unsigned int));
+	for (i = 0; i < m_nOSMRecords; i++) {
+		WriteMemory(&m_pOSMRecords[i].nOSMFeatureNames, hFile, sizeof(unsigned short));
+		for (j = 0; j < m_pOSMRecords[i].nOSMFeatureNames; j++) {
+			WriteMemory(m_pOSMRecords[i].pOSMFeatureNames + j, hFile, sizeof(unsigned int));
+			WriteMemory(m_pOSMRecords[i].pOSMFeatureTypes + j, hFile, sizeof(unsigned int));
+		}
+	//	recordFlags = ((unsigned char)m_pOSMRecords[i].eOSMRecordType) & 0x3f;
+	//	if (m_pRecords[i].bWaterL) recordFlags |= 0x80;
+	//	if (m_pRecords[i].bWaterR) recordFlags |= 0x40;
+	//	WriteMemory(&recordFlags, hFile, sizeof(unsigned char));
+		WriteMemory(&m_pOSMRecords[i].fCost, hFile, sizeof(float));
+	//	WriteCoords(&m_pOSMRecords[i].ptWaterL, hFile);
+	//	WriteCoords(&m_pOSMRecords[i].ptWaterR, hFile);
+	//	WriteMemory(&m_pOSMRecords[i].nAddressRanges, hFile, sizeof(unsigned short));
+	//	for (j = 0; j < m_pRecords[i].nAddressRanges; j++)
+	//		WriteAddressRange(m_pRecords[i].pAddressRanges + j, hFile);
+		WriteRect(&m_pOSMRecords[i].rOSMBounds, hFile);
+		WriteMemory(&m_pOSMRecords[i].nOSMShapePoints, hFile, sizeof(unsigned short));
+		for (j = 0; j < m_pOSMRecords[i].nOSMShapePoints; j++)
+			WriteCoords(m_pOSMRecords[i].pOSMShapePoints + j, hFile);
+		WriteMemory(&m_pOSMRecords[i].nVertices, hFile, sizeof(unsigned short));
+		for (j = 0; j < m_pOSMRecords[i].nVertices; j++)
+			WriteMemory(m_pOSMRecords[i].pVertices + j, hFile, sizeof(unsigned int));
+	}
+	/*numPolys = m_WaterPolygons.size();
+	WriteMemory(&numPolys, hFile, sizeof(unsigned int));
+	for (poly = m_WaterPolygons.begin(); poly != m_WaterPolygons.end(); ++poly) {
+		WriteRect(&poly->first, hFile);
+		numPoints = poly->second.size();
+		WriteMemory(&numPoints, hFile, sizeof(unsigned int));
+		for (polyPoint = poly->second.begin(); polyPoint != poly->second.end(); ++polyPoint)
+			WriteCoords(&(*polyPoint), hFile);
+	}*/
+	close(hFile);
+	return false;
+}
 
 void TIGERProcessor::EnumerateVertices()
 {
@@ -923,6 +1322,75 @@ void TIGERProcessor::EnumerateVertices()
 				if (!IsOneWay(psRec))
 				{
 					AddRecordToVertex(&m_Vertices[iVertex], m_pRecords, iRec, iPreviousVertex);
+//					m_Vertices[iVertex].mapEdges.insert(std::pair<unsigned int, unsigned>(iRec, iPreviousVertex));
+				}
+			}
+		}
+	}
+}
+
+
+void TIGERProcessor::EnumerateOSMvertices()
+{
+	unsigned int iRec, iPreviousVertex, iVertex, iAdj;
+	Coords * ptPrevious, * pt;
+	OSMRecord * psRec;
+	std::map<Coords, unsigned int>::iterator vertexFromCoords;
+	unsigned int * newAdjVertices;
+	for (iRec = 0; iRec < m_nOSMRecords; iRec++)
+	{
+		psRec = m_pOSMRecords + iRec;
+		psRec->rOSMBounds = Rect::BoundingRect(psRec->vOSMShapePoints, psRec->nOSMShapePoints);
+
+		// can't drive on rivers or railroad tracks
+		if (IsRoad(psRec))
+		{
+			iPreviousVertex = 0;
+			pt = psRec->pOSMShapePoints;
+			vertexFromCoords = m_mapOSMCoordinateToVertex.find(*pt);
+			if (vertexFromCoords == m_mapOSMCoordinateToVertex.end())
+			{
+				iVertex = m_OSMVertices.size();
+				m_OSMVertices.push_back(Vertex());
+				m_mapOSMCoordinateToVertex.insert(std::pair<Coords, unsigned int>(*pt, iVertex));
+			}
+			else
+				iVertex = vertexFromCoords->second;
+			newAdjVertices = new unsigned int[m_pOSMRecords[iRec].nVertices + 1];
+			for (iAdj = 0; iAdj < m_pOSMRecords[iRec].nVertices; iAdj++)
+				newAdjVertices[iAdj] = m_pOSMRecords[iRec].pVertices[iAdj];
+			newAdjVertices[iAdj] = iVertex;
+			if (m_pOSMRecords[iRec].nVertices > 0) delete[] m_pOSMRecords[iRec].pVertices;
+			m_pOSMRecords[iRec].pVertices = newAdjVertices;
+			m_pOSMRecords[iRec].nVertices++;
+			iPreviousVertex = iVertex;
+			ptPrevious = pt;
+			if (psRec->nOSMShapePoints > 0) {
+				if (psRec->nOSMShapePoints > 1) {
+					pt = psRec->pOSMShapePoints + psRec->nOSMShapePoints - 1;
+					vertexFromCoords = m_mapOSMCoordinateToVertex.find(*pt);
+					if (vertexFromCoords == m_mapOSMCoordinateToVertex.end())
+					{
+						iVertex = m_OSMVertices.size();
+						m_OSMVertices.push_back(Vertex());
+						m_mapOSMCoordinateToVertex.insert(std::pair<Coords, unsigned int>(*pt, iVertex));
+					}
+					else
+						iVertex = vertexFromCoords->second;
+					newAdjVertices = new unsigned int[m_pOSMRecords[iRec].nVertices + 1];
+					for (iAdj = 0; iAdj < m_pOSMRecords[iRec].nVertices; iAdj++)
+						newAdjVertices[iAdj] = m_pOSMRecords[iRec].pVertices[iAdj];
+					newAdjVertices[iAdj] = iVertex;
+					if (m_pOSMRecords[iRec].nVertices > 0) delete[] m_pOSMRecords[iRec].pVertices;
+					m_pOSMRecords[iRec].pVertices = newAdjVertices;
+					m_pOSMRecords[iRec].nVertices++;
+				}
+				m_pOSMRecords[iRec].fCost = RecordDistance(&m_pOSMRecords[iRec]) * CostFactor(psRec);
+				AddRecordToVertex(&m_OSMVertices[iPreviousVertex], m_pOSMRecords, iRec, iVertex);
+//				m_Vertices[iPreviousVertex].mapEdges.insert(std::pair<unsigned int, unsigned int>(iRec, iVertex));
+				if (!IsOneWay(psRec))
+				{
+					AddRecordToVertex(&m_OSMVertices[iVertex], m_pOSMRecords, iRec, iPreviousVertex);
 //					m_Vertices[iVertex].mapEdges.insert(std::pair<unsigned int, unsigned>(iRec, iPreviousVertex));
 				}
 			}
@@ -1017,3 +1485,74 @@ unsigned int TIGERProcessor::AddString(const QString & str)
 	m_Strings.push_back(str);
 	return ret;
 }
+unsigned int TIGERProcessor::AddOSMString(const QString & str)
+{
+	std::map<QString, unsigned int>::iterator iterName = m_osmMapStringsToIndex.find(str);
+	if (iterName != m_osmMapStringsToIndex.end()) return iterName->second;
+
+	unsigned int ret = m_OSMStrings.size();
+	m_osmMapStringsToIndex.insert(std::pair<QString, unsigned int>(str, ret));
+	m_OSMStrings.push_back(str);
+	return ret;
+}
+long TIGERProcessor::getCoord(char* str, int strLen)
+{
+  int i = 0;
+  int cnt = 0;
+  if(str[0] == '-')
+  {
+    char newStr[strLen];
+    memset(newStr,'0',strLen);
+    newStr[strLen-1] = '\0';
+    newStr[cnt] = '-';
+    cnt++;
+    i++;
+    for (i; i < strLen;i++)
+    {
+      if(str[i] >= '0' && str[i] <= '9')   
+      {
+	newStr[cnt] = str[i];
+	cnt++;
+	
+      }
+    }
+    //printf("str = %s\r\n",newStr);
+   // printf("strNum = %ld\r\n",atol(newStr));
+    return atol(newStr);  
+  }
+  else
+  {
+    char newStr[strLen-1];
+    memset(newStr,'0',strLen-1);
+    newStr[strLen-2] = '\0';
+    for (i; i < strLen;i++)
+    {
+      if(str[i] >= '0' && str[i] <= '9')   
+      {
+	newStr[cnt] = str[i];
+	cnt++;
+      }    
+    }
+   // printf("str = %s\r\n",newStr);
+    //printf("strNum = %ld\r\n",atol(newStr));
+    return atol(newStr);
+  }
+
+}
+
+/*char* TIGERProcessor::GetKeyName(char * str)
+{
+  int charCount = 0;
+  static char rawKey[32];
+  strcpy(rawKey,ExtractField(strstr(str,"<tag k"),9,40));
+  while(rawKey[charCount] != '"') 
+  {
+    charCount++;   
+  }
+  char outKey[charCount];
+  strncpy(outKey ,rawKey, charCount - 1);
+  return outKey;
+
+}
+
+*/

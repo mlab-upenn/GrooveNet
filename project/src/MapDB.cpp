@@ -255,6 +255,23 @@ bool IsRoad(const MapRecord * pRecord)
 		return false;
 	}
 }
+bool IsRoad(const OSMRecord * pRecord)
+{
+	switch (pRecord->eOSMRecordType)
+	{
+	case RecordTypeOneWaySmallRoad:
+	case RecordTypeOneWayLargeRoad:
+	case RecordTypeOneWayPrimary:
+	case RecordTypeOneWayHighway:
+	case RecordTypeTwoWaySmallRoad:
+	case RecordTypeTwoWayLargeRoad:
+	case RecordTypeTwoWayPrimary:
+	case RecordTypeTwoWayHighway:
+		return true;
+	default:
+		return false;
+	}
+}
 
 bool IsBigRoad(const MapRecord * pRecord)
 {
@@ -271,7 +288,21 @@ bool IsBigRoad(const MapRecord * pRecord)
 		return false;
 	}
 }
-
+bool IsBigRoad(const OSMRecord * pRecord)
+{
+	switch (pRecord->eOSMRecordType)
+	{
+	case RecordTypeOneWayLargeRoad:
+	case RecordTypeOneWayPrimary:
+	case RecordTypeOneWayHighway:
+	case RecordTypeTwoWayLargeRoad:
+	case RecordTypeTwoWayPrimary:
+	case RecordTypeTwoWayHighway:
+		return true;
+	default:
+		return false;
+	}
+}
 bool IsOneWay(const MapRecord * pRecord)
 {
 	switch (pRecord->eRecordType)
@@ -285,7 +316,19 @@ bool IsOneWay(const MapRecord * pRecord)
 		return false;
 	}
 }
-
+bool IsOneWay(const OSMRecord * pRecord)
+{
+	switch (pRecord->eOSMRecordType)
+	{
+	case RecordTypeOneWaySmallRoad:
+	case RecordTypeOneWayLargeRoad:
+	case RecordTypeOneWayPrimary:
+	case RecordTypeOneWayHighway:
+		return true;
+	default:
+		return false;
+	}
+}
 bool IsSameRoad(const MapRecord * pRecord1, const MapRecord * pRecord2)
 {
 	unsigned int i, j;
@@ -301,7 +344,21 @@ bool IsSameRoad(const MapRecord * pRecord1, const MapRecord * pRecord2)
 	}
 	return false;
 }
+bool IsSameRoad(const OSMRecord * pRecord1, const OSMRecord * pRecord2)
+{
+	unsigned int i, j;
 
+	// assume same road if both records have same names - probably not a great assumption...
+	for (i = 0; i < pRecord1->nOSMFeatureNames; i++)
+	{
+		for (j = 0; j < pRecord2->nOSMFeatureNames; j++)
+		{
+			if (pRecord1->pOSMFeatureNames[i] == pRecord2->pOSMFeatureNames[j] && pRecord1->pOSMFeatureTypes[i] == pRecord2->pOSMFeatureTypes[j])
+				return true;
+		}
+	}
+	return false;
+}
 #define SMALLROADLANES 1
 #define LARGEROADLANES 2
 #define PRIMARYROADLANES 2
@@ -327,7 +384,26 @@ unsigned char NumberOfLanes(const MapRecord * pRecord)
 		return 0;
 	}
 }
-
+unsigned char NumberOfLanes(const OSMRecord * pRecord)
+{
+	switch (pRecord->eOSMRecordType)
+	{
+	case RecordTypeOneWaySmallRoad:
+	case RecordTypeTwoWaySmallRoad:
+		return SMALLROADLANES;
+	case RecordTypeOneWayLargeRoad:
+	case RecordTypeTwoWayLargeRoad:
+		return LARGEROADLANES;
+	case RecordTypeOneWayPrimary:
+	case RecordTypeTwoWayPrimary:
+		return PRIMARYROADLANES;
+	case RecordTypeOneWayHighway:
+	case RecordTypeTwoWayHighway:
+		return HIGHWAYLANES;
+	default:
+		return 0;
+	}
+}
 #define SMALLROADPENALTY 3.0
 #define LARGEROADPENALTY 1.5
 #define PRIMARYROADPENALTY 1.0
@@ -353,7 +429,26 @@ float CostFactor(const MapRecord * pRecord)
 		return INFINITY; // don't take this edge (not a road!!!)
 	}
 }
-
+float CostFactor(const OSMRecord * pRecord)
+{
+	switch (pRecord->eOSMRecordType)
+	{
+	case RecordTypeOneWaySmallRoad:
+	case RecordTypeTwoWaySmallRoad:
+		return SMALLROADPENALTY; // penalty for small roads
+	case RecordTypeOneWayLargeRoad:
+	case RecordTypeTwoWayLargeRoad:
+		return LARGEROADPENALTY; // penalty for large roads
+	case RecordTypeOneWayPrimary:
+	case RecordTypeTwoWayPrimary:
+		return PRIMARYROADPENALTY; // penalty for primary roads
+	case RecordTypeOneWayHighway:
+	case RecordTypeTwoWayHighway:
+		return HIGHWAYROADPENALTY; // penalty for highway
+	default:
+		return INFINITY; // don't take this edge (not a road!!!)
+	}
+}
 #define SMALLROADSPEED 25
 #define LARGEROADSPEED 35
 #define PRIMARYROADSPEED 45
@@ -379,7 +474,26 @@ float TimeFactor(const MapRecord * pRecord)
 		return INFINITY; // don't take this edge (not a road!!!)
 	}
 }
-
+float TimeFactor(const OSMRecord * pRecord)
+{
+	switch (pRecord->eOSMRecordType)
+	{
+	case RecordTypeOneWaySmallRoad:
+	case RecordTypeTwoWaySmallRoad:
+		return SECSPERHOUR / SMALLROADSPEED; // penalty for small roads
+	case RecordTypeOneWayLargeRoad:
+	case RecordTypeTwoWayLargeRoad:
+		return SECSPERHOUR / LARGEROADSPEED; // penalty for large roads
+	case RecordTypeOneWayPrimary:
+	case RecordTypeTwoWayPrimary:
+		return SECSPERHOUR / PRIMARYROADSPEED; // penalty for primary roads
+	case RecordTypeOneWayHighway:
+	case RecordTypeTwoWayHighway:
+		return SECSPERHOUR / HIGHWAYROADSPEED; // penalty for highway
+	default:
+		return INFINITY; // don't take this edge (not a road!!!)
+	}
+}
 float RecordDistance(const MapRecord * pRecord)
 {
 	int iSeg;
@@ -390,7 +504,16 @@ float RecordDistance(const MapRecord * pRecord)
 
 	return fDistance;
 }
+float RecordDistance(const OSMRecord * pRecord)
+{
+	unsigned iSeg;
+	float fDistance = 0;
 
+	for (iSeg = 1; iSeg < pRecord->nOSMShapePoints; iSeg++)
+		fDistance += Distance(pRecord->vOSMShapePoints[iSeg - 1], pRecord->vOSMShapePoints[iSeg]); // add distance from shape point to shape point
+
+	return fDistance;
+}
 float PointRecordDistance(const Coords & pt, const MapRecord * pRecord, unsigned short & iShapePointClosest, float & fProgressClosest)
 {
 	Coords * pt0, * pt1;
@@ -401,6 +524,33 @@ float PointRecordDistance(const Coords & pt, const MapRecord * pRecord, unsigned
 	iShapePointClosest = (unsigned)-1;
 	pt1 = pRecord->pShapePoints;
 	for (i = 0; i < pRecord->nShapePoints - 1; i++)
+	{
+		pt0 = pt1;
+		pt1++;
+
+		fDistance = PointSegmentDistance(pt, *pt0, *pt1, fProgress);
+
+		if (fDistance < fDistanceClosest || !bFound)
+		{
+			fDistanceClosest = fDistance;
+			fProgressClosest = fProgress;
+			iShapePointClosest = i;
+			bFound = true;
+		}
+	}
+
+	return bFound ? fDistanceClosest : INFINITY;
+}
+float PointRecordDistance(const Coords & pt, const OSMRecord * pRecord, unsigned short & iShapePointClosest, float & fProgressClosest)
+{
+	Coords * pt0, * pt1;
+	float fDistanceClosest = 0., fDistance, fProgress;
+	unsigned short i;
+	bool bFound = false;
+
+	iShapePointClosest = (unsigned)-1;
+	pt1 = pRecord->pOSMShapePoints;
+	for (i = 0; i < pRecord->nOSMShapePoints - 1; i++)
 	{
 		pt0 = pt1;
 		pt1++;
@@ -443,7 +593,30 @@ bool IsVehicleGoingForwards(unsigned short iShapePoint, short iHeading, const Ma
 
 	return (sx*ax+sy*ay)/(sx*sx+sy*sy) >= 0.f;
 }
+bool IsVehicleGoingForwards(unsigned short iShapePoint, short iHeading, const OSMRecord * pRecord)
+{
+	Coords s0, s1;
+	float sx, sy, ax, ay;
+	// take care of some non-trivial conditions
 
+	// first, we need to make sure we're not out of the range
+	if (iShapePoint > pRecord->nOSMShapePoints - 1 || pRecord->nOSMShapePoints < 2)
+		return true;
+
+	// next, if we're on the last shape point, look at the preceding segment
+	if (iShapePoint == pRecord->nOSMShapePoints - 1)
+		iShapePoint--;
+
+	s0 = pRecord->vOSMShapePoints[iShapePoint].Flatten();
+	s1 = pRecord->vOSMShapePoints[iShapePoint+1].Flatten();
+	sx = s1.m_iLong - s0.m_iLong;
+	sy = s1.m_iLat - s0.m_iLat;
+
+	ax = sinf(iHeading * RADIANSPERCENTIDEGREE);
+	ay = cosf(iHeading * RADIANSPERCENTIDEGREE);
+
+	return (sx*ax+sy*ay)/(sx*sx+sy*sy) >= 0.f;
+}
 float DistanceAlongRecord(const MapRecord * pRecord, unsigned short iStartShapePoint, float fStartProgress, unsigned short iEndShapePoint, float fEndProgress)
 {
 	unsigned short i;
@@ -466,6 +639,30 @@ float DistanceAlongRecord(const MapRecord * pRecord, unsigned short iStartShapeP
 		fDistance += Distance(pRecord->pShapePoints[iEndShapePoint], pRecord->pShapePoints[iEndShapePoint+1]) * fEndProgress;
 	if (iStartShapePoint < pRecord->nShapePoints - 1)
 		fDistance -= Distance(pRecord->pShapePoints[iStartShapePoint], pRecord->pShapePoints[iStartShapePoint+1]) * fStartProgress;
+	return fDistance;
+}
+float DistanceAlongRecord(const OSMRecord * pRecord, unsigned short iStartShapePoint, float fStartProgress, unsigned short iEndShapePoint, float fEndProgress)
+{
+	unsigned short i;
+	float fDistance = 0.f;
+
+	// swap to ensure that start <= end
+	if (iStartShapePoint > iEndShapePoint || iStartShapePoint == iEndShapePoint && fStartProgress > fEndProgress)
+	{
+		unsigned short iTemp = iStartShapePoint;
+		float fTemp = fStartProgress;
+		iStartShapePoint = iEndShapePoint;
+		fStartProgress = fEndProgress;
+		iEndShapePoint = iTemp;
+		fEndProgress = fTemp;
+	}
+
+	for (i = iStartShapePoint; i < iEndShapePoint; i++)
+		fDistance += Distance(pRecord->vOSMShapePoints[i], pRecord->vOSMShapePoints[i+1]);
+	if (iEndShapePoint < pRecord->nOSMShapePoints - 1)
+		fDistance += Distance(pRecord->vOSMShapePoints[iEndShapePoint], pRecord->vOSMShapePoints[iEndShapePoint+1]) * fEndProgress;
+	if (iStartShapePoint < pRecord->nOSMShapePoints - 1)
+		fDistance -= Distance(pRecord->vOSMShapePoints[iStartShapePoint], pRecord->vOSMShapePoints[iStartShapePoint+1]) * fStartProgress;
 	return fDistance;
 }
 
@@ -1104,7 +1301,22 @@ void AddRecordToVertex(Vertex * pVertex, const MapRecord * pRecordSet, unsigned 
 		pVertex->vecRoads.push_back(iRecord);
 	}
 }
-
+void AddRecordToVertex(Vertex * pVertex, const OSMRecord * pRecordSet, unsigned int iRecord, unsigned int iPreviousVertex)
+{
+	unsigned int i;
+	pVertex->mapEdges.insert(std::pair<unsigned int, unsigned>(iRecord, iPreviousVertex));
+	if (IsRoad(pRecordSet + iRecord))
+	{
+		for (i = 0; i < pVertex->vecRoads.size(); i++)
+		{
+			// same as existing road
+			if (IsSameRoad(pRecordSet + pVertex->vecRoads[i], pRecordSet + iRecord))
+				return;
+		}
+		// new road
+		pVertex->vecRoads.push_back(iRecord);
+	}
+}
 bool CanCarGoThrough(const Vertex & vertex, unsigned int iRecord)
 {
 	return IsSameRoad(g_pMapDB->GetRecord(iRecord), g_pMapDB->GetRecord(vertex.vecRoads[vertex.iRoadPermitted]));
@@ -1529,13 +1741,21 @@ bool MapDB::LoadMap(const QString & strBaseName)
 	// get buffer
 	fstat(handle, &fileInfo);
 	buffer = startBuffer = (unsigned char *)mmap(0, fileInfo.st_size, PROT_READ, MAP_PRIVATE, handle, 0);
-
+	//printf("MapDB buffer loaded\r\n");
+	//printf("file size:%d\r\n",fileInfo.st_size);
+	/*for(int i = 0; i<100;i++)
+	{
+		printf("buffer 0: %ld\r\n",buffer[i]);
+	}*/
 	// read header
 	memcpy(&countyCode, buffer, sizeof(unsigned short));
-	if (IsCountyLoaded(countyCode)) goto TIGERPROCESSOR_LOAD_ERROR;
+	printf("county code:%d\r\n",countyCode);
 
+	if (IsCountyLoaded(countyCode)) goto TIGERPROCESSOR_LOAD_ERROR;
+	
 	buffer += sizeof(int);
 	memcpy(&boundingRect.m_iLeft, buffer, sizeof(long));
+	//printf("BR left: %d\r\n",boundingRect.m_iLeft);
 	buffer += sizeof(long);
 	memcpy(&boundingRect.m_iTop, buffer, sizeof(long));
 	buffer += sizeof(long);
@@ -1543,10 +1763,13 @@ bool MapDB::LoadMap(const QString & strBaseName)
 	buffer += sizeof(long);
 	memcpy(&boundingRect.m_iBottom, buffer, sizeof(long));
 	buffer += sizeof(long);
+	printf("bounding rect copied\r\n");
+
 	iterBoundary = m_mapCountyCodeToBoundingRect.insert(std::pair<unsigned short, Rect>(countyCode, boundingRect)).first;
 
 	// read strings
 	memcpy(&numStrings, buffer, sizeof(unsigned int));
+	printf("numStrings: %d\r\n",numStrings);
 	buffer += sizeof(unsigned int);
 	m_vecStrings.reserve(m_vecStrings.size() + numStrings);
 	vecStrings.resize(numStrings);
@@ -1554,6 +1777,7 @@ bool MapDB::LoadMap(const QString & strBaseName)
 		strncpy(szString, (const char *)buffer, 256);
 		buffer += (strlen(szString) + 1);
 		vecStrings[i] = AddString(QString(szString).stripWhiteSpace());
+		//printf("%s\r\n",szString);
 	}
 	m_vecStringRoads.resize(m_vecStrings.size());
 
@@ -1689,6 +1913,198 @@ bool MapDB::LoadMap(const QString & strBaseName)
 	iterSquares = m_mapCountyCodeToRegions.insert(std::pair<unsigned short, std::vector<std::vector<unsigned int> > >(countyCode, std::vector<std::vector<unsigned int> >(SQUARES_PER_COUNTY))).first;
 	AddRecordsToRegionSquares(m_nRecords, m_nRecords + numRecords, &iterSquares->second, iterBoundary->second);
 	m_nRecords += numRecords;
+	qApp->processEvents();
+	bSuccess = true;
+
+TIGERPROCESSOR_LOAD_ERROR:
+	munmap(startBuffer, fileInfo.st_size);
+	close(handle);
+	qApp->processEvents();
+	if (newRecordBuffer != NULL) delete[] newRecordBuffer; // TODO: fix memory leak! (note: only occurs on error)
+	return bSuccess;
+}
+
+bool MapDB::LoadOSMMap(const QString & strBaseName)
+{
+	std::vector<unsigned int> vecStrings; // maps string codes to record set string codes
+	std::vector<unsigned int> vecVertices; // maps file vertex codes to record set vertex codes
+	std::vector<Vertex> vertexInfo; // for each vertex index, stores a list of edges (records)...
+	std::map<unsigned short, CountySquares>::iterator iterSquares;
+	std::map<unsigned short, Rect>::iterator iterBoundary;
+	std::map<unsigned short, WaterPolygons>::iterator polys;
+	OSMRecord * newRecordBuffer = NULL;
+	unsigned char * buffer, * startBuffer;
+	unsigned short countyCode;
+	Rect boundingRect;
+	Coords vertexCoords;
+	unsigned int i, j, numStrings, numVertices, neighborVertex, neighborRecord, numRecords, vertexMapIndex, numPolys, numPoints;
+	unsigned char recordType;
+	unsigned short numNeighbors;
+	std::map<Coords, unsigned int>::iterator vertexCoordsIter;
+	std::map<unsigned int, unsigned int>::iterator vertexNeighborIter;
+	char szString[256]; // no string longer than this...
+	bool bSuccess = false;
+	struct stat fileInfo;
+
+	int handle = open(strBaseName.ascii(), O_RDONLY);
+	if (handle == -1) return false;
+
+	// get buffer
+	fstat(handle, &fileInfo);
+	buffer = startBuffer = (unsigned char *)mmap(0, fileInfo.st_size, PROT_READ, MAP_PRIVATE, handle, 0);
+	//printf("MapDB buffer loaded\r\n");
+	//printf("file size:%d\r\n",fileInfo.st_size);
+	/*for(int i = 0; i<100;i++)
+	{
+		printf("buffer 0: %ld\r\n",buffer[i]);
+	}*/
+	// read header
+	memcpy(&countyCode, buffer, sizeof(unsigned short));
+	printf("county code:%d\r\n",countyCode);
+
+	if (IsCountyLoaded(countyCode)) goto TIGERPROCESSOR_LOAD_ERROR;
+	
+	buffer += sizeof(int);
+	memcpy(&boundingRect.m_iLeft, buffer, sizeof(long));
+	//printf("BR left: %d\r\n",boundingRect.m_iLeft);
+	buffer += sizeof(long);
+	memcpy(&boundingRect.m_iTop, buffer, sizeof(long));
+	buffer += sizeof(long);
+	memcpy(&boundingRect.m_iRight, buffer, sizeof(long));
+	buffer += sizeof(long);
+	memcpy(&boundingRect.m_iBottom, buffer, sizeof(long));
+	buffer += sizeof(long);
+	printf("bounding rect copied\r\n");
+
+	iterBoundary = m_mapCountyCodeToBoundingRect.insert(std::pair<unsigned short, Rect>(countyCode, boundingRect)).first;
+
+	// read strings
+	memcpy(&numStrings, buffer, sizeof(unsigned int));
+//	printf("numStrings: %d\r\n",numStrings);
+	buffer += sizeof(unsigned int);
+	m_vecStrings.reserve(m_vecStrings.size() + numStrings);
+	vecStrings.resize(numStrings);
+	for (i = 0; i < numStrings; i++) {
+		strncpy(szString, (const char *)buffer, 256);
+		buffer += (strlen(szString) + 1);
+		vecStrings[i] = AddString(QString(szString).stripWhiteSpace());
+		//printf("%s\r\n",szString);
+	}
+	m_vecStringRoads.resize(m_vecStrings.size());
+
+	// read vertices
+	memcpy(&numVertices, buffer, sizeof(unsigned int));
+	buffer += sizeof(unsigned int);
+	vecVertices.resize(numVertices);
+	vertexInfo.resize(numVertices);
+	m_vecVertices.reserve(m_vecVertices.size() + vecVertices.size());
+	for (i = 0; i < numVertices; i++) {
+		memcpy(&vertexCoords.m_iLong, buffer, sizeof(long));
+		memcpy(&vertexCoords.m_iLat, (buffer += sizeof(long)), sizeof(long));
+		vertexCoordsIter = m_mapCoordinateToVertex.find(vertexCoords);
+		if (vertexCoordsIter == m_mapCoordinateToVertex.end()) {
+			vertexCoordsIter = m_mapCoordinateToVertex.insert(std::pair<Coords, unsigned int>(vertexCoords, m_vecVertices.size())).first;
+			m_vecVertices.push_back(Vertex());
+			m_vecVertices.back().iRoadPermitted = 0;
+		}
+		vecVertices[i] = vertexCoordsIter->second;
+		memcpy(&numNeighbors, buffer += sizeof(long), sizeof(unsigned short));
+		buffer += sizeof(unsigned short);
+		for (j = 0; j < numNeighbors; j++)
+		{
+			memcpy(&neighborVertex, buffer, sizeof(unsigned int));
+			memcpy(&neighborRecord, (buffer += sizeof(unsigned int)), sizeof(unsigned int));
+			buffer += sizeof(unsigned int);
+			neighborRecord += m_nOSMRecords;
+			vertexInfo[i].mapEdges.insert(std::pair<unsigned int, unsigned int>(neighborRecord, neighborVertex));
+		}
+		memcpy(&numNeighbors, buffer, sizeof(unsigned short));
+		buffer += sizeof(unsigned short);
+		vertexInfo[i].vecRoads.resize(numNeighbors);
+		for (j = 0; j < numNeighbors; j++)
+		{
+			memcpy(&vertexInfo[i].vecRoads[j], buffer, sizeof(unsigned int));
+			vertexInfo[i].vecRoads[j] += m_nOSMRecords;
+			buffer += sizeof(unsigned int);
+		}
+	}
+	// postprocessing step... (realign vertex indexes within record set)
+	for (i = 0; i < numVertices; i++) {
+		for (vertexNeighborIter = vertexInfo[i].mapEdges.begin(); vertexNeighborIter != vertexInfo[i].mapEdges.end(); ++vertexNeighborIter) {
+			vertexMapIndex = vecVertices[vertexNeighborIter->second];
+			m_vecVertices[vecVertices[i]].mapEdges.insert(std::pair<unsigned int, unsigned int>(vertexNeighborIter->first, vertexMapIndex));
+		}
+		m_vecVertices[vecVertices[i]].vecRoads.insert(m_vecVertices[vecVertices[i]].vecRoads.end(), vertexInfo[i].vecRoads.begin(), vertexInfo[i].vecRoads.end());
+	}
+
+	// read records
+	memcpy(&numRecords, buffer, sizeof(unsigned int));
+	buffer += sizeof(unsigned int);
+	newRecordBuffer = new OSMRecord[m_nOSMRecords + numRecords];
+	memcpy(newRecordBuffer, m_pOSMRecords, m_nOSMRecords * sizeof(OSMRecord));
+	for (i = 0; i < numRecords; i++) {
+		memcpy(&newRecordBuffer[i+m_nOSMRecords].nOSMFeatureNames, buffer, sizeof(unsigned short));
+		buffer += sizeof(unsigned short);
+		newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames = new unsigned int[newRecordBuffer[i + m_nOSMRecords].nOSMFeatureNames];
+		newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes = new unsigned int[newRecordBuffer[i + m_nOSMRecords].nOSMFeatureNames];
+		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nOSMFeatureNames; j++) {
+			memcpy(newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames + j, buffer, sizeof(unsigned int));
+			newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j] = vecStrings[newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j]];
+			m_vecStringRoads[newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j]].push_back(i + m_nOSMRecords);
+			memcpy(newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes + j, (buffer += sizeof(unsigned int)), sizeof(unsigned int));
+			buffer += sizeof(unsigned int);
+			newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes[j] = vecStrings[newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes[j]];
+		}
+		//memcpy(&recordType, buffer, sizeof(unsigned char));
+		//newRecordBuffer[i + m_nOSMRecords].bWaterL = ((recordType & 0x80) == 0x80);
+		//newRecordBuffer[i + m_nOSMRecords].bWaterR = ((recordType & 0x40) == 0x40);
+		//newRecordBuffer[i + m_nOSMRecords].eRecordType = (RecordTypes)(recordType & 0x3f);
+		memcpy(&newRecordBuffer[i + m_nOSMRecords].fCost, (buffer += sizeof(unsigned char)), sizeof(float));
+		//memcpy(&newRecordBuffer[i + m_nOSMRecords].ptWaterL.m_iLong, (buffer += sizeof(float)), sizeof(long));
+		//memcpy(&newRecordBuffer[i + m_nOSMRecords].ptWaterL.m_iLat, (buffer += sizeof(long)), sizeof(long));
+		//memcpy(&newRecordBuffer[i + m_nOSMRecords].ptWaterR.m_iLong, (buffer += sizeof(long)), sizeof(long));
+		//memcpy(&newRecordBuffer[i + m_nOSMRecords].ptWaterR.m_iLat, (buffer += sizeof(long)), sizeof(long));
+		//memcpy(&newRecordBuffer[i + m_nOSMRecords].nAddressRanges, (buffer += sizeof(long)), sizeof(unsigned short));
+		//buffer += sizeof(unsigned short);
+	/*	newRecordBuffer[i + m_nOSMRecords].pAddressRanges = new AddressRange[newRecordBuffer[i + m_nOSMRecords].nAddressRanges];
+		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nAddressRanges; j++) {
+			memcpy(&newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iFromAddr, buffer, sizeof(unsigned short));
+			memcpy(&newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iToAddr, (buffer += sizeof(unsigned short)), sizeof(unsigned short));
+			memcpy(&newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iZip, (buffer += sizeof(unsigned short)), sizeof(int));
+			buffer += sizeof(int);
+			newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].bOnLeft = ((newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iZip & 0x80000000) == 0x80000000);
+			newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iZip &= 0x7fffffff;
+		}*/
+		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iLeft, buffer, sizeof(long));
+		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iTop, (buffer += sizeof(long)), sizeof(long));
+		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iRight, (buffer += sizeof(long)), sizeof(long));
+		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iBottom, (buffer += sizeof(long)), sizeof(long));
+		memcpy(&newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints, (buffer += sizeof(long)), sizeof(unsigned short));
+		buffer += sizeof(unsigned short);
+		newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints = new Coords[newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints];
+		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints; j++) {
+			memcpy(&newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLong, buffer, sizeof(long));
+			memcpy(&newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLat, (buffer += sizeof(long)), sizeof(long));
+			buffer += sizeof(long);
+		}
+		memcpy(&newRecordBuffer[i + m_nOSMRecords].nVertices, buffer, sizeof(unsigned short));
+		buffer += sizeof(unsigned short);
+		newRecordBuffer[i + m_nOSMRecords].pVertices = new unsigned int[newRecordBuffer[i + m_nOSMRecords].nVertices];
+		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nVertices; j++) {
+			memcpy(newRecordBuffer[i + m_nOSMRecords].pVertices + j, buffer, sizeof(unsigned int));
+			buffer += sizeof(unsigned int);
+			newRecordBuffer[i + m_nOSMRecords].pVertices[j] = vecVertices[newRecordBuffer[i + m_nOSMRecords].pVertices[j]];
+		}
+	}
+	delete[] m_pOSMRecords;
+	m_pOSMRecords = newRecordBuffer;
+	newRecordBuffer = NULL;
+
+
+	m_mapCountyCodeToRecords.insert(std::pair<unsigned short, std::pair<unsigned int, unsigned int> >(countyCode, std::pair<unsigned int, unsigned int>(m_nOSMRecords, m_nOSMRecords + numRecords)));
+	iterSquares = m_mapCountyCodeToRegions.insert(std::pair<unsigned short, std::vector<std::vector<unsigned int> > >(countyCode, std::vector<std::vector<unsigned int> >(SQUARES_PER_COUNTY))).first;
+	AddRecordsToRegionSquares(m_nOSMRecords, m_nOSMRecords + numRecords, &iterSquares->second, iterBoundary->second);
+	m_nOSMRecords += numRecords;
 	qApp->processEvents();
 	bSuccess = true;
 

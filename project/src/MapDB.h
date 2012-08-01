@@ -161,17 +161,53 @@ typedef struct MapRecordStruct
 	                       // record
 } MapRecord;
 
+typedef struct OSMRecordStruct
+{
+  unsigned int * pVertices; // a list of vertices that this record intersects
+  std::vector<Coords> vOSMShapePoints;
+  Coords * pOSMShapePoints;
+  Rect rOSMBounds; 
+  float fCost; // the cost for driving the length of the record (for Djikstra's)
+  unsigned int nOSMShapePoints;
+  unsigned int * pOSMFeatureNames; // the names of this road (e.g. Main or State)
+  unsigned int * pOSMFeatureTypes; // the types of this road (e.g. Street or Avenue)
+  unsigned short nOSMFeatureNames;
+  unsigned short nVertices;
+  RecordTypes eOSMRecordType;
+}OSMRecord;
+
 bool IsRoad(const MapRecord * pRecord);
+bool IsRoad(const OSMRecord * pRecord);
+
 bool IsBigRoad(const MapRecord * pRecord);
+bool IsBigRoad(const OSMRecord * pRecord);
+
 bool IsOneWay(const MapRecord * pRecord);
+bool IsOneWay(const OSMRecord * pRecord);
+
 bool IsSameRoad(const MapRecord * pRecord1, const MapRecord * pRecord2);
+bool IsSameRoad(const OSMRecord * pRecord1, const OSMRecord * pRecord2);
+
 unsigned char NumberOfLanes(const MapRecord * pRecord);
+unsigned char NumberOfLanes(const OSMRecord * pRecord);
+
 float CostFactor(const MapRecord * pRecord);
+float CostFactor(const OSMRecord * pRecord);
+
 float TimeFactor(const MapRecord * pRecord);
+float TimeFactor(const OSMRecord * pRecord);
+
 float RecordDistance(const MapRecord * pRecord);
+float RecordDistance(const OSMRecord * pRecord);
+
 float PointRecordDistance(const Coords & pt, const MapRecord * pRecord, unsigned short & iShapePoint, float & fProgress);
+float PointRecordDistance(const Coords & pt, const OSMRecord * pRecord, unsigned short & iShapePoint, float & fProgress);
+
 bool IsVehicleGoingForwards(unsigned short iShapePoint, short iHeading, const MapRecord * pRecord);
+bool IsVehicleGoingForwards(unsigned short iShapePoint, short iHeading, const OSMRecord * pRecord);
+
 float DistanceAlongRecord(const MapRecord * pRecord, unsigned short iStartShapePoint, float fStartProgress, unsigned short iEndShapePoint, float fEndProgress);
+float DistanceAlongRecord(const OSMRecord * pRecord, unsigned short iStartShapePoint, float fStartProgress, unsigned short iEndShapePoint, float fEndProgress);
 
 typedef struct DijkstraVertexStruct {
 	unsigned int vertex;
@@ -261,6 +297,8 @@ typedef struct VertexStruct
 } Vertex;
 
 void AddRecordToVertex(Vertex * pVertex, const MapRecord * pRecordSet, unsigned int iRecord, unsigned int iPreviousVertex);
+void AddRecordToVertex(Vertex * pVertex, const OSMRecord * pRecordSet, unsigned int iRecord, unsigned int iPreviousVertex);
+
 bool CanCarGoThrough(const Vertex & vertex, unsigned int iRecord);
 
 typedef std::pair<unsigned int, unsigned int> RecordRange;
@@ -279,6 +317,7 @@ public:
 	void ResetTrafficLights();
 
 	bool IsCountyLoaded(unsigned short iFIPSCode);
+	
 	bool DownloadCounties(const std::set<unsigned short> & setFIPSCodes);
 	bool DownloadCounty(unsigned short iFIPSCode);
 	bool LoadAll(const QString & strDirectory);
@@ -356,6 +395,9 @@ public:
 
 protected:
 	bool LoadMap(const QString & strBaseName);
+	bool LoadOSMMap(const QString & strBaseName);
+	
+	
 	void AddRecordsToRegionSquares(unsigned int begin, unsigned int end, CountySquares * squares, const Rect & totalBounds);
 	unsigned int AddString(const QString & str);
 	void DrawMapFeatures(MapDrawingSettings * pSettings);
@@ -367,6 +409,9 @@ protected:
 
 	MapRecord * m_pRecords;
 	unsigned int m_nRecords;
+	
+	OSMRecord * m_pOSMRecords;
+	unsigned int m_nOSMRecords;
 	std::vector<Vertex> m_vecVertices;
 	bool m_bTrafficLights;
 
@@ -406,6 +451,7 @@ QString StateNameByCode(unsigned short iStateCode);
 QString StateNameByAbbreviation(const QString & strName);
 unsigned short StateCodeByName(const QString & strStateName);
 char * ExtractField(char * pszText, int iStart, int iEnd);
+char * ExtractOSMField(char * posPtr, int offset,int len);
 QString FormatAddress(Address * psAddr);
 QString FormatName(const QString & strIn);
 QString FormatAbbreviation(const QString & strIn);
