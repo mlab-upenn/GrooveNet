@@ -163,17 +163,29 @@ typedef struct MapRecordStruct
 
 typedef struct OSMRecordStruct
 {
-  unsigned int * pVertices; // a list of vertices that this record intersects
-  std::vector<Coords> vOSMShapePoints;
-  Coords * pOSMShapePoints;
-  Rect rOSMBounds; 
-  float fCost; // the cost for driving the length of the record (for Djikstra's)
-  unsigned int nOSMShapePoints;
-  unsigned int * pOSMFeatureNames; // the names of this road (e.g. Main or State)
-  unsigned int * pOSMFeatureTypes; // the types of this road (e.g. Street or Avenue)
-  unsigned short nOSMFeatureNames;
-  unsigned short nVertices;
-  RecordTypes eOSMRecordType;
+	Coords * pOSMShapePoints;
+	Rect rOSMBounds; 
+	
+	
+	RecordTypes eOSMRecordType;
+	float fCost;
+	unsigned int * pVertices;
+	unsigned int * pOSMFeatureTypes;
+	unsigned int * pOSMFeatureNames;
+	unsigned short nOSMFeatureNames;
+
+	unsigned int nOSMShapePoints;
+	unsigned short nVertices;
+//	std::vector<Coords> vOSMShapePoints;
+
+
+  // the cost for driving the length of the record (for Djikstra's)
+  
+ // the names of this road (e.g. Main or State)
+ // the types of this road (e.g. Street or Avenue)
+
+
+
 }OSMRecord;
 
 bool IsRoad(const MapRecord * pRecord);
@@ -320,6 +332,7 @@ public:
 	
 	bool DownloadCounties(const std::set<unsigned short> & setFIPSCodes);
 	bool DownloadCounty(unsigned short iFIPSCode);
+	bool DownloadCountiesOSM(const std::set<unsigned short> & setFIPSCodes);
 	bool LoadAll(const QString & strDirectory);
 	bool LoadAll(const QString & strDirectory, const std::set<QString> & setFilenames);
 
@@ -399,6 +412,8 @@ protected:
 	
 	
 	void AddRecordsToRegionSquares(unsigned int begin, unsigned int end, CountySquares * squares, const Rect & totalBounds);
+	void AddRecordsToRegionSquaresOSM(unsigned int begin, unsigned int end, CountySquares * squares, const Rect & totalBounds);
+
 	unsigned int AddString(const QString & str);
 	void DrawMapFeatures(MapDrawingSettings * pSettings);
 	void DrawMapCompass(MapDrawingSettings * pSettings);

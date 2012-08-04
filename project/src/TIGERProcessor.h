@@ -162,6 +162,7 @@ protected:
 	std::map<QString, unsigned int> m_osmMapStringsToIndex;
 	std::map<Coords, unsigned int> m_mapOSMCoordinateToVertex;	
 
+	std::vector<Coords> vOSMShapePoints;
 	std::vector<Vertex> m_OSMVertices;
 	
 	

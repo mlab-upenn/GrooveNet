@@ -126,7 +126,7 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 		}
 
 		if (!setDownload.empty())
-			g_pMapDB->DownloadCounties(setDownload);
+			g_pMapDB->DownloadCountiesOSM(setDownload);
 
 		g_pMapDB->GetStreetsByName(strStreetName, strStreetTypeAbbrev, setRecords);
 
@@ -212,7 +212,8 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 		}
 
 		if (!setDownload.empty())
-			g_pMapDB->DownloadCounties(setDownload);
+			g_pMapDB->DownloadCountiesOSM(setDownload);
+		printf("StringToAdd called, OSM map just loaded\r\n");
 
 		return g_pMapDB->FindAddress(pAddress, iStreetNumber, strStreetName, strStreetType, strCity, strState);
 	}
@@ -510,7 +511,7 @@ float RecordDistance(const OSMRecord * pRecord)
 	float fDistance = 0;
 
 	for (iSeg = 1; iSeg < pRecord->nOSMShapePoints; iSeg++)
-		fDistance += Distance(pRecord->vOSMShapePoints[iSeg - 1], pRecord->vOSMShapePoints[iSeg]); // add distance from shape point to shape point
+		fDistance += Distance(pRecord->pOSMShapePoints[iSeg - 1], pRecord->pOSMShapePoints[iSeg]); // add distance from shape point to shape point
 
 	return fDistance;
 }
@@ -607,8 +608,8 @@ bool IsVehicleGoingForwards(unsigned short iShapePoint, short iHeading, const OS
 	if (iShapePoint == pRecord->nOSMShapePoints - 1)
 		iShapePoint--;
 
-	s0 = pRecord->vOSMShapePoints[iShapePoint].Flatten();
-	s1 = pRecord->vOSMShapePoints[iShapePoint+1].Flatten();
+	s0 = pRecord->pOSMShapePoints[iShapePoint].Flatten();
+	s1 = pRecord->pOSMShapePoints[iShapePoint+1].Flatten();
 	sx = s1.m_iLong - s0.m_iLong;
 	sy = s1.m_iLat - s0.m_iLat;
 
@@ -658,11 +659,11 @@ float DistanceAlongRecord(const OSMRecord * pRecord, unsigned short iStartShapeP
 	}
 
 	for (i = iStartShapePoint; i < iEndShapePoint; i++)
-		fDistance += Distance(pRecord->vOSMShapePoints[i], pRecord->vOSMShapePoints[i+1]);
+		fDistance += Distance(pRecord->pOSMShapePoints[i], pRecord->pOSMShapePoints[i+1]);
 	if (iEndShapePoint < pRecord->nOSMShapePoints - 1)
-		fDistance += Distance(pRecord->vOSMShapePoints[iEndShapePoint], pRecord->vOSMShapePoints[iEndShapePoint+1]) * fEndProgress;
+		fDistance += Distance(pRecord->pOSMShapePoints[iEndShapePoint], pRecord->pOSMShapePoints[iEndShapePoint+1]) * fEndProgress;
 	if (iStartShapePoint < pRecord->nOSMShapePoints - 1)
-		fDistance -= Distance(pRecord->vOSMShapePoints[iStartShapePoint], pRecord->vOSMShapePoints[iStartShapePoint+1]) * fStartProgress;
+		fDistance -= Distance(pRecord->pOSMShapePoints[iStartShapePoint], pRecord->pOSMShapePoints[iStartShapePoint+1]) * fStartProgress;
 	return fDistance;
 }
 
@@ -1324,7 +1325,7 @@ bool CanCarGoThrough(const Vertex & vertex, unsigned int iRecord)
 
 
 MapDB::MapDB()
-: m_pRecords(NULL), m_nRecords(0), m_bTrafficLights(false)
+: m_pRecords(NULL), m_nRecords(0), m_bTrafficLights(false),m_pOSMRecords(NULL), m_nOSMRecords(0)
 {
 	m_tLastChange = GetCurrentTime();
 }
@@ -1351,6 +1352,18 @@ void MapDB::Clear()
 	if (m_pRecords != NULL) {
 		delete[] m_pRecords;
 		m_pRecords = NULL;
+	}
+	for(iRec = 0; iRec <m_nOSMRecords; iRec++)
+	{
+	  if(m_pOSMRecords[iRec].pOSMFeatureNames != NULL) delete[] m_pOSMRecords[iRec].pOSMFeatureNames;
+	  if(m_pOSMRecords[iRec].pOSMFeatureTypes != NULL) delete[] m_pOSMRecords[iRec].pOSMFeatureTypes;
+	  if(m_pOSMRecords[iRec].pOSMShapePoints != NULL) delete[] m_pOSMRecords[iRec].pOSMShapePoints;
+	}
+	m_nOSMRecords = 0;
+	if(m_pOSMRecords != NULL)
+	{
+	  delete[] m_pOSMRecords;
+	  m_pOSMRecords = NULL;
 	}
 	m_vecVertices.clear();
 	m_vecStringRoads.clear();
@@ -1570,11 +1583,59 @@ bool MapDB::DownloadCounties(const std::set<unsigned short> & setFIPSCodes)
 	return bRetVal;
 }
 
+bool MapDB::DownloadCountiesOSM(const std::set<unsigned short> & setFIPSCodes)
+{
+	std::set<unsigned short>::iterator iterFIPSCode;
+	std::set<QString> filesLoad;
+	bool bProcessable, bRetVal = false;
+	unsigned short iCombinedCode, iStateCode;
+	QString strCode, strState, strProcessedFile, strUnzippedFile, strZippedFile,strOSMFile;
+
+	qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
+	for (iterFIPSCode = setFIPSCodes.begin(); iterFIPSCode != setFIPSCodes.end(); ++iterFIPSCode)
+	{
+		iCombinedCode = *iterFIPSCode;
+		iStateCode = iCombinedCode / 1000;
+
+		if (IsCountyLoaded(iCombinedCode))
+			continue;
+
+		strState = StateAbbreviationByCode(iStateCode);
+		strCode.sprintf("%05d", iCombinedCode);
+		strProcessedFile = GetDataPath(QString("%1.MAP").arg(strCode));
+		if (strProcessedFile.isEmpty() || !QFileInfo(strProcessedFile).exists() || !QFileInfo(strProcessedFile).isFile() || !QFileInfo(strProcessedFile).isReadable()) {
+			// processed file not found
+			//strUnzippedFile = GetDataPath(QString("TGR%1.RT1").arg(strCode));
+			strOSMFile = GetDataPath(QString("%1.osm").arg(strCode));
+			bProcessable = false;
+			if(!strOSMFile.isEmpty() && QFileInfo(strOSMFile).exists() && QFileInfo(strOSMFile).isFile() && QFileInfo(strOSMFile).isReadable())
+			  
+			  bProcessable = true;
+
+			if (bProcessable) {
+				TIGERProcessor processor;
+				if (!processor.LoadSetOSM(strOSMFile)) { // process files
+					strProcessedFile = GetDataPath(QString("%1.MAP").arg(strCode));
+					if (!strProcessedFile.isEmpty() && QFileInfo(strProcessedFile).exists() && QFileInfo(strProcessedFile).isFile() && QFileInfo(strProcessedFile).isReadable())
+						filesLoad.insert(strProcessedFile);
+				}
+			}
+		} else
+			filesLoad.insert(strProcessedFile);
+	}
+
+	if (!filesLoad.empty())
+		bRetVal = LoadAll(GetDataPath(), filesLoad); // load processed files
+	qApp->restoreOverrideCursor();
+	return bRetVal;
+}
+
 bool MapDB::DownloadCounty(unsigned short iFIPSCode)
 {
 	std::set<unsigned short> setFIPSCodes;
 	setFIPSCodes.insert(iFIPSCode);
-	return DownloadCounties(setFIPSCodes);
+	return DownloadCountiesOSM(setFIPSCodes);
+	//return DownloadCounties(setFIPSCodes);
 }
 
 bool MapDB::LoadAll(const QString & strDirectory)
@@ -1596,7 +1657,7 @@ bool MapDB::LoadAll(const QString & strDirectory)
 	while (iterFiles != listFiles.end()) {
 		filePath = dir.absFilePath(*iterFiles);
 		g_pLogger->LogInfo(QString("Loading map \"%1\"...").arg(filePath));
-		if (LoadMap(filePath))
+		if (LoadOSMMap(filePath))
 			g_pLogger->LogInfo("Successful\n");
 		else
 			g_pLogger->LogInfo("Failed\n");
@@ -1632,7 +1693,7 @@ bool MapDB::LoadAll(const QString & strDirectory, const std::set<QString> & setF
 		if (filePath != "" && fileInfo.exists() && fileInfo.isFile() && fileInfo.isReadable() && strcasecmp(fileInfo.extension(false), "MAP") == 0)
 		{
 			g_pLogger->LogInfo(QString("Loading map \"%1\"...").arg(filePath));
-			if (LoadMap(filePath))
+			if (LoadOSMMap(filePath))
 				g_pLogger->LogInfo("Successful\n");
 			else
 				g_pLogger->LogInfo("Failed\n");
@@ -1763,7 +1824,6 @@ bool MapDB::LoadMap(const QString & strBaseName)
 	buffer += sizeof(long);
 	memcpy(&boundingRect.m_iBottom, buffer, sizeof(long));
 	buffer += sizeof(long);
-	printf("bounding rect copied\r\n");
 
 	iterBoundary = m_mapCountyCodeToBoundingRect.insert(std::pair<unsigned short, Rect>(countyCode, boundingRect)).first;
 
@@ -1771,6 +1831,7 @@ bool MapDB::LoadMap(const QString & strBaseName)
 	memcpy(&numStrings, buffer, sizeof(unsigned int));
 	printf("numStrings: %d\r\n",numStrings);
 	buffer += sizeof(unsigned int);
+	printf("strat loading m_vecStrings\r\n");
 	m_vecStrings.reserve(m_vecStrings.size() + numStrings);
 	vecStrings.resize(numStrings);
 	for (i = 0; i < numStrings; i++) {
@@ -1779,14 +1840,18 @@ bool MapDB::LoadMap(const QString & strBaseName)
 		vecStrings[i] = AddString(QString(szString).stripWhiteSpace());
 		//printf("%s\r\n",szString);
 	}
+	printf("finish loading strings\r\n");
 	m_vecStringRoads.resize(m_vecStrings.size());
 
 	// read vertices
+	printf("loading numVertices\r\n");
 	memcpy(&numVertices, buffer, sizeof(unsigned int));
 	buffer += sizeof(unsigned int);
 	vecVertices.resize(numVertices);
 	vertexInfo.resize(numVertices);
 	m_vecVertices.reserve(m_vecVertices.size() + vecVertices.size());
+
+	printf("loading vertices coords\r\n");
 	for (i = 0; i < numVertices; i++) {
 		memcpy(&vertexCoords.m_iLong, buffer, sizeof(long));
 		memcpy(&vertexCoords.m_iLat, (buffer += sizeof(long)), sizeof(long));
@@ -1874,6 +1939,7 @@ bool MapDB::LoadMap(const QString & strBaseName)
 		for (j = 0; j < newRecordBuffer[i + m_nRecords].nShapePoints; j++) {
 			memcpy(&newRecordBuffer[i + m_nRecords].pShapePoints[j].m_iLong, buffer, sizeof(long));
 			memcpy(&newRecordBuffer[i + m_nRecords].pShapePoints[j].m_iLat, (buffer += sizeof(long)), sizeof(long));
+			printf("%ld %ld\r\n",newRecordBuffer[i + m_nRecords].pShapePoints[j].m_iLong,newRecordBuffer[i + m_nRecords].pShapePoints[j].m_iLat);
 			buffer += sizeof(long);
 		}
 		memcpy(&newRecordBuffer[i + m_nRecords].nVertices, buffer, sizeof(unsigned short));
@@ -1974,13 +2040,14 @@ bool MapDB::LoadOSMMap(const QString & strBaseName)
 	buffer += sizeof(long);
 	memcpy(&boundingRect.m_iBottom, buffer, sizeof(long));
 	buffer += sizeof(long);
-	printf("bounding rect copied\r\n");
+	printf("bounding rect :%ld %ld %ld %ld\r\n",boundingRect.m_iLeft,boundingRect.m_iTop,boundingRect.m_iRight,boundingRect.m_iBottom);;
+
 
 	iterBoundary = m_mapCountyCodeToBoundingRect.insert(std::pair<unsigned short, Rect>(countyCode, boundingRect)).first;
 
 	// read strings
 	memcpy(&numStrings, buffer, sizeof(unsigned int));
-//	printf("numStrings: %d\r\n",numStrings);
+	printf("numStrings: %d\r\n",numStrings);
 	buffer += sizeof(unsigned int);
 	m_vecStrings.reserve(m_vecStrings.size() + numStrings);
 	vecStrings.resize(numStrings);
@@ -2038,12 +2105,20 @@ bool MapDB::LoadOSMMap(const QString & strBaseName)
 	}
 
 	// read records
+	//printf("loading records\r\n");
 	memcpy(&numRecords, buffer, sizeof(unsigned int));
+	printf("numRecords :%d\r\n",numRecords);
 	buffer += sizeof(unsigned int);
+	
+	
 	newRecordBuffer = new OSMRecord[m_nOSMRecords + numRecords];
+	printf("MapDB m_nOSMRecords = %d\r\n",m_nOSMRecords);
 	memcpy(newRecordBuffer, m_pOSMRecords, m_nOSMRecords * sizeof(OSMRecord));
+	printf("starting record loop\r\n");
 	for (i = 0; i < numRecords; i++) {
+	//	printf("loading record No.%d\r\n",i);
 		memcpy(&newRecordBuffer[i+m_nOSMRecords].nOSMFeatureNames, buffer, sizeof(unsigned short));
+		//printf("Rec No.%d num of FeatureNames: %d\r\n",i,newRecordBuffer[i+m_nOSMRecords].nOSMFeatureNames);
 		buffer += sizeof(unsigned short);
 		newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames = new unsigned int[newRecordBuffer[i + m_nOSMRecords].nOSMFeatureNames];
 		newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes = new unsigned int[newRecordBuffer[i + m_nOSMRecords].nOSMFeatureNames];
@@ -2051,21 +2126,20 @@ bool MapDB::LoadOSMMap(const QString & strBaseName)
 			memcpy(newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames + j, buffer, sizeof(unsigned int));
 			newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j] = vecStrings[newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j]];
 			m_vecStringRoads[newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j]].push_back(i + m_nOSMRecords);
+			//printf("Rec No.%d FeatureNameID: %d\r\n",i,newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j]);;
 			memcpy(newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes + j, (buffer += sizeof(unsigned int)), sizeof(unsigned int));
 			buffer += sizeof(unsigned int);
 			newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes[j] = vecStrings[newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes[j]];
 		}
+		//printf("FeatureName&Type copied\r\n");
 		//memcpy(&recordType, buffer, sizeof(unsigned char));
 		//newRecordBuffer[i + m_nOSMRecords].bWaterL = ((recordType & 0x80) == 0x80);
 		//newRecordBuffer[i + m_nOSMRecords].bWaterR = ((recordType & 0x40) == 0x40);
 		//newRecordBuffer[i + m_nOSMRecords].eRecordType = (RecordTypes)(recordType & 0x3f);
-		memcpy(&newRecordBuffer[i + m_nOSMRecords].fCost, (buffer += sizeof(unsigned char)), sizeof(float));
-		//memcpy(&newRecordBuffer[i + m_nOSMRecords].ptWaterL.m_iLong, (buffer += sizeof(float)), sizeof(long));
-		//memcpy(&newRecordBuffer[i + m_nOSMRecords].ptWaterL.m_iLat, (buffer += sizeof(long)), sizeof(long));
-		//memcpy(&newRecordBuffer[i + m_nOSMRecords].ptWaterR.m_iLong, (buffer += sizeof(long)), sizeof(long));
-		//memcpy(&newRecordBuffer[i + m_nOSMRecords].ptWaterR.m_iLat, (buffer += sizeof(long)), sizeof(long));
-		//memcpy(&newRecordBuffer[i + m_nOSMRecords].nAddressRanges, (buffer += sizeof(long)), sizeof(unsigned short));
-		//buffer += sizeof(unsigned short);
+		memcpy(&newRecordBuffer[i + m_nOSMRecords].fCost, buffer , sizeof(float));
+		buffer += sizeof(float);
+	//	printf("cost = %f\r\n",newRecordBuffer[i + m_nOSMRecords].fCost);
+
 	/*	newRecordBuffer[i + m_nOSMRecords].pAddressRanges = new AddressRange[newRecordBuffer[i + m_nOSMRecords].nAddressRanges];
 		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nAddressRanges; j++) {
 			memcpy(&newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iFromAddr, buffer, sizeof(unsigned short));
@@ -2080,13 +2154,17 @@ bool MapDB::LoadOSMMap(const QString & strBaseName)
 		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iRight, (buffer += sizeof(long)), sizeof(long));
 		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iBottom, (buffer += sizeof(long)), sizeof(long));
 		memcpy(&newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints, (buffer += sizeof(long)), sizeof(unsigned short));
+	//	printf("num shapepoints: %d\r\n",newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints);
+	//	printf("rBound copied\r\n");
 		buffer += sizeof(unsigned short);
 		newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints = new Coords[newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints];
 		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints; j++) {
 			memcpy(&newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLong, buffer, sizeof(long));
 			memcpy(&newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLat, (buffer += sizeof(long)), sizeof(long));
+			//printf("coords: %ld, %ld\r\n",newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLong,newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLat);
 			buffer += sizeof(long);
 		}
+		//printf("shape points copied\r\n");
 		memcpy(&newRecordBuffer[i + m_nOSMRecords].nVertices, buffer, sizeof(unsigned short));
 		buffer += sizeof(unsigned short);
 		newRecordBuffer[i + m_nOSMRecords].pVertices = new unsigned int[newRecordBuffer[i + m_nOSMRecords].nVertices];
@@ -2095,24 +2173,31 @@ bool MapDB::LoadOSMMap(const QString & strBaseName)
 			buffer += sizeof(unsigned int);
 			newRecordBuffer[i + m_nOSMRecords].pVertices[j] = vecVertices[newRecordBuffer[i + m_nOSMRecords].pVertices[j]];
 		}
+		//printf("vertices copied\r\n");
 	}
+	
 	delete[] m_pOSMRecords;
 	m_pOSMRecords = newRecordBuffer;
 	newRecordBuffer = NULL;
 
 
 	m_mapCountyCodeToRecords.insert(std::pair<unsigned short, std::pair<unsigned int, unsigned int> >(countyCode, std::pair<unsigned int, unsigned int>(m_nOSMRecords, m_nOSMRecords + numRecords)));
+	printf("countyCode: %d\r\n",countyCode);
+	printf("inserted m_mapCountyCodeToRecords\r\n");
 	iterSquares = m_mapCountyCodeToRegions.insert(std::pair<unsigned short, std::vector<std::vector<unsigned int> > >(countyCode, std::vector<std::vector<unsigned int> >(SQUARES_PER_COUNTY))).first;
-	AddRecordsToRegionSquares(m_nOSMRecords, m_nOSMRecords + numRecords, &iterSquares->second, iterBoundary->second);
+	AddRecordsToRegionSquaresOSM(m_nOSMRecords, m_nOSMRecords + numRecords, &iterSquares->second, iterBoundary->second);
 	m_nOSMRecords += numRecords;
+	printf("AddRecordsToRegionSquares finished\r\n");
 	qApp->processEvents();
 	bSuccess = true;
 
+	printf("sucess = true\r\n");
 TIGERPROCESSOR_LOAD_ERROR:
 	munmap(startBuffer, fileInfo.st_size);
 	close(handle);
 	qApp->processEvents();
 	if (newRecordBuffer != NULL) delete[] newRecordBuffer; // TODO: fix memory leak! (note: only occurs on error)
+	printf("finish loading\r\n");
 	return bSuccess;
 }
 
@@ -3201,7 +3286,35 @@ void MapDB::AddRecordsToRegionSquares(unsigned int begin, unsigned int end, Coun
 		psRec++;
 	}
 }
-
+void MapDB::AddRecordsToRegionSquaresOSM(unsigned int begin, unsigned int end, CountySquares * squares, const Rect & totalBounds)
+{
+	unsigned int i;
+	int j, k, left, top, right, bottom, sqWidth, sqHeight, squares_sides = (int)sqrt((double)squares->size());
+	sqWidth = (int)ceil(((double)(totalBounds.m_iRight - totalBounds.m_iLeft)) / squares_sides);
+	sqHeight = (int)ceil(((double)(totalBounds.m_iTop - totalBounds.m_iBottom)) / squares_sides);
+	OSMRecord * psRec = m_pOSMRecords + begin;
+	for (i = begin; i < end; i++) {
+		qApp->processEvents();
+		psRec->rOSMBounds = Rect::BoundingRect(psRec->pOSMShapePoints, psRec->nOSMShapePoints);
+		left = (psRec->rOSMBounds.m_iLeft - totalBounds.m_iLeft) / sqWidth;
+		if (left < 0) left = 0;
+		if (left > squares_sides - 1) left = squares_sides - 1;
+		top = (totalBounds.m_iTop - psRec->rOSMBounds.m_iTop) / sqHeight;
+		if (top < 0) top = 0;
+		if (top > squares_sides - 1) top = squares_sides - 1;
+		right = (psRec->rOSMBounds.m_iRight - totalBounds.m_iLeft) / sqWidth;
+		if (right < 0) right = 0;
+		if (right > squares_sides - 1) right = squares_sides - 1;
+		bottom = (totalBounds.m_iTop - psRec->rOSMBounds.m_iBottom) / sqHeight;
+		if (bottom < 0) bottom = 0;
+		if (bottom > squares_sides - 1) bottom = squares_sides - 1;
+		for (j = left; j <= right; j++) {
+			for (k = top; k <= bottom; k++)
+				(*squares)[j+k*squares_sides].push_back(i);
+		}
+		psRec++;
+	}
+}
 unsigned int MapDB::AddString(const QString & str)
 {
 	std::map<QString, unsigned int>::iterator iterName = m_mapStringsToIndex.find(str);
@@ -3271,103 +3384,7 @@ void MapDB::DrawMapFeatures(MapDrawingSettings * pSettings)
 	}
 
 	// fill in water
-	if (pSettings->bFillInWater) {
-		pLevelDetails = &pSettings->vecLevelDetails[pSettings->iDetailLevel][RecordTypeWater];
-		pSettings->pMemoryDC->setRasterOp(Qt::XorROP);
-		clrLine = pSettings->clrBackground.rgb() ^ pLevelDetails->clrLine.rgb();
-		iWidth = pLevelDetails->iWidth;
-		iStyle = pLevelDetails->iStyle;
-		QPointArray waterPoly;
-		QPoint ptWater;
-		int iSeg2;
-		oldPen = pSettings->pMemoryDC->pen();
-		pSettings->pMemoryDC->setPen(clrLine);
-		oldBrush = pSettings->pMemoryDC->brush();
-		pSettings->pMemoryDC->setBrush(clrLine);
-
-		for (iterCounties = m_mapCountyCodeToRecords.begin(); iterCounties != m_mapCountyCodeToRecords.end(); ++iterCounties) {
-			countyRect = m_mapCountyCodeToBoundingRect.find(iterCounties->first);
-			if (countyRect == m_mapCountyCodeToBoundingRect.end() || bounds.intersectRect(countyRect->second)) {
-				iterCountyWaterPolys = m_mapCountyCodeToWaterPolys.find(iterCounties->first);
-				if (iterCountyWaterPolys != m_mapCountyCodeToWaterPolys.end()) {
-					for (iRec = 0; iRec < iterCountyWaterPolys->second.size(); iRec++) {
-						bVisible = iterCountyWaterPolys->second[iRec].first.intersectRect(bounds);
-//						bVisible = (iterCountyWaterPolys->second[iRec].first.m_iLeft > bounds.m_iRight || iterCountyWaterPolys->second[iRec].first.m_iRight < bounds.m_iLeft || iterCountyWaterPolys->second[iRec].first.m_iTop < bounds.m_iBottom || iterCountyWaterPolys->second[iRec].first.m_iBottom > bounds.m_iTop) ? false : IsRecordVisible(iterCountyWaterPolys->second[iRec].second, pSettings->ptTopLeftClip, pSettings->ptBottomRightClip);
-						if (bVisible) {
-							waterPoly.resize(iterCountyWaterPolys->second[iRec].second.size());
-							for (iSeg2 = iSeg = 0; iSeg < (int)iterCountyWaterPolys->second[iRec].second.size(); iSeg++) {
-								ptWater = MapLongLatToScreen(pSettings, iterCountyWaterPolys->second[iRec].second[iSeg]);
-								if (iSeg2 == 0 || ptWater != waterPoly[iSeg2-1])
-									waterPoly[iSeg2++] = ptWater;
-							}
-							waterPoly.resize(iSeg2);
-							pSettings->pMemoryDC->drawPolygon(waterPoly, true);
-						}
-					}
-				}
-			}
-		}
-
-		// draw boundaries of water polygons - the polygons overlap, causing the color to change - change it back!
-		for (iterCounties = m_mapCountyCodeToRecords.begin(); iterCounties != m_mapCountyCodeToRecords.end(); ++iterCounties) {
-			countyRect = m_mapCountyCodeToBoundingRect.find(iterCounties->first);
-			if (countyRect == m_mapCountyCodeToBoundingRect.end() || bounds.intersectRect(countyRect->second)) {
-				iterCountyWaterPolys = m_mapCountyCodeToWaterPolys.find(iterCounties->first);
-				if (iterCountyWaterPolys != m_mapCountyCodeToWaterPolys.end()) {
-					for (iRec = 0; iRec < iterCountyWaterPolys->second.size(); iRec++) {
-						bVisible = iterCountyWaterPolys->second[iRec].first.intersectRect(bounds);
-//						bVisible = (iterCountyWaterPolys->second[iRec].first.m_iLeft > bounds.m_iRight || iterCountyWaterPolys->second[iRec].first.m_iRight < bounds.m_iLeft || iterCountyWaterPolys->second[iRec].first.m_iTop < bounds.m_iBottom || iterCountyWaterPolys->second[iRec].first.m_iBottom > bounds.m_iTop) ? false : IsRecordVisible(iterCountyWaterPolys->second[iRec].second, pSettings->ptTopLeftClip, pSettings->ptBottomRightClip);
-						if (bVisible) {
-							waterPoly.resize(iterCountyWaterPolys->second[iRec].second.size());
-							for (iSeg2 = iSeg = 0; iSeg < (int)iterCountyWaterPolys->second[iRec].second.size(); iSeg++) {
-								ptWater = MapLongLatToScreen(pSettings, iterCountyWaterPolys->second[iRec].second[iSeg]);
-								if (iSeg2 == 0 || ptWater != waterPoly[iSeg2-1])
-									waterPoly[iSeg2++] = ptWater;
-							}
-							waterPoly.resize(iSeg2);
-							for (iSeg2 = 0; iSeg2 < (int)waterPoly.size() - 1; iSeg2++)
-								DrawLine(pSettings->pMemoryDC, waterPoly[iSeg2].x(), waterPoly[iSeg2].y(), waterPoly[iSeg2+1].x(), waterPoly[iSeg2+1].y(), iWidth, clrLine, (Qt::PenStyle)iStyle);
-							if (waterPoly.size() > 1)
-								DrawLine(pSettings->pMemoryDC, waterPoly[waterPoly.size()-1].x(), waterPoly[waterPoly.size()-1].y(), waterPoly[0].x(), waterPoly[0].y(), iWidth, clrLine, (Qt::PenStyle)iStyle);
-						}
-					}
-				}
-			}
-		}
-
-		pSettings->pMemoryDC->setRasterOp(Qt::CopyROP);
-		pSettings->pMemoryDC->setPen(oldPen);
-		pSettings->pMemoryDC->setBrush(oldBrush);
-	}
-
-	// draw water boundaries
-	for (iterRecordSquares = recordSquares.begin(); iterRecordSquares != recordSquares.end(); ++iterRecordSquares) {
-		for (iRec = 0; iRec < (*iterRecordSquares)->size(); iRec++)
-		{
-			psRec = m_pRecords + (**iterRecordSquares)[iRec];
-			bVisible = psRec->rBounds.intersectRect(bounds);
-//			bVisible = (psRec->rBounds.m_iLeft > bounds.m_iRight || psRec->rBounds.m_iRight < bounds.m_iLeft || psRec->rBounds.m_iTop < bounds.m_iBottom || psRec->rBounds.m_iBottom > bounds.m_iTop) ? false : IsRecordVisible(psRec->pShapePoints, psRec->nShapePoints, pSettings->ptTopLeftClip, pSettings->ptBottomRightClip);
-			if (bVisible)
-			{
-				if (psRec->eRecordType == RecordTypeWater)
-				{
-					pLevelDetails = &pSettings->vecLevelDetails[pSettings->iDetailLevel][psRec->eRecordType];
-					if (pLevelDetails->bLineVisible) {
-						clrLine = pLevelDetails->clrLine;
-						iWidth = pLevelDetails->iWidth;
-						iStyle = pLevelDetails->iStyle;
-						parPoints.resize(psRec->nShapePoints);
-						for (iSeg = 0; iSeg < psRec->nShapePoints; iSeg++)
-							parPoints[iSeg] = MapLongLatToScreen(pSettings, psRec->pShapePoints[iSeg]);
-
-						for (iSeg = 0; iSeg < psRec->nShapePoints - 1; iSeg++)
-							DrawLine(pSettings->pMemoryDC, parPoints[iSeg].x(), parPoints[iSeg].y(), parPoints[iSeg+1].x(), parPoints[iSeg+1].y(), iWidth, clrLine, (Qt::PenStyle)iStyle);
-					}
-				}
-			}
-		}
-	}
-
+	
 	// draw general features from records for each visible square (counties and states)
 	for (iterRecordSquares = recordSquares.begin(); iterRecordSquares != recordSquares.end(); ++iterRecordSquares) {
 		for (iRec = 0; iRec < (*iterRecordSquares)->size(); iRec++)
