@@ -24,7 +24,6 @@
 
 #include <stdlib.h>
 #include <list>
-#include <vector>
 
 #include "Global.h"
 
@@ -92,6 +91,7 @@ public:
 
 	long m_iLong;
 	long m_iLat;
+	int m_iRefCnt;
 };
 
 inline bool operator < (const Coords & x, const Coords & y)
@@ -160,7 +160,6 @@ public:
 
 	/*	Create a new rectangle from list of coordinates */
 	static Rect BoundingRect(Coords * coords, int numCoords);
-	static Rect BoundingRect(std::vector<Coords> coords, int numCoords);
 	/*	Like above function using iterator instead of pointer to array of coordinates */
 	static Rect BoundingRect(std::list<Coords>::const_iterator begin, std::list<Coords>::const_iterator end);
 

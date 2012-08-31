@@ -31,6 +31,7 @@
 #include <qinputdialog.h>
 #include <qlineedit.h>
 
+
 QMapWidget::QMapWidget(QWidget * parent, const char * name, WFlags f)
 : QWidget(parent, name, f | Qt::WNoAutoErase), m_eSelectionMode(SelectionModeNone)
 {
@@ -43,6 +44,7 @@ QMapWidget::QMapWidget(QWidget * parent, const char * name, WFlags f)
 	m_pRightClickMenu->insertItem("Clear Selection", 0);
 	m_pRightClickMenu->insertItem("Recenter", 1);
 	m_pRightClickMenu->insertItem("Find Address...", 2);
+	m_pRightClickMenu->insertItem("routing",3);
 	setFocusPolicy(QWidget::StrongFocus);
 }
 
@@ -135,6 +137,7 @@ bool QMapWidget::processKey(int iQtKey, Qt::ButtonState eButtonState)
 		return false;
 	}
 }
+
 
 void QMapWidget::keyPressEvent(QKeyEvent * e)
 {
@@ -237,6 +240,7 @@ void QMapWidget::paintEvent(QPaintEvent * e)
 						m_sPaintSettings.pMemoryDC->setPen(QPen(Qt::red, 3, Qt::DashLine));
 						m_sPaintSettings.pMemoryDC->drawLine(ptFocus, pt2);
 					}
+				
 
 					QRect rFocus(ptFocus.x() - 5, ptFocus.y() - 5, 11, 11);
 					m_sPaintSettings.pMemoryDC->setBrush(Qt::black);
@@ -444,6 +448,7 @@ void QMapWidget::mouseReleaseEvent(QMouseEvent * e)
 	{
 		int iResult = m_pRightClickMenu->exec(e->globalPos());
 		Address sAddress;
+		Address sAddress2;
 		QString strText;
 		Coords ptCenter;
 		bool bOK = true;
@@ -471,10 +476,31 @@ void QMapWidget::mouseReleaseEvent(QMouseEvent * e)
 			strText = QInputDialog::getText("GrooveNet", "Enter a street address or intersection to locate:", QLineEdit::Normal, strText, &bOK, this);
 			if (bOK && StringToAddress(strText, &sAddress))
 			{
+			//	sAddress.ptCoordinates.m_iLat = 401035851;
+			//	sAddress.ptCoordinates.m_iLong = -805012037;
 				g_pSettings->AddAddress(strText);
 				recenter(sAddress.ptCoordinates);
 			}
 			break;
+		case 3:
+			strText = g_pSettings->m_listAddressHistory.empty() ? QString::null : g_pSettings->m_listAddressHistory.front();
+			strText = QInputDialog::getText("GrooveNet", "Enter the first location:", QLineEdit::Normal, strText, &bOK, this);
+			if(bOK)
+			{
+				StringToAddress(strText,&sAddress);
+				recenter(sAddress.ptCoordinates);
+			}
+			strText = QInputDialog::getText("GrooveNet", "Enter the second location:", QLineEdit::Normal, strText, &bOK, this);
+			if(bOK)
+			{
+				StringToAddress(strText,&sAddress2);
+			}
+			g_pMapDB->Routing(&sAddress,&sAddress2);
+		
+			printf("found route in map widget\r\n");
+			break;
+
+			
 		default:
 			break;
 		}

@@ -60,6 +60,7 @@
 typedef enum RecordTypesEnum
 {
 	RecordTypeDefault = 0,
+	RecordTypeHighWay,
 	RecordTypeOneWaySmallRoad,
 	RecordTypeOneWayLargeRoad,
 	RecordTypeOneWayPrimary,
@@ -75,6 +76,7 @@ typedef enum RecordTypesEnum
 	RecordTypeInvisibleMiscBoundary,
 	RecordTypeLandmark,
 	RecordTypePhysicalFeature,
+	RecordTypePedestrian,
 	RecordTypeTownOrCity
 } RecordTypes;
 
@@ -161,65 +163,17 @@ typedef struct MapRecordStruct
 	                       // record
 } MapRecord;
 
-typedef struct OSMRecordStruct
-{
-	Coords * pOSMShapePoints;
-	Rect rOSMBounds; 
-	
-	
-	RecordTypes eOSMRecordType;
-	float fCost;
-	unsigned int * pVertices;
-	unsigned int * pOSMFeatureTypes;
-	unsigned int * pOSMFeatureNames;
-	unsigned short nOSMFeatureNames;
-
-	unsigned int nOSMShapePoints;
-	unsigned short nVertices;
-//	std::vector<Coords> vOSMShapePoints;
-
-
-  // the cost for driving the length of the record (for Djikstra's)
-  
- // the names of this road (e.g. Main or State)
- // the types of this road (e.g. Street or Avenue)
-
-
-
-}OSMRecord;
-
 bool IsRoad(const MapRecord * pRecord);
-bool IsRoad(const OSMRecord * pRecord);
-
 bool IsBigRoad(const MapRecord * pRecord);
-bool IsBigRoad(const OSMRecord * pRecord);
-
 bool IsOneWay(const MapRecord * pRecord);
-bool IsOneWay(const OSMRecord * pRecord);
-
 bool IsSameRoad(const MapRecord * pRecord1, const MapRecord * pRecord2);
-bool IsSameRoad(const OSMRecord * pRecord1, const OSMRecord * pRecord2);
-
 unsigned char NumberOfLanes(const MapRecord * pRecord);
-unsigned char NumberOfLanes(const OSMRecord * pRecord);
-
 float CostFactor(const MapRecord * pRecord);
-float CostFactor(const OSMRecord * pRecord);
-
 float TimeFactor(const MapRecord * pRecord);
-float TimeFactor(const OSMRecord * pRecord);
-
 float RecordDistance(const MapRecord * pRecord);
-float RecordDistance(const OSMRecord * pRecord);
-
 float PointRecordDistance(const Coords & pt, const MapRecord * pRecord, unsigned short & iShapePoint, float & fProgress);
-float PointRecordDistance(const Coords & pt, const OSMRecord * pRecord, unsigned short & iShapePoint, float & fProgress);
-
 bool IsVehicleGoingForwards(unsigned short iShapePoint, short iHeading, const MapRecord * pRecord);
-bool IsVehicleGoingForwards(unsigned short iShapePoint, short iHeading, const OSMRecord * pRecord);
-
 float DistanceAlongRecord(const MapRecord * pRecord, unsigned short iStartShapePoint, float fStartProgress, unsigned short iEndShapePoint, float fEndProgress);
-float DistanceAlongRecord(const OSMRecord * pRecord, unsigned short iStartShapePoint, float fStartProgress, unsigned short iEndShapePoint, float fEndProgress);
 
 typedef struct DijkstraVertexStruct {
 	unsigned int vertex;
@@ -309,8 +263,6 @@ typedef struct VertexStruct
 } Vertex;
 
 void AddRecordToVertex(Vertex * pVertex, const MapRecord * pRecordSet, unsigned int iRecord, unsigned int iPreviousVertex);
-void AddRecordToVertex(Vertex * pVertex, const OSMRecord * pRecordSet, unsigned int iRecord, unsigned int iPreviousVertex);
-
 bool CanCarGoThrough(const Vertex & vertex, unsigned int iRecord);
 
 typedef std::pair<unsigned int, unsigned int> RecordRange;
@@ -329,10 +281,8 @@ public:
 	void ResetTrafficLights();
 
 	bool IsCountyLoaded(unsigned short iFIPSCode);
-	
 	bool DownloadCounties(const std::set<unsigned short> & setFIPSCodes);
 	bool DownloadCounty(unsigned short iFIPSCode);
-	bool DownloadCountiesOSM(const std::set<unsigned short> & setFIPSCodes);
 	bool LoadAll(const QString & strDirectory);
 	bool LoadAll(const QString & strDirectory, const std::set<QString> & setFilenames);
 
@@ -391,6 +341,7 @@ public:
 	bool GetVertex(unsigned int iVertex, Address * pAddress);
 
 	bool FindAddress(Address * pAddress, int iSearchNumber, const QString & strSearchStreet, const QString & strSearchType, const QString & strCity, const QString & strState);
+	bool FindAddress(Address * pAddress, const QString & strSearchStreet, const QString & strSearchType, const QString & strCity, const QString & strState);	//OSM map does not contain street number;
 	bool FindCoordinates(Address * pAddress, const Coords & ptSearch);
 	bool GetRandomAddress(Address * pAddress, const Rect & rRect);
 	bool GetRecordsInRegion(std::vector<unsigned int> & vecRecords, const Rect & rRect);
@@ -405,28 +356,22 @@ public:
 	bool CoordsToRecord(const Coords & ptPosition, unsigned int & iRecordClosest, unsigned short & iShapePointClosest, float & fProgressClosest, float fDistanceClosest = MAX_DISTANCE_THRESHOLD);
 	bool GetRelativeRecord(unsigned int & iRecord, unsigned short & iCountyCode);
 	bool GetAbsoluteRecord(unsigned int & iRecord, unsigned short iCountyCode);
-
+	void Routing(Address * add1, Address * add2);	
+	
 protected:
 	bool LoadMap(const QString & strBaseName);
-	bool LoadOSMMap(const QString & strBaseName);
-	
-	
 	void AddRecordsToRegionSquares(unsigned int begin, unsigned int end, CountySquares * squares, const Rect & totalBounds);
-	void AddRecordsToRegionSquaresOSM(unsigned int begin, unsigned int end, CountySquares * squares, const Rect & totalBounds);
-
 	unsigned int AddString(const QString & str);
 	void DrawMapFeatures(MapDrawingSettings * pSettings);
 	void DrawMapCompass(MapDrawingSettings * pSettings);
 	void DrawMapKey(MapDrawingSettings * pSettings);
+	void DrawRoute(MapDrawingSettings * pSettings);
 
 	struct timeval m_tLastChange;
 	QMutex m_Mutex;
 
 	MapRecord * m_pRecords;
 	unsigned int m_nRecords;
-	
-	OSMRecord * m_pOSMRecords;
-	unsigned int m_nOSMRecords;
 	std::vector<Vertex> m_vecVertices;
 	bool m_bTrafficLights;
 
@@ -442,12 +387,15 @@ protected:
 
 	std::vector<FibonacciHeapNode<double, DijkstraVertex> * > m_vecVerticesHeapLookup;
 
+	
 	// some temporary variables used during the loading process
 	std::map<unsigned int, unsigned int> m_mapTLIDtoRecord;
 	std::map<unsigned int, unsigned int> m_mapPolyIDtoRecord;
 	std::map<unsigned int, unsigned int> m_mapPolyIDtoSide;
 	std::map<unsigned int, std::vector<unsigned int> > m_mapAdditionalNameIDtoRecords;
 	std::map<QString, unsigned int> m_mapStringsToIndex; // temporary variable
+	std::vector<Coords> m_vecRoute;
+	
 	Coords * m_pAreaLeft, * m_pAreaRight, * m_pAreaTop, * m_pAreaBottom;
 };
 
@@ -466,7 +414,6 @@ QString StateNameByCode(unsigned short iStateCode);
 QString StateNameByAbbreviation(const QString & strName);
 unsigned short StateCodeByName(const QString & strStateName);
 char * ExtractField(char * pszText, int iStart, int iEnd);
-char * ExtractOSMField(char * posPtr, int offset,int len);
 QString FormatAddress(Address * psAddr);
 QString FormatName(const QString & strIn);
 QString FormatAbbreviation(const QString & strIn);
@@ -477,6 +424,7 @@ QString StateByZip(unsigned int iZip);
 QString CityByZip(unsigned int iZip);
 int CountyCodeByZip(unsigned int iZip);
 float PointSegmentDistance(const Coords & pt, const Coords & s0, const Coords & s1, float & fProgress);
+
 
 extern std::map<QString,QString> g_mapAbbreviationToFullName;
 extern std::map<QString,QString> g_mapNameToAbbreviation;

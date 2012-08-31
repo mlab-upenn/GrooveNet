@@ -68,6 +68,7 @@ std::map<unsigned int, unsigned int> g_mapZipToCountyCode;
 
 bool StringToAddress(const QString & strValue, Address * pAddress)
 {
+	printf("stringtoadd start\r\n");
 	QStringList listAddress;
 	QStringList::iterator iterString;
 	unsigned int i;
@@ -81,6 +82,7 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 	iterString = listAddress.begin();
 	if ((*iterString).find(" & ") > -1)
 	{
+		printf("intersection start\r\n");
 		// intersection
 		QString strStreetName, strStreetType, strStreetTypeAbbrev, strCity, strState, strTemp;
 		QStringList listStreets;
@@ -126,7 +128,7 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 		}
 
 		if (!setDownload.empty())
-			g_pMapDB->DownloadCountiesOSM(setDownload);
+			g_pMapDB->DownloadCounties(setDownload);
 
 		g_pMapDB->GetStreetsByName(strStreetName, strStreetTypeAbbrev, setRecords);
 
@@ -153,6 +155,7 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 			{
 				if (setZipCodes.find(pRecord->pAddressRanges[i].iZip) != setZipCodes.end())
 				{
+					printf("zipcode checked\r\n");
 					bFoundZipCode = true;
 					break;
 				}
@@ -168,6 +171,8 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 				if (g_pMapDB->IsVertex(pRecord->pVertices[i], setStreetNamesAndTypes))
 				{
 					// found it!
+					printf("we found the intersection\r\n");
+				//	printf("");pRecord->pVertice
 					if (g_pMapDB->GetVertex(pRecord->pVertices[i], pAddress))
 						return true;
 				}
@@ -179,6 +184,7 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 	else
 	{
 		// regular address
+		printf("num and st start\r\n");
 		QString strStreetName, strStreetType, strCity, strState, strTemp;
 		int iStreetNumber;
 		std::vector<unsigned int> vecZipCodes;
@@ -212,8 +218,7 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 		}
 
 		if (!setDownload.empty())
-			g_pMapDB->DownloadCountiesOSM(setDownload);
-		printf("StringToAdd called, OSM map just loaded\r\n");
+			g_pMapDB->DownloadCounties(setDownload);
 
 		return g_pMapDB->FindAddress(pAddress, iStreetNumber, strStreetName, strStreetType, strCity, strState);
 	}
@@ -256,23 +261,6 @@ bool IsRoad(const MapRecord * pRecord)
 		return false;
 	}
 }
-bool IsRoad(const OSMRecord * pRecord)
-{
-	switch (pRecord->eOSMRecordType)
-	{
-	case RecordTypeOneWaySmallRoad:
-	case RecordTypeOneWayLargeRoad:
-	case RecordTypeOneWayPrimary:
-	case RecordTypeOneWayHighway:
-	case RecordTypeTwoWaySmallRoad:
-	case RecordTypeTwoWayLargeRoad:
-	case RecordTypeTwoWayPrimary:
-	case RecordTypeTwoWayHighway:
-		return true;
-	default:
-		return false;
-	}
-}
 
 bool IsBigRoad(const MapRecord * pRecord)
 {
@@ -289,21 +277,7 @@ bool IsBigRoad(const MapRecord * pRecord)
 		return false;
 	}
 }
-bool IsBigRoad(const OSMRecord * pRecord)
-{
-	switch (pRecord->eOSMRecordType)
-	{
-	case RecordTypeOneWayLargeRoad:
-	case RecordTypeOneWayPrimary:
-	case RecordTypeOneWayHighway:
-	case RecordTypeTwoWayLargeRoad:
-	case RecordTypeTwoWayPrimary:
-	case RecordTypeTwoWayHighway:
-		return true;
-	default:
-		return false;
-	}
-}
+
 bool IsOneWay(const MapRecord * pRecord)
 {
 	switch (pRecord->eRecordType)
@@ -317,19 +291,7 @@ bool IsOneWay(const MapRecord * pRecord)
 		return false;
 	}
 }
-bool IsOneWay(const OSMRecord * pRecord)
-{
-	switch (pRecord->eOSMRecordType)
-	{
-	case RecordTypeOneWaySmallRoad:
-	case RecordTypeOneWayLargeRoad:
-	case RecordTypeOneWayPrimary:
-	case RecordTypeOneWayHighway:
-		return true;
-	default:
-		return false;
-	}
-}
+
 bool IsSameRoad(const MapRecord * pRecord1, const MapRecord * pRecord2)
 {
 	unsigned int i, j;
@@ -345,21 +307,7 @@ bool IsSameRoad(const MapRecord * pRecord1, const MapRecord * pRecord2)
 	}
 	return false;
 }
-bool IsSameRoad(const OSMRecord * pRecord1, const OSMRecord * pRecord2)
-{
-	unsigned int i, j;
 
-	// assume same road if both records have same names - probably not a great assumption...
-	for (i = 0; i < pRecord1->nOSMFeatureNames; i++)
-	{
-		for (j = 0; j < pRecord2->nOSMFeatureNames; j++)
-		{
-			if (pRecord1->pOSMFeatureNames[i] == pRecord2->pOSMFeatureNames[j] && pRecord1->pOSMFeatureTypes[i] == pRecord2->pOSMFeatureTypes[j])
-				return true;
-		}
-	}
-	return false;
-}
 #define SMALLROADLANES 1
 #define LARGEROADLANES 2
 #define PRIMARYROADLANES 2
@@ -385,26 +333,7 @@ unsigned char NumberOfLanes(const MapRecord * pRecord)
 		return 0;
 	}
 }
-unsigned char NumberOfLanes(const OSMRecord * pRecord)
-{
-	switch (pRecord->eOSMRecordType)
-	{
-	case RecordTypeOneWaySmallRoad:
-	case RecordTypeTwoWaySmallRoad:
-		return SMALLROADLANES;
-	case RecordTypeOneWayLargeRoad:
-	case RecordTypeTwoWayLargeRoad:
-		return LARGEROADLANES;
-	case RecordTypeOneWayPrimary:
-	case RecordTypeTwoWayPrimary:
-		return PRIMARYROADLANES;
-	case RecordTypeOneWayHighway:
-	case RecordTypeTwoWayHighway:
-		return HIGHWAYLANES;
-	default:
-		return 0;
-	}
-}
+
 #define SMALLROADPENALTY 3.0
 #define LARGEROADPENALTY 1.5
 #define PRIMARYROADPENALTY 1.0
@@ -430,26 +359,7 @@ float CostFactor(const MapRecord * pRecord)
 		return INFINITY; // don't take this edge (not a road!!!)
 	}
 }
-float CostFactor(const OSMRecord * pRecord)
-{
-	switch (pRecord->eOSMRecordType)
-	{
-	case RecordTypeOneWaySmallRoad:
-	case RecordTypeTwoWaySmallRoad:
-		return SMALLROADPENALTY; // penalty for small roads
-	case RecordTypeOneWayLargeRoad:
-	case RecordTypeTwoWayLargeRoad:
-		return LARGEROADPENALTY; // penalty for large roads
-	case RecordTypeOneWayPrimary:
-	case RecordTypeTwoWayPrimary:
-		return PRIMARYROADPENALTY; // penalty for primary roads
-	case RecordTypeOneWayHighway:
-	case RecordTypeTwoWayHighway:
-		return HIGHWAYROADPENALTY; // penalty for highway
-	default:
-		return INFINITY; // don't take this edge (not a road!!!)
-	}
-}
+
 #define SMALLROADSPEED 25
 #define LARGEROADSPEED 35
 #define PRIMARYROADSPEED 45
@@ -475,26 +385,7 @@ float TimeFactor(const MapRecord * pRecord)
 		return INFINITY; // don't take this edge (not a road!!!)
 	}
 }
-float TimeFactor(const OSMRecord * pRecord)
-{
-	switch (pRecord->eOSMRecordType)
-	{
-	case RecordTypeOneWaySmallRoad:
-	case RecordTypeTwoWaySmallRoad:
-		return SECSPERHOUR / SMALLROADSPEED; // penalty for small roads
-	case RecordTypeOneWayLargeRoad:
-	case RecordTypeTwoWayLargeRoad:
-		return SECSPERHOUR / LARGEROADSPEED; // penalty for large roads
-	case RecordTypeOneWayPrimary:
-	case RecordTypeTwoWayPrimary:
-		return SECSPERHOUR / PRIMARYROADSPEED; // penalty for primary roads
-	case RecordTypeOneWayHighway:
-	case RecordTypeTwoWayHighway:
-		return SECSPERHOUR / HIGHWAYROADSPEED; // penalty for highway
-	default:
-		return INFINITY; // don't take this edge (not a road!!!)
-	}
-}
+
 float RecordDistance(const MapRecord * pRecord)
 {
 	int iSeg;
@@ -505,16 +396,7 @@ float RecordDistance(const MapRecord * pRecord)
 
 	return fDistance;
 }
-float RecordDistance(const OSMRecord * pRecord)
-{
-	unsigned iSeg;
-	float fDistance = 0;
 
-	for (iSeg = 1; iSeg < pRecord->nOSMShapePoints; iSeg++)
-		fDistance += Distance(pRecord->pOSMShapePoints[iSeg - 1], pRecord->pOSMShapePoints[iSeg]); // add distance from shape point to shape point
-
-	return fDistance;
-}
 float PointRecordDistance(const Coords & pt, const MapRecord * pRecord, unsigned short & iShapePointClosest, float & fProgressClosest)
 {
 	Coords * pt0, * pt1;
@@ -525,33 +407,6 @@ float PointRecordDistance(const Coords & pt, const MapRecord * pRecord, unsigned
 	iShapePointClosest = (unsigned)-1;
 	pt1 = pRecord->pShapePoints;
 	for (i = 0; i < pRecord->nShapePoints - 1; i++)
-	{
-		pt0 = pt1;
-		pt1++;
-
-		fDistance = PointSegmentDistance(pt, *pt0, *pt1, fProgress);
-
-		if (fDistance < fDistanceClosest || !bFound)
-		{
-			fDistanceClosest = fDistance;
-			fProgressClosest = fProgress;
-			iShapePointClosest = i;
-			bFound = true;
-		}
-	}
-
-	return bFound ? fDistanceClosest : INFINITY;
-}
-float PointRecordDistance(const Coords & pt, const OSMRecord * pRecord, unsigned short & iShapePointClosest, float & fProgressClosest)
-{
-	Coords * pt0, * pt1;
-	float fDistanceClosest = 0., fDistance, fProgress;
-	unsigned short i;
-	bool bFound = false;
-
-	iShapePointClosest = (unsigned)-1;
-	pt1 = pRecord->pOSMShapePoints;
-	for (i = 0; i < pRecord->nOSMShapePoints - 1; i++)
 	{
 		pt0 = pt1;
 		pt1++;
@@ -594,30 +449,7 @@ bool IsVehicleGoingForwards(unsigned short iShapePoint, short iHeading, const Ma
 
 	return (sx*ax+sy*ay)/(sx*sx+sy*sy) >= 0.f;
 }
-bool IsVehicleGoingForwards(unsigned short iShapePoint, short iHeading, const OSMRecord * pRecord)
-{
-	Coords s0, s1;
-	float sx, sy, ax, ay;
-	// take care of some non-trivial conditions
 
-	// first, we need to make sure we're not out of the range
-	if (iShapePoint > pRecord->nOSMShapePoints - 1 || pRecord->nOSMShapePoints < 2)
-		return true;
-
-	// next, if we're on the last shape point, look at the preceding segment
-	if (iShapePoint == pRecord->nOSMShapePoints - 1)
-		iShapePoint--;
-
-	s0 = pRecord->pOSMShapePoints[iShapePoint].Flatten();
-	s1 = pRecord->pOSMShapePoints[iShapePoint+1].Flatten();
-	sx = s1.m_iLong - s0.m_iLong;
-	sy = s1.m_iLat - s0.m_iLat;
-
-	ax = sinf(iHeading * RADIANSPERCENTIDEGREE);
-	ay = cosf(iHeading * RADIANSPERCENTIDEGREE);
-
-	return (sx*ax+sy*ay)/(sx*sx+sy*sy) >= 0.f;
-}
 float DistanceAlongRecord(const MapRecord * pRecord, unsigned short iStartShapePoint, float fStartProgress, unsigned short iEndShapePoint, float fEndProgress)
 {
 	unsigned short i;
@@ -640,30 +472,6 @@ float DistanceAlongRecord(const MapRecord * pRecord, unsigned short iStartShapeP
 		fDistance += Distance(pRecord->pShapePoints[iEndShapePoint], pRecord->pShapePoints[iEndShapePoint+1]) * fEndProgress;
 	if (iStartShapePoint < pRecord->nShapePoints - 1)
 		fDistance -= Distance(pRecord->pShapePoints[iStartShapePoint], pRecord->pShapePoints[iStartShapePoint+1]) * fStartProgress;
-	return fDistance;
-}
-float DistanceAlongRecord(const OSMRecord * pRecord, unsigned short iStartShapePoint, float fStartProgress, unsigned short iEndShapePoint, float fEndProgress)
-{
-	unsigned short i;
-	float fDistance = 0.f;
-
-	// swap to ensure that start <= end
-	if (iStartShapePoint > iEndShapePoint || iStartShapePoint == iEndShapePoint && fStartProgress > fEndProgress)
-	{
-		unsigned short iTemp = iStartShapePoint;
-		float fTemp = fStartProgress;
-		iStartShapePoint = iEndShapePoint;
-		fStartProgress = fEndProgress;
-		iEndShapePoint = iTemp;
-		fEndProgress = fTemp;
-	}
-
-	for (i = iStartShapePoint; i < iEndShapePoint; i++)
-		fDistance += Distance(pRecord->pOSMShapePoints[i], pRecord->pOSMShapePoints[i+1]);
-	if (iEndShapePoint < pRecord->nOSMShapePoints - 1)
-		fDistance += Distance(pRecord->pOSMShapePoints[iEndShapePoint], pRecord->pOSMShapePoints[iEndShapePoint+1]) * fEndProgress;
-	if (iStartShapePoint < pRecord->nOSMShapePoints - 1)
-		fDistance -= Distance(pRecord->pOSMShapePoints[iStartShapePoint], pRecord->pOSMShapePoints[iStartShapePoint+1]) * fStartProgress;
 	return fDistance;
 }
 
@@ -703,14 +511,40 @@ void UpdateMapDrawingSettings(MapDrawingSettings * pSettings)
 	eRT = RecordTypeDefault;
 	for (iDetailLevel = MIN_DETAIL_LEVEL; iDetailLevel <= MAX_DETAIL_LEVEL; iDetailLevel++)
 	{
-		pSettings->vecLevelDetails[iDetailLevel][eRT].iWidth = 2;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].iWidth = 0;
 		pSettings->vecLevelDetails[iDetailLevel][eRT].iStyle = Qt::SolidLine;
-		pSettings->vecLevelDetails[iDetailLevel][eRT].bLineVisible = iDetailLevel <= 5;
-		pSettings->vecLevelDetails[iDetailLevel][eRT].bTextVisible = iDetailLevel <= 5;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].bLineVisible = iDetailLevel <= 2;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].bTextVisible = iDetailLevel <= 2;
 		pSettings->vecLevelDetails[iDetailLevel][eRT].clrLine = g_pSettings->m_sSettings[SETTINGS_APPEARANCE_COLOR_FG_NUM].GetValue().strValue;
 		pSettings->vecLevelDetails[iDetailLevel][eRT].clrText = g_pSettings->m_sSettings[SETTINGS_APPEARANCE_COLOR_FG_NUM].GetValue().strValue;
 		pSettings->vecLevelDetails[iDetailLevel][eRT].iFontSize = 8;
 		pSettings->vecLevelDetails[iDetailLevel][eRT].iArrowSpacing = 0;
+	}
+	
+	eRT = RecordTypePedestrian;
+	for (iDetailLevel = MIN_DETAIL_LEVEL; iDetailLevel <= MAX_DETAIL_LEVEL; iDetailLevel++)
+	{
+		pSettings->vecLevelDetails[iDetailLevel][eRT].iWidth = 1;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].iStyle = Qt::SolidLine;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].bLineVisible = iDetailLevel <= 7;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].bTextVisible = iDetailLevel <= 5;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].clrLine = g_pSettings->m_sSettings[SETTINGS_APPEARANCE_COLOR_SMROAD_NUM].GetValue().strValue;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].clrText = g_pSettings->m_sSettings[SETTINGS_APPEARANCE_COLOR_SMROAD_NUM].GetValue().strValue;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].iFontSize = 12;
+		pSettings->vecLevelDetails[iDetailLevel][eRT].iArrowSpacing = 1;
+
+		if (iDetailLevel >= 5)
+		{
+			pSettings->vecLevelDetails[iDetailLevel][eRT].iFontSize = 8;
+		}
+		if (iDetailLevel >= 6)
+		{
+			pSettings->vecLevelDetails[iDetailLevel][eRT].iFontSize = 6;
+		}
+		if (iDetailLevel >= 7)
+		{
+			pSettings->vecLevelDetails[iDetailLevel][eRT].iWidth = 1;
+		}
 	}
 
 	eRT = RecordTypeTwoWaySmallRoad;
@@ -1272,6 +1106,13 @@ void DrawLine(QPainter * dc, int sx, int sy, int dx, int dy, int iWidth, const Q
 	QPen oldPen = dc->pen();
 	dc->setPen(pen);
 	dc->drawLine(sx, sy, dx, dy);
+//	QPen dotpen1(QColor(1,0,1),5,(Qt::PenStyle)iStyle);
+//	dc->setPen(dotpen1);
+//	dc->drawPoint(sx,sy);
+//	dc->drawEllipse(sx,sy,2,2);
+//	QPen dotpen2(QColor(1,0,0),1,(Qt::PenStyle)iStyle);
+//	dc->setPen(dotpen2);
+//	dc->drawEllipse(dx,dy,10,10);
 	dc->setPen(oldPen);
 }
 
@@ -1302,22 +1143,7 @@ void AddRecordToVertex(Vertex * pVertex, const MapRecord * pRecordSet, unsigned 
 		pVertex->vecRoads.push_back(iRecord);
 	}
 }
-void AddRecordToVertex(Vertex * pVertex, const OSMRecord * pRecordSet, unsigned int iRecord, unsigned int iPreviousVertex)
-{
-	unsigned int i;
-	pVertex->mapEdges.insert(std::pair<unsigned int, unsigned>(iRecord, iPreviousVertex));
-	if (IsRoad(pRecordSet + iRecord))
-	{
-		for (i = 0; i < pVertex->vecRoads.size(); i++)
-		{
-			// same as existing road
-			if (IsSameRoad(pRecordSet + pVertex->vecRoads[i], pRecordSet + iRecord))
-				return;
-		}
-		// new road
-		pVertex->vecRoads.push_back(iRecord);
-	}
-}
+
 bool CanCarGoThrough(const Vertex & vertex, unsigned int iRecord)
 {
 	return IsSameRoad(g_pMapDB->GetRecord(iRecord), g_pMapDB->GetRecord(vertex.vecRoads[vertex.iRoadPermitted]));
@@ -1325,7 +1151,7 @@ bool CanCarGoThrough(const Vertex & vertex, unsigned int iRecord)
 
 
 MapDB::MapDB()
-: m_pRecords(NULL), m_nRecords(0), m_bTrafficLights(false),m_pOSMRecords(NULL), m_nOSMRecords(0)
+: m_pRecords(NULL), m_nRecords(0), m_bTrafficLights(false)
 {
 	m_tLastChange = GetCurrentTime();
 }
@@ -1353,22 +1179,10 @@ void MapDB::Clear()
 		delete[] m_pRecords;
 		m_pRecords = NULL;
 	}
-	for(iRec = 0; iRec <m_nOSMRecords; iRec++)
-	{
-	  if(m_pOSMRecords[iRec].pOSMFeatureNames != NULL) delete[] m_pOSMRecords[iRec].pOSMFeatureNames;
-	  if(m_pOSMRecords[iRec].pOSMFeatureTypes != NULL) delete[] m_pOSMRecords[iRec].pOSMFeatureTypes;
-	  if(m_pOSMRecords[iRec].pOSMShapePoints != NULL) delete[] m_pOSMRecords[iRec].pOSMShapePoints;
-	}
-	m_nOSMRecords = 0;
-	if(m_pOSMRecords != NULL)
-	{
-	  delete[] m_pOSMRecords;
-	  m_pOSMRecords = NULL;
-	}
 	m_vecVertices.clear();
 	m_vecStringRoads.clear();
 	m_vecStrings.clear();
-
+	m_vecRoute.clear();
 	m_mapCoordinateToVertex.clear();
 	m_mapTLIDtoRecord.clear();
 	m_mapPolyIDtoRecord.clear();
@@ -1395,26 +1209,35 @@ void MapDB::ResetTrafficLights()
 void MapDB::GetStreetsByName(const QString & strStreetName, const QString & strStreetType, std::set<unsigned int> & setMatching)
 {
 	unsigned int iStreetName, iStreetType, i, j;
-
+	int cnt = 0;
 	iStreetName = g_pMapDB->GetStringIndex(strStreetName);
 	iStreetType = g_pMapDB->GetStringIndex(strStreetType);
+	printf("iStreetName: %d iStreetType: %d\r\n",iStreetName,iStreetType);
 
 	if (iStreetName == (unsigned)-1 || iStreetType == (unsigned)-1)
 		return;
 
+	printf("m_nRecords:%d\r\n",m_nRecords);
 	for (i = 0; i < m_nRecords; i++)
 	{
 		if (!IsRoad(m_pRecords + i))
 			continue;
+	//	printf("nFeatureNames: %d\r\n",m_pRecords[i].nFeatureNames);
 		for (j = 0; j < m_pRecords[i].nFeatureNames; j++)
 		{
 			if (m_pRecords[i].pFeatureNames[j] == iStreetName && m_pRecords[i].pFeatureTypes[j] == iStreetType)
 			{
+				printf("pFeatureNames: %d	iStreetName: %d\r\n",m_pRecords[i].pFeatureNames[j],iStreetName);
+		        	printf("pFeatureTypes: %d	iStreetType: %d\r\n",m_pRecords[i].pFeatureTypes[j],iStreetType);
+				printf("Rec No.%d\r\n",i);
+				printf("GetStreetsByName, name, type checked\r\n");
 				setMatching.insert(i);
+				cnt++;
 				break;
 			}
 		}
 	}
+	printf("Found %d Recs\r\n",cnt);
 }
 
 QString MapDB::GetNameAndType(unsigned int iRec, int iEntry, bool bLongTypeForm)
@@ -1527,11 +1350,12 @@ bool MapDB::IsCountyLoaded(unsigned short iFIPSCode)
 
 bool MapDB::DownloadCounties(const std::set<unsigned short> & setFIPSCodes)
 {
+	printf("DownloadCounties\r\n");
 	std::set<unsigned short>::iterator iterFIPSCode;
 	std::set<QString> filesLoad;
 	bool bProcessable, bRetVal = false;
 	unsigned short iCombinedCode, iStateCode;
-	QString strCode, strState, strProcessedFile, strUnzippedFile, strZippedFile;
+	QString strCode, strState, strProcessedFile, strUnzippedFile, strZippedFile, strOSMFile;
 
 	qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
 	for (iterFIPSCode = setFIPSCodes.begin(); iterFIPSCode != setFIPSCodes.end(); ++iterFIPSCode)
@@ -1547,65 +1371,6 @@ bool MapDB::DownloadCounties(const std::set<unsigned short> & setFIPSCodes)
 		strProcessedFile = GetDataPath(QString("%1.MAP").arg(strCode));
 		if (strProcessedFile.isEmpty() || !QFileInfo(strProcessedFile).exists() || !QFileInfo(strProcessedFile).isFile() || !QFileInfo(strProcessedFile).isReadable()) {
 			// processed file not found
-			strUnzippedFile = GetDataPath(QString("TGR%1.RT1").arg(strCode));
-			bProcessable = false;
-			if (strUnzippedFile.isEmpty() || !QFileInfo(strUnzippedFile).exists() || !QFileInfo(strUnzippedFile).isFile() || !QFileInfo(strUnzippedFile).isReadable()) {
-				// unzipped file not found
-				strZippedFile = GetDataPath(QString("tgr%1.zip").arg(strCode), QString("%1%2/tgr%3.zip").arg(TIGER_BASE_URL).arg(strState).arg(strCode), false);
-
-				QDir dataDir(GetDataPath());
-				if (!strZippedFile.isEmpty() && QFileInfo(strZippedFile).exists() && QFileInfo(strZippedFile).isFile() && QFileInfo(strZippedFile).isReadable()) {
-					// zipped file downloaded - unzip now
-					system(QString("unzip -uoqq %1 -d %2").arg(strZippedFile).arg(dataDir.absPath()));
-					strUnzippedFile = GetDataPath(QString("TGR%1.RT1").arg(strCode));
-					if (!strUnzippedFile.isEmpty() && QFileInfo(strUnzippedFile).exists() && QFileInfo(strUnzippedFile).isFile() && QFileInfo(strUnzippedFile).isReadable())
-						bProcessable = true;
-
-					dataDir.remove(strZippedFile);
-				}
-			} else
-				bProcessable = true;
-			if (bProcessable) {
-				TIGERProcessor processor;
-				if (!processor.LoadSet(strUnzippedFile)) { // process files
-					strProcessedFile = GetDataPath(QString("%1.MAP").arg(strCode));
-					if (!strProcessedFile.isEmpty() && QFileInfo(strProcessedFile).exists() && QFileInfo(strProcessedFile).isFile() && QFileInfo(strProcessedFile).isReadable())
-						filesLoad.insert(strProcessedFile);
-				}
-			}
-		} else
-			filesLoad.insert(strProcessedFile);
-	}
-
-	if (!filesLoad.empty())
-		bRetVal = LoadAll(GetDataPath(), filesLoad); // load processed files
-	qApp->restoreOverrideCursor();
-	return bRetVal;
-}
-
-bool MapDB::DownloadCountiesOSM(const std::set<unsigned short> & setFIPSCodes)
-{
-	std::set<unsigned short>::iterator iterFIPSCode;
-	std::set<QString> filesLoad;
-	bool bProcessable, bRetVal = false;
-	unsigned short iCombinedCode, iStateCode;
-	QString strCode, strState, strProcessedFile, strUnzippedFile, strZippedFile,strOSMFile;
-
-	qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
-	for (iterFIPSCode = setFIPSCodes.begin(); iterFIPSCode != setFIPSCodes.end(); ++iterFIPSCode)
-	{
-		iCombinedCode = *iterFIPSCode;
-		iStateCode = iCombinedCode / 1000;
-
-		if (IsCountyLoaded(iCombinedCode))
-			continue;
-
-		strState = StateAbbreviationByCode(iStateCode);
-		strCode.sprintf("%05d", iCombinedCode);
-		strProcessedFile = GetDataPath(QString("%1.MAP").arg(strCode));
-		if (strProcessedFile.isEmpty() || !QFileInfo(strProcessedFile).exists() || !QFileInfo(strProcessedFile).isFile() || !QFileInfo(strProcessedFile).isReadable()) {
-			// processed file not found
-			//strUnzippedFile = GetDataPath(QString("TGR%1.RT1").arg(strCode));
 			strOSMFile = GetDataPath(QString("%1.osm").arg(strCode));
 			bProcessable = false;
 			if(!strOSMFile.isEmpty() && QFileInfo(strOSMFile).exists() && QFileInfo(strOSMFile).isFile() && QFileInfo(strOSMFile).isReadable())
@@ -1614,7 +1379,7 @@ bool MapDB::DownloadCountiesOSM(const std::set<unsigned short> & setFIPSCodes)
 
 			if (bProcessable) {
 				TIGERProcessor processor;
-				if (!processor.LoadSetOSM(strOSMFile)) { // process files
+				if (!processor.LoadSet(strOSMFile)) { // process files
 					strProcessedFile = GetDataPath(QString("%1.MAP").arg(strCode));
 					if (!strProcessedFile.isEmpty() && QFileInfo(strProcessedFile).exists() && QFileInfo(strProcessedFile).isFile() && QFileInfo(strProcessedFile).isReadable())
 						filesLoad.insert(strProcessedFile);
@@ -1627,6 +1392,8 @@ bool MapDB::DownloadCountiesOSM(const std::set<unsigned short> & setFIPSCodes)
 	if (!filesLoad.empty())
 		bRetVal = LoadAll(GetDataPath(), filesLoad); // load processed files
 	qApp->restoreOverrideCursor();
+	
+	printf("DownloadCounties finished\r\n");
 	return bRetVal;
 }
 
@@ -1634,8 +1401,7 @@ bool MapDB::DownloadCounty(unsigned short iFIPSCode)
 {
 	std::set<unsigned short> setFIPSCodes;
 	setFIPSCodes.insert(iFIPSCode);
-	return DownloadCountiesOSM(setFIPSCodes);
-	//return DownloadCounties(setFIPSCodes);
+	return DownloadCounties(setFIPSCodes);
 }
 
 bool MapDB::LoadAll(const QString & strDirectory)
@@ -1657,7 +1423,7 @@ bool MapDB::LoadAll(const QString & strDirectory)
 	while (iterFiles != listFiles.end()) {
 		filePath = dir.absFilePath(*iterFiles);
 		g_pLogger->LogInfo(QString("Loading map \"%1\"...").arg(filePath));
-		if (LoadOSMMap(filePath))
+		if (LoadMap(filePath))
 			g_pLogger->LogInfo("Successful\n");
 		else
 			g_pLogger->LogInfo("Failed\n");
@@ -1693,7 +1459,7 @@ bool MapDB::LoadAll(const QString & strDirectory, const std::set<QString> & setF
 		if (filePath != "" && fileInfo.exists() && fileInfo.isFile() && fileInfo.isReadable() && strcasecmp(fileInfo.extension(false), "MAP") == 0)
 		{
 			g_pLogger->LogInfo(QString("Loading map \"%1\"...").arg(filePath));
-			if (LoadOSMMap(filePath))
+			if (LoadMap(filePath))
 				g_pLogger->LogInfo("Successful\n");
 			else
 				g_pLogger->LogInfo("Failed\n");
@@ -1716,6 +1482,8 @@ void MapDB::DrawMap(MapDrawingSettings * pSettings, const QRect & rMap)
 	DrawMapFeatures(pSettings);
 	DrawMapCompass(pSettings);
 	DrawMapKey(pSettings);
+	if(m_vecRoute.size()>0)
+		DrawRoute(pSettings);
 }
 
 void MapDB::DrawBorder(MapDrawingSettings * pSettings, bool bFocus)
@@ -1776,6 +1544,7 @@ void MapDB::DrawRecordHighlights(MapDrawingSettings * pSettings, const std::set<
 
 bool MapDB::LoadMap(const QString & strBaseName)
 {
+	printf("Loading Map in MapDB\r\n");
 	std::vector<unsigned int> vecStrings; // maps string codes to record set string codes
 	std::vector<unsigned int> vecVertices; // maps file vertex codes to record set vertex codes
 	std::vector<Vertex> vertexInfo; // for each vertex index, stores a list of edges (records)...
@@ -1802,21 +1571,14 @@ bool MapDB::LoadMap(const QString & strBaseName)
 	// get buffer
 	fstat(handle, &fileInfo);
 	buffer = startBuffer = (unsigned char *)mmap(0, fileInfo.st_size, PROT_READ, MAP_PRIVATE, handle, 0);
-	//printf("MapDB buffer loaded\r\n");
-	//printf("file size:%d\r\n",fileInfo.st_size);
-	/*for(int i = 0; i<100;i++)
-	{
-		printf("buffer 0: %ld\r\n",buffer[i]);
-	}*/
+
 	// read header
 	memcpy(&countyCode, buffer, sizeof(unsigned short));
-	printf("county code:%d\r\n",countyCode);
-
+	printf("countyCode:%d\r\n",countyCode);
 	if (IsCountyLoaded(countyCode)) goto TIGERPROCESSOR_LOAD_ERROR;
-	
+
 	buffer += sizeof(int);
 	memcpy(&boundingRect.m_iLeft, buffer, sizeof(long));
-	//printf("BR left: %d\r\n",boundingRect.m_iLeft);
 	buffer += sizeof(long);
 	memcpy(&boundingRect.m_iTop, buffer, sizeof(long));
 	buffer += sizeof(long);
@@ -1824,34 +1586,26 @@ bool MapDB::LoadMap(const QString & strBaseName)
 	buffer += sizeof(long);
 	memcpy(&boundingRect.m_iBottom, buffer, sizeof(long));
 	buffer += sizeof(long);
-
 	iterBoundary = m_mapCountyCodeToBoundingRect.insert(std::pair<unsigned short, Rect>(countyCode, boundingRect)).first;
 
 	// read strings
 	memcpy(&numStrings, buffer, sizeof(unsigned int));
-	printf("numStrings: %d\r\n",numStrings);
 	buffer += sizeof(unsigned int);
-	printf("strat loading m_vecStrings\r\n");
 	m_vecStrings.reserve(m_vecStrings.size() + numStrings);
 	vecStrings.resize(numStrings);
 	for (i = 0; i < numStrings; i++) {
 		strncpy(szString, (const char *)buffer, 256);
 		buffer += (strlen(szString) + 1);
 		vecStrings[i] = AddString(QString(szString).stripWhiteSpace());
-		//printf("%s\r\n",szString);
 	}
-	printf("finish loading strings\r\n");
 	m_vecStringRoads.resize(m_vecStrings.size());
 
 	// read vertices
-	printf("loading numVertices\r\n");
 	memcpy(&numVertices, buffer, sizeof(unsigned int));
 	buffer += sizeof(unsigned int);
 	vecVertices.resize(numVertices);
 	vertexInfo.resize(numVertices);
 	m_vecVertices.reserve(m_vecVertices.size() + vecVertices.size());
-
-	printf("loading vertices coords\r\n");
 	for (i = 0; i < numVertices; i++) {
 		memcpy(&vertexCoords.m_iLong, buffer, sizeof(long));
 		memcpy(&vertexCoords.m_iLat, (buffer += sizeof(long)), sizeof(long));
@@ -1895,6 +1649,7 @@ bool MapDB::LoadMap(const QString & strBaseName)
 	memcpy(&numRecords, buffer, sizeof(unsigned int));
 	buffer += sizeof(unsigned int);
 	newRecordBuffer = new MapRecord[m_nRecords + numRecords];
+	printf("MapDB m_nRecords = %d\r\n",numRecords);
 	memcpy(newRecordBuffer, m_pRecords, m_nRecords * sizeof(MapRecord));
 	for (i = 0; i < numRecords; i++) {
 		memcpy(&newRecordBuffer[i+m_nRecords].nFeatureNames, buffer, sizeof(unsigned short));
@@ -1939,10 +1694,10 @@ bool MapDB::LoadMap(const QString & strBaseName)
 		for (j = 0; j < newRecordBuffer[i + m_nRecords].nShapePoints; j++) {
 			memcpy(&newRecordBuffer[i + m_nRecords].pShapePoints[j].m_iLong, buffer, sizeof(long));
 			memcpy(&newRecordBuffer[i + m_nRecords].pShapePoints[j].m_iLat, (buffer += sizeof(long)), sizeof(long));
-			printf("%ld %ld\r\n",newRecordBuffer[i + m_nRecords].pShapePoints[j].m_iLong,newRecordBuffer[i + m_nRecords].pShapePoints[j].m_iLat);
 			buffer += sizeof(long);
 		}
 		memcpy(&newRecordBuffer[i + m_nRecords].nVertices, buffer, sizeof(unsigned short));
+	//	printf("num Vertices:%d\r\n",)
 		buffer += sizeof(unsigned short);
 		newRecordBuffer[i + m_nRecords].pVertices = new unsigned int[newRecordBuffer[i + m_nRecords].nVertices];
 		for (j = 0; j < newRecordBuffer[i + m_nRecords].nVertices; j++) {
@@ -1990,219 +1745,9 @@ TIGERPROCESSOR_LOAD_ERROR:
 	return bSuccess;
 }
 
-bool MapDB::LoadOSMMap(const QString & strBaseName)
-{
-	std::vector<unsigned int> vecStrings; // maps string codes to record set string codes
-	std::vector<unsigned int> vecVertices; // maps file vertex codes to record set vertex codes
-	std::vector<Vertex> vertexInfo; // for each vertex index, stores a list of edges (records)...
-	std::map<unsigned short, CountySquares>::iterator iterSquares;
-	std::map<unsigned short, Rect>::iterator iterBoundary;
-	std::map<unsigned short, WaterPolygons>::iterator polys;
-	OSMRecord * newRecordBuffer = NULL;
-	unsigned char * buffer, * startBuffer;
-	unsigned short countyCode;
-	Rect boundingRect;
-	Coords vertexCoords;
-	unsigned int i, j, numStrings, numVertices, neighborVertex, neighborRecord, numRecords, vertexMapIndex, numPolys, numPoints;
-	unsigned char recordType;
-	unsigned short numNeighbors;
-	std::map<Coords, unsigned int>::iterator vertexCoordsIter;
-	std::map<unsigned int, unsigned int>::iterator vertexNeighborIter;
-	char szString[256]; // no string longer than this...
-	bool bSuccess = false;
-	struct stat fileInfo;
-
-	int handle = open(strBaseName.ascii(), O_RDONLY);
-	if (handle == -1) return false;
-
-	// get buffer
-	fstat(handle, &fileInfo);
-	buffer = startBuffer = (unsigned char *)mmap(0, fileInfo.st_size, PROT_READ, MAP_PRIVATE, handle, 0);
-	//printf("MapDB buffer loaded\r\n");
-	//printf("file size:%d\r\n",fileInfo.st_size);
-	/*for(int i = 0; i<100;i++)
-	{
-		printf("buffer 0: %ld\r\n",buffer[i]);
-	}*/
-	// read header
-	memcpy(&countyCode, buffer, sizeof(unsigned short));
-	printf("county code:%d\r\n",countyCode);
-
-	if (IsCountyLoaded(countyCode)) goto TIGERPROCESSOR_LOAD_ERROR;
-	
-	buffer += sizeof(int);
-	memcpy(&boundingRect.m_iLeft, buffer, sizeof(long));
-	//printf("BR left: %d\r\n",boundingRect.m_iLeft);
-	buffer += sizeof(long);
-	memcpy(&boundingRect.m_iTop, buffer, sizeof(long));
-	buffer += sizeof(long);
-	memcpy(&boundingRect.m_iRight, buffer, sizeof(long));
-	buffer += sizeof(long);
-	memcpy(&boundingRect.m_iBottom, buffer, sizeof(long));
-	buffer += sizeof(long);
-	printf("bounding rect :%ld %ld %ld %ld\r\n",boundingRect.m_iLeft,boundingRect.m_iTop,boundingRect.m_iRight,boundingRect.m_iBottom);;
-
-
-	iterBoundary = m_mapCountyCodeToBoundingRect.insert(std::pair<unsigned short, Rect>(countyCode, boundingRect)).first;
-
-	// read strings
-	memcpy(&numStrings, buffer, sizeof(unsigned int));
-	printf("numStrings: %d\r\n",numStrings);
-	buffer += sizeof(unsigned int);
-	m_vecStrings.reserve(m_vecStrings.size() + numStrings);
-	vecStrings.resize(numStrings);
-	for (i = 0; i < numStrings; i++) {
-		strncpy(szString, (const char *)buffer, 256);
-		buffer += (strlen(szString) + 1);
-		vecStrings[i] = AddString(QString(szString).stripWhiteSpace());
-		//printf("%s\r\n",szString);
-	}
-	m_vecStringRoads.resize(m_vecStrings.size());
-
-	// read vertices
-	memcpy(&numVertices, buffer, sizeof(unsigned int));
-	buffer += sizeof(unsigned int);
-	vecVertices.resize(numVertices);
-	vertexInfo.resize(numVertices);
-	m_vecVertices.reserve(m_vecVertices.size() + vecVertices.size());
-	for (i = 0; i < numVertices; i++) {
-		memcpy(&vertexCoords.m_iLong, buffer, sizeof(long));
-		memcpy(&vertexCoords.m_iLat, (buffer += sizeof(long)), sizeof(long));
-		vertexCoordsIter = m_mapCoordinateToVertex.find(vertexCoords);
-		if (vertexCoordsIter == m_mapCoordinateToVertex.end()) {
-			vertexCoordsIter = m_mapCoordinateToVertex.insert(std::pair<Coords, unsigned int>(vertexCoords, m_vecVertices.size())).first;
-			m_vecVertices.push_back(Vertex());
-			m_vecVertices.back().iRoadPermitted = 0;
-		}
-		vecVertices[i] = vertexCoordsIter->second;
-		memcpy(&numNeighbors, buffer += sizeof(long), sizeof(unsigned short));
-		buffer += sizeof(unsigned short);
-		for (j = 0; j < numNeighbors; j++)
-		{
-			memcpy(&neighborVertex, buffer, sizeof(unsigned int));
-			memcpy(&neighborRecord, (buffer += sizeof(unsigned int)), sizeof(unsigned int));
-			buffer += sizeof(unsigned int);
-			neighborRecord += m_nOSMRecords;
-			vertexInfo[i].mapEdges.insert(std::pair<unsigned int, unsigned int>(neighborRecord, neighborVertex));
-		}
-		memcpy(&numNeighbors, buffer, sizeof(unsigned short));
-		buffer += sizeof(unsigned short);
-		vertexInfo[i].vecRoads.resize(numNeighbors);
-		for (j = 0; j < numNeighbors; j++)
-		{
-			memcpy(&vertexInfo[i].vecRoads[j], buffer, sizeof(unsigned int));
-			vertexInfo[i].vecRoads[j] += m_nOSMRecords;
-			buffer += sizeof(unsigned int);
-		}
-	}
-	// postprocessing step... (realign vertex indexes within record set)
-	for (i = 0; i < numVertices; i++) {
-		for (vertexNeighborIter = vertexInfo[i].mapEdges.begin(); vertexNeighborIter != vertexInfo[i].mapEdges.end(); ++vertexNeighborIter) {
-			vertexMapIndex = vecVertices[vertexNeighborIter->second];
-			m_vecVertices[vecVertices[i]].mapEdges.insert(std::pair<unsigned int, unsigned int>(vertexNeighborIter->first, vertexMapIndex));
-		}
-		m_vecVertices[vecVertices[i]].vecRoads.insert(m_vecVertices[vecVertices[i]].vecRoads.end(), vertexInfo[i].vecRoads.begin(), vertexInfo[i].vecRoads.end());
-	}
-
-	// read records
-	//printf("loading records\r\n");
-	memcpy(&numRecords, buffer, sizeof(unsigned int));
-	printf("numRecords :%d\r\n",numRecords);
-	buffer += sizeof(unsigned int);
-	
-	
-	newRecordBuffer = new OSMRecord[m_nOSMRecords + numRecords];
-	printf("MapDB m_nOSMRecords = %d\r\n",m_nOSMRecords);
-	memcpy(newRecordBuffer, m_pOSMRecords, m_nOSMRecords * sizeof(OSMRecord));
-	printf("starting record loop\r\n");
-	for (i = 0; i < numRecords; i++) {
-	//	printf("loading record No.%d\r\n",i);
-		memcpy(&newRecordBuffer[i+m_nOSMRecords].nOSMFeatureNames, buffer, sizeof(unsigned short));
-		//printf("Rec No.%d num of FeatureNames: %d\r\n",i,newRecordBuffer[i+m_nOSMRecords].nOSMFeatureNames);
-		buffer += sizeof(unsigned short);
-		newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames = new unsigned int[newRecordBuffer[i + m_nOSMRecords].nOSMFeatureNames];
-		newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes = new unsigned int[newRecordBuffer[i + m_nOSMRecords].nOSMFeatureNames];
-		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nOSMFeatureNames; j++) {
-			memcpy(newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames + j, buffer, sizeof(unsigned int));
-			newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j] = vecStrings[newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j]];
-			m_vecStringRoads[newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j]].push_back(i + m_nOSMRecords);
-			//printf("Rec No.%d FeatureNameID: %d\r\n",i,newRecordBuffer[i + m_nOSMRecords].pOSMFeatureNames[j]);;
-			memcpy(newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes + j, (buffer += sizeof(unsigned int)), sizeof(unsigned int));
-			buffer += sizeof(unsigned int);
-			newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes[j] = vecStrings[newRecordBuffer[i + m_nOSMRecords].pOSMFeatureTypes[j]];
-		}
-		//printf("FeatureName&Type copied\r\n");
-		//memcpy(&recordType, buffer, sizeof(unsigned char));
-		//newRecordBuffer[i + m_nOSMRecords].bWaterL = ((recordType & 0x80) == 0x80);
-		//newRecordBuffer[i + m_nOSMRecords].bWaterR = ((recordType & 0x40) == 0x40);
-		//newRecordBuffer[i + m_nOSMRecords].eRecordType = (RecordTypes)(recordType & 0x3f);
-		memcpy(&newRecordBuffer[i + m_nOSMRecords].fCost, buffer , sizeof(float));
-		buffer += sizeof(float);
-	//	printf("cost = %f\r\n",newRecordBuffer[i + m_nOSMRecords].fCost);
-
-	/*	newRecordBuffer[i + m_nOSMRecords].pAddressRanges = new AddressRange[newRecordBuffer[i + m_nOSMRecords].nAddressRanges];
-		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nAddressRanges; j++) {
-			memcpy(&newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iFromAddr, buffer, sizeof(unsigned short));
-			memcpy(&newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iToAddr, (buffer += sizeof(unsigned short)), sizeof(unsigned short));
-			memcpy(&newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iZip, (buffer += sizeof(unsigned short)), sizeof(int));
-			buffer += sizeof(int);
-			newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].bOnLeft = ((newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iZip & 0x80000000) == 0x80000000);
-			newRecordBuffer[i + m_nOSMRecords].pAddressRanges[j].iZip &= 0x7fffffff;
-		}*/
-		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iLeft, buffer, sizeof(long));
-		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iTop, (buffer += sizeof(long)), sizeof(long));
-		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iRight, (buffer += sizeof(long)), sizeof(long));
-		memcpy(&newRecordBuffer[i + m_nOSMRecords].rOSMBounds.m_iBottom, (buffer += sizeof(long)), sizeof(long));
-		memcpy(&newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints, (buffer += sizeof(long)), sizeof(unsigned short));
-	//	printf("num shapepoints: %d\r\n",newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints);
-	//	printf("rBound copied\r\n");
-		buffer += sizeof(unsigned short);
-		newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints = new Coords[newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints];
-		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nOSMShapePoints; j++) {
-			memcpy(&newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLong, buffer, sizeof(long));
-			memcpy(&newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLat, (buffer += sizeof(long)), sizeof(long));
-			//printf("coords: %ld, %ld\r\n",newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLong,newRecordBuffer[i + m_nOSMRecords].pOSMShapePoints[j].m_iLat);
-			buffer += sizeof(long);
-		}
-		//printf("shape points copied\r\n");
-		memcpy(&newRecordBuffer[i + m_nOSMRecords].nVertices, buffer, sizeof(unsigned short));
-		buffer += sizeof(unsigned short);
-		newRecordBuffer[i + m_nOSMRecords].pVertices = new unsigned int[newRecordBuffer[i + m_nOSMRecords].nVertices];
-		for (j = 0; j < newRecordBuffer[i + m_nOSMRecords].nVertices; j++) {
-			memcpy(newRecordBuffer[i + m_nOSMRecords].pVertices + j, buffer, sizeof(unsigned int));
-			buffer += sizeof(unsigned int);
-			newRecordBuffer[i + m_nOSMRecords].pVertices[j] = vecVertices[newRecordBuffer[i + m_nOSMRecords].pVertices[j]];
-		}
-		//printf("vertices copied\r\n");
-	}
-	
-	delete[] m_pOSMRecords;
-	m_pOSMRecords = newRecordBuffer;
-	newRecordBuffer = NULL;
-
-
-	m_mapCountyCodeToRecords.insert(std::pair<unsigned short, std::pair<unsigned int, unsigned int> >(countyCode, std::pair<unsigned int, unsigned int>(m_nOSMRecords, m_nOSMRecords + numRecords)));
-	printf("countyCode: %d\r\n",countyCode);
-	printf("inserted m_mapCountyCodeToRecords\r\n");
-	iterSquares = m_mapCountyCodeToRegions.insert(std::pair<unsigned short, std::vector<std::vector<unsigned int> > >(countyCode, std::vector<std::vector<unsigned int> >(SQUARES_PER_COUNTY))).first;
-	AddRecordsToRegionSquaresOSM(m_nOSMRecords, m_nOSMRecords + numRecords, &iterSquares->second, iterBoundary->second);
-	m_nOSMRecords += numRecords;
-	printf("AddRecordsToRegionSquares finished\r\n");
-	qApp->processEvents();
-	bSuccess = true;
-
-	printf("sucess = true\r\n");
-TIGERPROCESSOR_LOAD_ERROR:
-	munmap(startBuffer, fileInfo.st_size);
-	close(handle);
-	qApp->processEvents();
-	if (newRecordBuffer != NULL) delete[] newRecordBuffer; // TODO: fix memory leak! (note: only occurs on error)
-	printf("finish loading\r\n");
-	return bSuccess;
-}
-
 bool MapDB::FindAddress(Address * pAddress, int iSearchNumber, const QString & strSearchStreet, const QString & strSearchType, const QString & strCity, const QString & strState)
 {
+	printf("find add start\r\n");
 	unsigned int iStreetName = (unsigned)-1, iStreetType = (unsigned)-1, i, iRec, j;
 	std::map<QString, unsigned int>::iterator iterStringID;
 	std::vector<unsigned int> vecZips;
@@ -2332,6 +1877,8 @@ bool MapDB::FindAddress(Address * pAddress, int iSearchNumber, const QString & s
 					pAddress->iZipCode = iZip;
 
 					pAddress->iRecord = iRec;
+					pAddress->ptCoordinates = pRec->pShapePoints[0];
+					printf("run here\r\n");
 
 					return true;
 				}
@@ -2520,7 +2067,100 @@ bool MapDB::FindAddress(Address * pAddress, int iSearchNumber, const QString & s
 	return false;
 */
 }
+bool MapDB::FindAddress(Address * pAddress, const QString & strSearchStreet, const QString & strSearchType, const QString & strCity, const QString & strState)
+{
+	printf("find add start\r\n");
+	unsigned int iStreetName = (unsigned)-1, iStreetType = (unsigned)-1, i, iRec, j;
+	std::map<QString, unsigned int>::iterator iterStringID;
+	std::vector<unsigned int> vecZips;
+	std::set<unsigned int> setZips;
+	QString strSearchTypeAbbrev;
+	MapRecord * pRec;
+	bool bMatch, bOnLeft, bOnRight;
+	double fPercentageAlongLeg, fTotalDistance, fDesiredDistance, fSearchDistance, fChange;
+	int iAddressZipEntry;
+	fPercentageAlongLeg = 0.5;
 
+	if (!strSearchStreet.isEmpty() && (iterStringID = m_mapStringsToIndex.find(strSearchStreet)) != m_mapStringsToIndex.end())
+		iStreetName = iterStringID->second;
+
+	strSearchTypeAbbrev = GetAbbreviation(strSearchType);
+	if (!strSearchTypeAbbrev.isEmpty() && (iterStringID = m_mapStringsToIndex.find(strSearchTypeAbbrev)) != m_mapStringsToIndex.end())
+		iStreetType = iterStringID->second;
+	else
+	{
+		strSearchTypeAbbrev = strSearchType;
+		if (!strSearchType.isEmpty() && (iterStringID = m_mapStringsToIndex.find(strSearchType)) != m_mapStringsToIndex.end())
+			iStreetType = iterStringID->second;
+	}
+
+	if (!strCity.isEmpty() && !strState.isEmpty())
+		vecZips = ZipCodesByCityState(strCity, strState);
+	for (i = 0; i < vecZips.size(); i++)
+		setZips.insert(vecZips[i]);
+
+	if (iStreetName == (unsigned)-1 || m_vecStringRoads[iStreetName].empty())
+		return false;
+
+	for (i = 0; i < m_vecStringRoads[iStreetName].size(); i++)
+	{
+		iRec = m_vecStringRoads[iStreetName][i];
+		pRec = m_pRecords + iRec;
+		if (pRec != NULL)
+		{
+			// verify street name and type matches
+			bMatch = false;
+			for (j = 0; j < pRec->nFeatureNames; j++)
+			{
+				if (iStreetType == (unsigned)-1 || (pRec->pFeatureNames[j] == iStreetName && pRec->pFeatureTypes[j] == iStreetType))
+				{
+					bMatch = true;
+					break;
+				}
+			}
+			if (!bMatch)
+				continue;
+
+			
+			else // we're not searching by street number, city, or zip
+				bOnLeft = true;
+			bMatch = bOnLeft || bOnRight;
+			if (!bMatch)
+				continue;
+
+			fTotalDistance = RecordDistance(pRec);
+			fDesiredDistance = fTotalDistance * fPercentageAlongLeg;
+			fSearchDistance = 0.;
+			for (j = 0; (signed)j < pRec->nShapePoints - 1; j++)
+			{
+				fChange = Distance(pRec->pShapePoints[j], pRec->pShapePoints[j + 1]);
+				if (fSearchDistance <= fDesiredDistance && fDesiredDistance < fSearchDistance + fChange)
+				{
+					int iZip = iAddressZipEntry < 0 ? 0 : pRec->pAddressRanges[iAddressZipEntry].iZip;
+					pAddress->iVertex = (unsigned)-1;
+					pAddress->ptCoordinates = pRec->pShapePoints[j+1] * (fDesiredDistance - fSearchDistance) / fChange + pRec->pShapePoints[j] * (1 - (fDesiredDistance - fSearchDistance) / fChange);
+
+				//	pAddress->iStreetNumber = iSearchNumber;
+					pAddress->szStreetName = m_vecStrings[pRec->pFeatureNames[0]];
+					pAddress->szStreetType = m_vecStrings[pRec->pFeatureTypes[0]];
+
+					pAddress->szCityName = CityByZip(iZip);
+					pAddress->szStateName = StateByZip(iZip);
+					pAddress->iZipCode = iZip;
+
+					pAddress->iRecord = iRec;
+					pAddress->ptCoordinates = pRec->pShapePoints[0];
+					printf("run here\r\n");
+
+					return true;
+				}
+
+				fSearchDistance += fChange;
+			}
+		}
+	}
+	return false;
+}
 bool MapDB::FindCoordinates(Address * pAddress, const Coords & ptSearch)
 {
 	unsigned int iRecord = (unsigned)-1;
@@ -2651,6 +2291,7 @@ bool MapDB::AddressFromRecord(Address * pAddress, unsigned int iRecord, unsigned
 
 std::list<unsigned int> MapDB::ShortestPath(Address * pStart, Address * pEnd, bool & bBackwardsStart, bool & bBackwardsEnd)
 {
+	printf("in ShortestPath\r\n");
 	unsigned int nVertices = m_vecVertices.size(), startVertex1, startVertex2, endVertex1, endVertex2;
 	double startDistance = 0.0, endDistance = 0.0, newDistance, totalDistance1 = INFINITY, totalDistance2 = INFINITY;
 	bool bNeedEnd2 = false, bFoundEnd1 = false, bFoundEnd2, bBackwards1, bBackwards2, bBackwardsEnd1, bBackwardsEnd2;
@@ -3286,35 +2927,7 @@ void MapDB::AddRecordsToRegionSquares(unsigned int begin, unsigned int end, Coun
 		psRec++;
 	}
 }
-void MapDB::AddRecordsToRegionSquaresOSM(unsigned int begin, unsigned int end, CountySquares * squares, const Rect & totalBounds)
-{
-	unsigned int i;
-	int j, k, left, top, right, bottom, sqWidth, sqHeight, squares_sides = (int)sqrt((double)squares->size());
-	sqWidth = (int)ceil(((double)(totalBounds.m_iRight - totalBounds.m_iLeft)) / squares_sides);
-	sqHeight = (int)ceil(((double)(totalBounds.m_iTop - totalBounds.m_iBottom)) / squares_sides);
-	OSMRecord * psRec = m_pOSMRecords + begin;
-	for (i = begin; i < end; i++) {
-		qApp->processEvents();
-		psRec->rOSMBounds = Rect::BoundingRect(psRec->pOSMShapePoints, psRec->nOSMShapePoints);
-		left = (psRec->rOSMBounds.m_iLeft - totalBounds.m_iLeft) / sqWidth;
-		if (left < 0) left = 0;
-		if (left > squares_sides - 1) left = squares_sides - 1;
-		top = (totalBounds.m_iTop - psRec->rOSMBounds.m_iTop) / sqHeight;
-		if (top < 0) top = 0;
-		if (top > squares_sides - 1) top = squares_sides - 1;
-		right = (psRec->rOSMBounds.m_iRight - totalBounds.m_iLeft) / sqWidth;
-		if (right < 0) right = 0;
-		if (right > squares_sides - 1) right = squares_sides - 1;
-		bottom = (totalBounds.m_iTop - psRec->rOSMBounds.m_iBottom) / sqHeight;
-		if (bottom < 0) bottom = 0;
-		if (bottom > squares_sides - 1) bottom = squares_sides - 1;
-		for (j = left; j <= right; j++) {
-			for (k = top; k <= bottom; k++)
-				(*squares)[j+k*squares_sides].push_back(i);
-		}
-		psRec++;
-	}
-}
+
 unsigned int MapDB::AddString(const QString & str)
 {
 	std::map<QString, unsigned int>::iterator iterName = m_mapStringsToIndex.find(str);
@@ -3324,6 +2937,65 @@ unsigned int MapDB::AddString(const QString & str)
 	m_mapStringsToIndex.insert(std::pair<QString, unsigned int>(str, ret));
 	m_vecStrings.push_back(str);
 	return ret;
+}
+
+void MapDB::Routing(Address * add1, Address * add2)
+{
+
+
+	bool bTemp1 = false, bTemp2 = false;
+	std::vector<Coords> vecVerticesToCoords;
+	std::map<Coords, unsigned int>::iterator iterCoords;
+	Coords endPoint, curPoint, prevPoint;
+	curPoint = add1->ptCoordinates;
+	endPoint = add2->ptCoordinates;
+	unsigned int iCurrentVertex;
+	float fCurrentDistance = 0;;
+	float fMinDistance = INFINITY;
+	std::list<unsigned int> l_route;
+	std::list<unsigned int>::iterator lrouteItr;
+	std::map<unsigned int, unsigned, int>::iterator edgeItr;
+	vecVerticesToCoords.resize(m_vecVertices.size());
+	l_route = ShortestPath(add1,add2,bTemp1,bTemp2);
+	printf("route size: %d\r\n",l_route.size());
+
+	for(iterCoords = m_mapCoordinateToVertex.begin(); iterCoords != m_mapCoordinateToVertex.end();++iterCoords)
+	{	
+
+		vecVerticesToCoords[iterCoords->second] = iterCoords->first;
+	}
+
+
+
+/*	while(curPoint != endPoint)
+	{
+		float fMinDistance = INFINITY;
+		prevPoint = curPoint;
+		iCurrentVertex = (*m_mapCoordinateToVertex.find(curPoint)).second;
+		m_vecRoute.push_back(curPoint);
+		for(edgeItr = m_vecVertices[iCurrentVertex].mapEdges.begin();edgeItr != m_vecVertices[iCurrentVertex].mapEdges.end();++edgeItr)
+		{
+			if(edgeItr->second != (*m_mapCoordinateToVertex.find(prevPoint)).second)
+			{
+				fCurrentDistance = Distance(vecVerticesToCoords[edgeItr->second], add2.ptCoordinates);
+				if(fCurrentDistance < fMinDistance)
+				{
+					fMinDistance = fCurrentDistance;
+					curPoint = vecVerticesToCoords[edgeItr->second];
+				}
+			}
+		}
+		printf("Current Dis:%f, Coords:%ld	%ld\r\n",fCurrentDistance,curPoint.m_iLat,curPoint.m_iLong);
+	//	DrawLine(pSettings->pMemoryDC, MapLongLatToScreen(pSettings,prevPoint).x(),MapLongLatToScreen(pSettings,prevPoint).y(),MapLongLatToScreen(pSettings,curPoint).x(),MapLongLatToScreen(pSettings,curPoint).y(),5,QColor(1,0,0),Qt::SolidLine);
+		
+	}
+	m_vecRoute.push_back(endPoint);
+	for(int i = 0; i < m_vecRoute.size();i++)
+	{
+		printf("route coords:%ld	%ld:\r\n",m_vecRoute[i].m_iLat,m_vecRoute[i].m_iLong);
+	}
+
+*/
 }
 
 typedef struct LabelInfoStruct
@@ -3384,11 +3056,110 @@ void MapDB::DrawMapFeatures(MapDrawingSettings * pSettings)
 	}
 
 	// fill in water
-	
-	// draw general features from records for each visible square (counties and states)
+	if (pSettings->bFillInWater) {
+		pLevelDetails = &pSettings->vecLevelDetails[pSettings->iDetailLevel][RecordTypeWater];
+		pSettings->pMemoryDC->setRasterOp(Qt::XorROP);
+		clrLine = pSettings->clrBackground.rgb() ^ pLevelDetails->clrLine.rgb();
+		iWidth = pLevelDetails->iWidth;
+		iStyle = pLevelDetails->iStyle;
+		QPointArray waterPoly;
+		QPoint ptWater;
+		int iSeg2;
+		oldPen = pSettings->pMemoryDC->pen();
+		pSettings->pMemoryDC->setPen(clrLine);
+		oldBrush = pSettings->pMemoryDC->brush();
+		pSettings->pMemoryDC->setBrush(clrLine);
+
+		for (iterCounties = m_mapCountyCodeToRecords.begin(); iterCounties != m_mapCountyCodeToRecords.end(); ++iterCounties) {
+			countyRect = m_mapCountyCodeToBoundingRect.find(iterCounties->first);
+			if (countyRect == m_mapCountyCodeToBoundingRect.end() || bounds.intersectRect(countyRect->second)) {
+				iterCountyWaterPolys = m_mapCountyCodeToWaterPolys.find(iterCounties->first);
+				if (iterCountyWaterPolys != m_mapCountyCodeToWaterPolys.end()) {
+					for (iRec = 0; iRec < iterCountyWaterPolys->second.size(); iRec++) {
+						bVisible = iterCountyWaterPolys->second[iRec].first.intersectRect(bounds);
+//						bVisible = (iterCountyWaterPolys->second[iRec].first.m_iLeft > bounds.m_iRight || iterCountyWaterPolys->second[iRec].first.m_iRight < bounds.m_iLeft || iterCountyWaterPolys->second[iRec].first.m_iTop < bounds.m_iBottom || iterCountyWaterPolys->second[iRec].first.m_iBottom > bounds.m_iTop) ? false : IsRecordVisible(iterCountyWaterPolys->second[iRec].second, pSettings->ptTopLeftClip, pSettings->ptBottomRightClip);
+						if (bVisible) {
+							waterPoly.resize(iterCountyWaterPolys->second[iRec].second.size());
+							for (iSeg2 = iSeg = 0; iSeg < (int)iterCountyWaterPolys->second[iRec].second.size(); iSeg++) {
+								ptWater = MapLongLatToScreen(pSettings, iterCountyWaterPolys->second[iRec].second[iSeg]);
+								if (iSeg2 == 0 || ptWater != waterPoly[iSeg2-1])
+									waterPoly[iSeg2++] = ptWater;
+							}
+							waterPoly.resize(iSeg2);
+							pSettings->pMemoryDC->drawPolygon(waterPoly, true);
+						}
+					}
+				}
+			}
+		}
+
+		// draw boundaries of water polygons - the polygons overlap, causing the color to change - change it back!
+		for (iterCounties = m_mapCountyCodeToRecords.begin(); iterCounties != m_mapCountyCodeToRecords.end(); ++iterCounties) {
+			countyRect = m_mapCountyCodeToBoundingRect.find(iterCounties->first);
+			if (countyRect == m_mapCountyCodeToBoundingRect.end() || bounds.intersectRect(countyRect->second)) {
+				iterCountyWaterPolys = m_mapCountyCodeToWaterPolys.find(iterCounties->first);
+				if (iterCountyWaterPolys != m_mapCountyCodeToWaterPolys.end()) {
+					for (iRec = 0; iRec < iterCountyWaterPolys->second.size(); iRec++) {
+						bVisible = iterCountyWaterPolys->second[iRec].first.intersectRect(bounds);
+//						bVisible = (iterCountyWaterPolys->second[iRec].first.m_iLeft > bounds.m_iRight || iterCountyWaterPolys->second[iRec].first.m_iRight < bounds.m_iLeft || iterCountyWaterPolys->second[iRec].first.m_iTop < bounds.m_iBottom || iterCountyWaterPolys->second[iRec].first.m_iBottom > bounds.m_iTop) ? false : IsRecordVisible(iterCountyWaterPolys->second[iRec].second, pSettings->ptTopLeftClip, pSettings->ptBottomRightClip);
+						if (bVisible) {
+							waterPoly.resize(iterCountyWaterPolys->second[iRec].second.size());
+							for (iSeg2 = iSeg = 0; iSeg < (int)iterCountyWaterPolys->second[iRec].second.size(); iSeg++) {
+								ptWater = MapLongLatToScreen(pSettings, iterCountyWaterPolys->second[iRec].second[iSeg]);
+								if (iSeg2 == 0 || ptWater != waterPoly[iSeg2-1])
+									waterPoly[iSeg2++] = ptWater;
+							}
+							waterPoly.resize(iSeg2);
+							for (iSeg2 = 0; iSeg2 < (int)waterPoly.size() - 1; iSeg2++)
+								DrawLine(pSettings->pMemoryDC, waterPoly[iSeg2].x(), waterPoly[iSeg2].y(), waterPoly[iSeg2+1].x(), waterPoly[iSeg2+1].y(), iWidth, clrLine, (Qt::PenStyle)iStyle);
+							if (waterPoly.size() > 1)
+								DrawLine(pSettings->pMemoryDC, waterPoly[waterPoly.size()-1].x(), waterPoly[waterPoly.size()-1].y(), waterPoly[0].x(), waterPoly[0].y(), iWidth, clrLine, (Qt::PenStyle)iStyle);
+						}
+					}
+				}
+			}
+		}
+
+		pSettings->pMemoryDC->setRasterOp(Qt::CopyROP);
+		pSettings->pMemoryDC->setPen(oldPen);
+		pSettings->pMemoryDC->setBrush(oldBrush);
+	}
+
+	// draw water boundaries
 	for (iterRecordSquares = recordSquares.begin(); iterRecordSquares != recordSquares.end(); ++iterRecordSquares) {
 		for (iRec = 0; iRec < (*iterRecordSquares)->size(); iRec++)
 		{
+			psRec = m_pRecords + (**iterRecordSquares)[iRec];
+			bVisible = psRec->rBounds.intersectRect(bounds);
+//			bVisible = (psRec->rBounds.m_iLeft > bounds.m_iRight || psRec->rBounds.m_iRight < bounds.m_iLeft || psRec->rBounds.m_iTop < bounds.m_iBottom || psRec->rBounds.m_iBottom > bounds.m_iTop) ? false : IsRecordVisible(psRec->pShapePoints, psRec->nShapePoints, pSettings->ptTopLeftClip, pSettings->ptBottomRightClip);
+			if (bVisible)
+			{
+				if (psRec->eRecordType == RecordTypeWater)
+				{
+					pLevelDetails = &pSettings->vecLevelDetails[pSettings->iDetailLevel][psRec->eRecordType];
+					if (pLevelDetails->bLineVisible) {
+						clrLine = pLevelDetails->clrLine;
+						iWidth = pLevelDetails->iWidth;
+						iStyle = pLevelDetails->iStyle;
+						parPoints.resize(psRec->nShapePoints);
+						for (iSeg = 0; iSeg < psRec->nShapePoints; iSeg++)
+							parPoints[iSeg] = MapLongLatToScreen(pSettings, psRec->pShapePoints[iSeg]);
+
+						for (iSeg = 0; iSeg < psRec->nShapePoints - 1; iSeg++)
+							DrawLine(pSettings->pMemoryDC, parPoints[iSeg].x(), parPoints[iSeg].y(), parPoints[iSeg+1].x(), parPoints[iSeg+1].y(), iWidth, clrLine, (Qt::PenStyle)iStyle);
+					}
+				}
+			}
+		}
+	}
+
+//	printf("start drawing land \r\n");
+	// draw general features from records for each visible square (counties and states)
+	//printf("Record size:%d\r\n",(*iterRecordSquares)->size());
+	for (iterRecordSquares = recordSquares.begin(); iterRecordSquares != recordSquares.end(); ++iterRecordSquares) {
+		for (iRec = 0; iRec < (*iterRecordSquares)->size(); iRec++)
+		{
+		//	printf("iRec = %d\r\n",iRec);
 			psRec = m_pRecords + (**iterRecordSquares)[iRec];
 			if (psRec->eRecordType == RecordTypeWater) continue;
 			bVisible = psRec->rBounds.intersectRect(bounds);
@@ -3462,6 +3233,7 @@ void MapDB::DrawMapFeatures(MapDrawingSettings * pSettings)
 		}
 	}
 
+	//printf("draw lands finished\r\n");
 	// draw the text
 	for (itLabels = mapLabels.begin(); itLabels != mapLabels.end(); itLabels++)
 	{
@@ -3738,6 +3510,17 @@ void MapDB::DrawMapKey(MapDrawingSettings * pSettings)
 
 
 
+void MapDB::DrawRoute(MapDrawingSettings* pSettings)
+{
+	QPen routePen(QColor(255,0,0), 3, Qt::SolidLine);
+	QPen oldPen(pSettings->pMemoryDC->pen());
+	pSettings->pMemoryDC->setPen(routePen);
+	for(int i = 0; i < m_vecRoute.size()-1; i++ )
+	{
+		pSettings->pMemoryDC->drawLine(MapLongLatToScreen(pSettings,m_vecRoute[i]).x(),MapLongLatToScreen(pSettings,m_vecRoute[i]).y(),MapLongLatToScreen(pSettings,m_vecRoute[i+1]).x(),MapLongLatToScreen(pSettings,m_vecRoute[i+1]).y());
+	}
+
+}
 
 
 
