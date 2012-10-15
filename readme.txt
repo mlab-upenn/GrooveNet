@@ -25,6 +25,9 @@ The GrooveNet Simulator has been tested on Ubuntu 12.04. This is qt3 OSM map bet
 9. type './groovenet' to run the simulator
 
 
+Map import:
+Rename your OSM map file according to ../mapdata/couties.txt
+
 
 TODO:
 

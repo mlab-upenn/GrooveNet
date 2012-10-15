@@ -961,7 +961,6 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 
 		      m_pRecords[m_nRecords].nAddressRanges++;
 
-		//      printf("zipcodeL: %d\r\n",iZipL);
 		      fgets(szLine,sizeof(szLine),hFile);
 	      }
 	      else if(strstr(szLine,"tiger:zip_right"))
@@ -1145,17 +1144,7 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 	    }
 	    vFeatureNames.clear();
 	    vFeatureTypes.clear();
-    	 //   printf("way node 1 coord %ld\r\n",m_pRecords[m_nRecords].vShapePoints[0].m_iLat);
 
-	  //  if(eRT == RecordTypeInvisibleLandBoundary)
-	//	    printf("RT = RecordTypeInvisibleLandBoundary\r\n");
-	 /*   if(m_pRecords[m_nRecords].pFeatureNames[0] == 7100 && m_pRecords[m_nRecords].pFeatureTypes[0] == 8)
-	    {
-		for(int Fi = 0; Fi < m_pRecords[m_nRecords].nShapePoints; Fi++)
-		{
-			printf("NumRef: %d,	Coords: %ld	%ld\r\n",m_pRecords[m_nRecords].pShapePoints[Fi].m_iRefCnt,m_pRecords[m_nRecords].pShapePoints[Fi].m_iLat,m_pRecords[m_nRecords].pShapePoints[Fi].m_iLong);
-		}
-	    }*/
 	    m_nRecords++ ;
 	  
 	    
@@ -1232,31 +1221,8 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 	//printf("Rec No 26614 nShapePoints:%d\r\n",m_pRecords[26614].nShapePoints);
 
 	BreakWays();
-	for(int i = 0; i < m_nRecords; i++)
-	{
-		printf("Record No.%d\r\n",i);
-		for(int j = 0; j < m_pRecords[i].nShapePoints; j++)
-		{
-			printf("Coord: %ld	%ld\r\n", m_pRecords[i].pShapePoints[j].m_iLat, m_pRecords[i].pShapePoints[j].m_iLong);
-		}
-	}
-/*	for(unsigned int i = offset; i < offset+5;i++)
-	{
-	 
-		printf("Way ID: %ld\r\n",(*wayIDItr).first);
-		printf("Way Connections: %d\r\n",m_pRecords[i].nShapePoints);
-		for(unsigned int j =0; j < m_pRecords[i].nShapePoints;j++)
-		{
-		printf("%ld	%ld\r\n",m_pRecords[i].pShapePoints[j].m_iLat,m_pRecords[i].pShapePoints[j].m_iLong);
-		}
-		printf("-------------------------------------------------------\r\n");
-		wayIDItr.operator++();
-		
-	  
 
-	  
-	}*/
-	//printf("print sth\r\n");
+
 	fclose(hFile);
 	return false;
 
@@ -1269,7 +1235,7 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 // new breakway
 bool TIGERProcessor::BreakWays()
 {
-	printf("start break\r\n");
+
 	int numBreakPoints = 0;
 	std::vector<unsigned int> vBreakPoints;
 	std::vector<unsigned int>::iterator bpItr;
@@ -1335,12 +1301,7 @@ bool TIGERProcessor::BreakWays()
 
 			if(vBreakPoints.size() > 0)
 			{
-			//	printf("iRec: %d\r\n",iRec);
-			//	memcpy(&ProcessingWay[0], m_pRecords + iRec, sizeof(MapRecord));
-			//	if(ProcessingWay[0].pShapePoints != NULL) delete[] ProcessingWay[0].pShapePoints;
-			//	ProcessingWay[0].nShapePoints = 0;addsasam
 
-		//		printf("breakpoint inserted\r\n");
 				/*Processing the first break point*/
 				ProcessingWay[0].nShapePoints = vBreakPoints[0] + 1;
 		//		printf("ProcessingWay nShapePoints:%d\r\n",ProcessingWay[0].nShapePoints);
@@ -1357,9 +1318,7 @@ bool TIGERProcessor::BreakWays()
 				}
 
 				vAdditionalWays.insert(vAdditionalWays.end(), ProcessingWay[0]);
-			//	if(ProcessingWay[0].pShapePoints != NULL) delete[] ProcessingWay[0].pShapePoints;
-			//	ProcessingWay[0].nShapePoints = 0;
-		//		printf("first seg processed\r\n");
+
 				/*Processing the other break points except the 1st one*/
 				for(int i = 1; i < vBreakPoints.size() ; i++)
 				{
@@ -1377,13 +1336,10 @@ bool TIGERProcessor::BreakWays()
 					vAdditionalWays.insert(vAdditionalWays.end(), ProcessingWay[0]);
 
 
-				//	if(ProcessingWay[0].pShapePoints != NULL) delete[] ProcessingWay[0].pShapePoints;
-				//	ProcessingWay[0].nShapePoints = 0;
 
 
 				}
-		//		printf("middle segs processed\r\n");
-				/*Processing the last way segment*/
+
 			
 				ProcessingWay[0].nShapePoints = m_pRecords[iRec].nShapePoints  - vBreakPoints[vBreakPoints.size() - 1] ;
 				ProcessingWay[0].pShapePoints = new Coords[ProcessingWay[0].nShapePoints];
@@ -1433,7 +1389,7 @@ bool TIGERProcessor::BreakWays()
 
 		
 	}
-	printf("finished break\r\n");
+
 
 	for (unsigned int iRec = 0; iRec < m_nRecords; iRec++)
 	{
@@ -1449,7 +1405,7 @@ bool TIGERProcessor::BreakWays()
 		delete[] m_pRecords;
 		m_pRecords = NULL;
 	}
-	printf("m_pRecords cleared\r\n");
+
 	m_nRecords = vAdditionalWays.size();
 	m_pRecords = new MapRecord[vAdditionalWays.size()];
 	for(int iRec = 0; iRec < m_nRecords; iRec++)
@@ -1537,12 +1493,11 @@ bool TIGERProcessor::LoadSet(const QString & strBaseName)
 			dir.remove(*filesIterator);
 			++filesIterator;
 		}
-		printf("finish in if !writemap\r\n");
+
 	}
-	printf("start clean\r\n");
+
 	Cleanup();
-	printf("finished clean\r\n");
-	printf("Loadset Finished\r\n");
+
 	return false;
 }
 

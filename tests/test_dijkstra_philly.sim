@@ -1,0 +1,22 @@
+% Created by GrooveNet Hybrid Simulator on 10/15/2012
+
+MODEL="DjikstraTripModel0" TYPE="DjikstraTripModel"
+FINISH="20th St & Ludlow St, Philadelphia, PA" START="40th St & Walnut St, Philadelphia, PA" WAYPOINTS=""
+
+MODEL="UniformSpeedModel0" TYPE="UniformSpeedModel" DEPENDS="DjikstraTripModel0"
+HIGH="0" LOW="0" MULTILANE="NO" TRIP="DjikstraTripModel0"
+
+MODEL="CarFollowingModel0" TYPE="CarFollowingModel" DEPENDS="DjikstraTripModel0;UniformSpeedModel0"
+LEADER="UniformSpeedModel0" MULTILANE="NO" TRIP="DjikstraTripModel0"
+
+MODEL="CollisionPhysModel0" TYPE="CollisionPhysModel"
+MAXDISTANCE="200" MULTICHANNEL="NO"
+
+MODEL="GrooveCommModel0" TYPE="GrooveCommModel"
+FASTRBXENABLE="NO" FIRSTRBXJITTER="0.0005" GATEWAY="NO" RBXJITTER="YES" REBROADCAST="YES" REBROADCASTINTERVAL="1"
+
+MODEL="SimpleLinkModel0" TYPE="SimpleLinkModel"
+
+MODEL="SimModel0" TYPE="SimModel" DEPENDS="SimpleLinkModel0;GrooveCommModel0;CollisionPhysModel0;DjikstraTripModel0;CarFollowingModel0"
+COMM="GrooveCommModel0" DELAY="0.2" DOLOG="YES" ID="192.168.0.1" LINK="SimpleLinkModel0" MOBILITY="CarFollowingModel0" PHYS="CollisionPhysModel0" START="0" TRACKSPEED="YES" TRIP="DjikstraTripModel0"
+

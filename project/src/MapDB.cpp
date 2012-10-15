@@ -197,7 +197,7 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 	}
 	else
 	{
-		printf("REGULAR ADDRESS\r\n");
+
 // 		QString strStreetName, strStreetType, strStreetTypeAbbrev, strCity, strState, strTemp;
 // 		QStringList listStreets;
 // 		QStringList::iterator iterStreet;
@@ -310,7 +310,7 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 		//getting the second street 
 		
 		
-		printf("num and st start\r\n");
+
 		QString strStreetName, strStreetType, strCity, strState, strTemp;
 		int iStreetNumber;
 		std::vector<unsigned int> vecZipCodes;
@@ -1873,7 +1873,7 @@ TIGERPROCESSOR_LOAD_ERROR:
 
 bool MapDB::FindAddress(Address * pAddress, int iSearchNumber, const QString & strSearchStreet, const QString & strSearchType, const QString & strCity, const QString & strState)
 {
-	printf("find add start\r\n");
+
 	unsigned int iStreetName = (unsigned)-1, iStreetType = (unsigned)-1, i, iRec, j;
 	std::map<QString, unsigned int>::iterator iterStringID;
 	std::vector<unsigned int> vecZips;
@@ -2022,7 +2022,7 @@ bool MapDB::FindAddress(Address * pAddress, int iSearchNumber, const QString & s
 
 					pAddress->iRecord = iRec;
 					pAddress->ptCoordinates = pRec->pShapePoints[0];
-					printf("run here\r\n");
+
 
 					return true;
 				}
