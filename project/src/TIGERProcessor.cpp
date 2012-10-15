@@ -124,7 +124,7 @@ void TIGERProcessor::Cleanup()
 	unsigned int iRec;
 
 
-	for (iRec = 0; iRec < m_nRecords - vAdditionalWays.size(); iRec++)
+	for (iRec = 0; iRec < m_nRecords; iRec++)
 	{
 		if (m_pRecords[iRec].pAddressRanges != NULL) delete[] m_pRecords[iRec].pAddressRanges;
 		if (m_pRecords[iRec].pFeatureNames != NULL) delete[] m_pRecords[iRec].pFeatureNames;
@@ -800,8 +800,7 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 		delete psOldSegments;
 	}
 	
-	
-	
+
 	//printf("Osm count done\r\n");
 	m_pRecords = new MapRecord[numRecords];
 	fseek(hFile, 0, SEEK_SET);
@@ -915,6 +914,7 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 
 			vShapePoints.push_back((*m_mapNodeIDandCoord.find(atol(nodeID))).second);
 
+
 		}
 		m_pRecords[m_nRecords].nShapePoints = vShapePoints.size();
 		fgets(szLine,sizeof(szLine),hFile);
@@ -1014,7 +1014,7 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 	      }
 	      
 		 
-	/*      else if(strstr(szLine,"k=\"oneway\" v=\"yes\""))
+	      else if(strstr(szLine,"k=\"oneway\" v=\"yes\""))
 	      {
 	//	printf("2 or 1 way tags\r\n");
 		switch(eRT)
@@ -1035,7 +1035,7 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 			  break;
 		}
 		fgets(szLine,sizeof(szLine),hFile);		
-	      }*/
+	      }
 	      else if(strstr(szLine,"k=\"waterway"))
 	      {
 		eRT = RecordTypeWater;
@@ -1107,7 +1107,8 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 	    m_pRecords[m_nRecords].pShapePoints = new Coords[m_pRecords[m_nRecords].nShapePoints];
 	    for(unsigned int i = 0 ; i < m_pRecords[m_nRecords].nShapePoints; i++)
 	    {
-	      m_pRecords[m_nRecords].pShapePoints[i] = vShapePoints[m_pRecords[m_nRecords].nShapePoints - i -1];
+	   //   m_pRecords[m_nRecords].pShapePoints[i] = vShapePoints[m_pRecords[m_nRecords].nShapePoints - i -1];
+	      m_pRecords[m_nRecords].pShapePoints[i] = vShapePoints[i];
 	    }
 	    vShapePoints.clear();
 	  
@@ -1148,13 +1149,13 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 
 	  //  if(eRT == RecordTypeInvisibleLandBoundary)
 	//	    printf("RT = RecordTypeInvisibleLandBoundary\r\n");
-	    if(m_pRecords[m_nRecords].pFeatureNames[0] == 7100 && m_pRecords[m_nRecords].pFeatureTypes[0] == 8)
+	 /*   if(m_pRecords[m_nRecords].pFeatureNames[0] == 7100 && m_pRecords[m_nRecords].pFeatureTypes[0] == 8)
 	    {
 		for(int Fi = 0; Fi < m_pRecords[m_nRecords].nShapePoints; Fi++)
 		{
 			printf("NumRef: %d,	Coords: %ld	%ld\r\n",m_pRecords[m_nRecords].pShapePoints[Fi].m_iRefCnt,m_pRecords[m_nRecords].pShapePoints[Fi].m_iLat,m_pRecords[m_nRecords].pShapePoints[Fi].m_iLong);
 		}
-	    }
+	    }*/
 	    m_nRecords++ ;
 	  
 	    
@@ -1231,6 +1232,14 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 	//printf("Rec No 26614 nShapePoints:%d\r\n",m_pRecords[26614].nShapePoints);
 
 	BreakWays();
+	for(int i = 0; i < m_nRecords; i++)
+	{
+		printf("Record No.%d\r\n",i);
+		for(int j = 0; j < m_pRecords[i].nShapePoints; j++)
+		{
+			printf("Coord: %ld	%ld\r\n", m_pRecords[i].pShapePoints[j].m_iLat, m_pRecords[i].pShapePoints[j].m_iLong);
+		}
+	}
 /*	for(unsigned int i = offset; i < offset+5;i++)
 	{
 	 
@@ -1255,9 +1264,12 @@ bool TIGERProcessor::LoadTypeOSM(const QString & strFilename)
 }
 
 
+
+
+// new breakway
 bool TIGERProcessor::BreakWays()
 {
-//	printf("star break\r\n");
+	printf("start break\r\n");
 	int numBreakPoints = 0;
 	std::vector<unsigned int> vBreakPoints;
 	std::vector<unsigned int>::iterator bpItr;
@@ -1272,11 +1284,46 @@ bool TIGERProcessor::BreakWays()
 	}
 	for(unsigned int iRec = 0; iRec < m_nRecords; iRec++)
 	{
+// 		//clear ProcessingWay
+// 		if(ProcessingWay[0].pShapePoints != NULL) delete[] ProcessingWay[0].pShapePoints;
+// 		if(ProcessingWay[0].pAddressRanges != NULL) delete[] ProcessingWay[0].pAddressRanges;
+// 		if(ProcessingWay[0].pFeatureNames != NULL) delete[] ProcessingWay[0].pFeatureNames;
+// 		if(ProcessingWay[0].pFeatureTypes != NULL) delete[] ProcessingWay[0].pFeatureTypes;
+// 		if(ProcessingWay != NULL)
+// 		{
+// 			delete[] ProcessingWay;
+// 			ProcessingWay = NULL;
+// 		}
+// 		printf("ProcessingWay cleared\r\n");
+
 		numShapePnts = m_pRecords[iRec].nShapePoints;
-		if(/*IsRoad(m_pRecords + iRec)&&*/(numShapePnts >2))
+		ProcessingWay[0].nFeatureNames = m_pRecords[iRec].nFeatureNames;
+		ProcessingWay[0].eRecordType = m_pRecords[iRec].eRecordType;
+		ProcessingWay[0].pFeatureNames = new unsigned int[ProcessingWay[0].nFeatureNames];
+		ProcessingWay[0].pFeatureTypes = new unsigned int[ProcessingWay[0].nFeatureNames];
+		for(unsigned int i = 0; i < ProcessingWay[0].nFeatureNames; i++)
+		{
+			ProcessingWay[0].pFeatureNames[i] = m_pRecords[iRec].pFeatureNames[i];
+			ProcessingWay[0].pFeatureTypes[i] = m_pRecords[iRec].pFeatureTypes[i];			
+		}
+		ProcessingWay[0].nAddressRanges = m_pRecords[iRec].nAddressRanges;
+		ProcessingWay[0].pAddressRanges = new AddressRange[ProcessingWay[0].nAddressRanges];
+		for(unsigned int i = 0; i < ProcessingWay[0].nAddressRanges; i++)
+		{
+			ProcessingWay[0].pAddressRanges[i].bOnLeft = m_pRecords[iRec].pAddressRanges[i].bOnLeft;				
+			ProcessingWay[0].pAddressRanges[i].iFromAddr = m_pRecords[iRec].pAddressRanges[i].iFromAddr;
+			ProcessingWay[0].pAddressRanges[i].iToAddr = m_pRecords[iRec].pAddressRanges[i].iToAddr;
+			ProcessingWay[0].pAddressRanges[i].iZip = m_pRecords[iRec].pAddressRanges[i].iZip;				
+		
+		
+		
+		}
+	
+
+		if(IsRoad(m_pRecords + iRec) && (numShapePnts >2))
 		{
 		//	printf("this is rec No.%d\r\n",iRec);
-			for(unsigned int iShape = 1; iShape < m_pRecords[iRec].nShapePoints - 1; iShape++)
+			for(unsigned int iShape = 1; iShape < m_pRecords[iRec].nShapePoints-1 ; iShape++)
 			{
 				if((m_pRecords[iRec].pShapePoints[iShape].m_iRefCnt > 1) )
 				{
@@ -1285,32 +1332,13 @@ bool TIGERProcessor::BreakWays()
 
 				}
 			}
-		//	for(int i = 0; i < vBreakPoints.size(); i++)
-		//	{
-		//		printf("vBreakPoints No.%d value: %d\r\n",i,vBreakPoints[i]);
-		//	}
-			//vBreakPoints.insert(vBreakPoints.begin(),0);
+
 			if(vBreakPoints.size() > 0)
 			{
 			//	printf("iRec: %d\r\n",iRec);
 			//	memcpy(&ProcessingWay[0], m_pRecords + iRec, sizeof(MapRecord));
 			//	if(ProcessingWay[0].pShapePoints != NULL) delete[] ProcessingWay[0].pShapePoints;
 			//	ProcessingWay[0].nShapePoints = 0;addsasam
-				ProcessingWay[0].nFeatureNames = m_pRecords[iRec].nFeatureNames;
-				ProcessingWay[0].eRecordType = m_pRecords[iRec].eRecordType;
-				ProcessingWay[0].pFeatureNames = new unsigned int[ProcessingWay[0].nFeatureNames];
-				ProcessingWay[0].pFeatureTypes = new unsigned int[ProcessingWay[0].nFeatureNames];
-				for(unsigned int i = 0; i < ProcessingWay[0].nFeatureNames; i++)
-				{
-					ProcessingWay[0].pFeatureNames[i] = m_pRecords[iRec].pFeatureNames[i];
-					ProcessingWay[0].pFeatureTypes[i] = m_pRecords[iRec].pFeatureTypes[i];			
-				}
-				ProcessingWay[0].nAddressRanges = m_pRecords[iRec].nAddressRanges;
-				ProcessingWay[0].pAddressRanges = new AddressRange[ProcessingWay[0].nAddressRanges];
-				for(unsigned int i = 0; i < ProcessingWay[0].nAddressRanges; i++)
-				{
-					ProcessingWay[0].pAddressRanges[i] = m_pRecords[iRec].pAddressRanges[i];				
-				}
 
 		//		printf("breakpoint inserted\r\n");
 				/*Processing the first break point*/
@@ -1327,10 +1355,7 @@ bool TIGERProcessor::BreakWays()
 				//	printf("Orig Coords: %ld %ld\r\n",m_pRecords[iRec].pShapePoints[iCopyShape].m_iLat,m_pRecords[iRec].pShapePoints[iCopyShape].m_iLong);
 
 				}
-		 		for(int i = 0 ; i < ProcessingWay[0].nShapePoints; i++)
-				{
-				//	printf("Coords: %ld %ld\r\n",ProcessingWay[0].pShapePoints[i].m_iLat,ProcessingWay[0].pShapePoints[i].m_iLong);
-				}
+
 				vAdditionalWays.insert(vAdditionalWays.end(), ProcessingWay[0]);
 			//	if(ProcessingWay[0].pShapePoints != NULL) delete[] ProcessingWay[0].pShapePoints;
 			//	ProcessingWay[0].nShapePoints = 0;
@@ -1371,21 +1396,22 @@ bool TIGERProcessor::BreakWays()
 
 				}
 
-			//	vAdditionalWays.insert(vAdditionalWays.end(), ProcessingWay[0]);
-			
-			//	printf("----------------------\r\n");
-				m_pRecords[iRec].nShapePoints = ProcessingWay[0].nShapePoints;
-			//	if(m_pRecords[iRec].pShapePoints != NULL) delete[] m_pRecords[iRec].pShapePoints;
-				m_pRecords[iRec].pShapePoints = new Coords[m_pRecords[iRec].nShapePoints];
-			//	memcpy(m_pRecords[iRec].pShapePoints, ProcessingWay[0].pShapePoints, sizeof(Coords) * m_pRecords[iRec].nShapePoints);
-				for(int i = 0; i < m_pRecords[iRec].nShapePoints; i ++)
-				{
-					m_pRecords[iRec].pShapePoints[i] = ProcessingWay[0].pShapePoints[i];
-				}
+				vAdditionalWays.insert(vAdditionalWays.end(), ProcessingWay[0]);
 				
 
 				vBreakPoints.clear();
 				
+			}
+			else
+			{
+				ProcessingWay[0].nShapePoints = m_pRecords[iRec].nShapePoints;
+				ProcessingWay[0].pShapePoints = new Coords[ProcessingWay[0].nShapePoints];
+				for(int iCopyShape = 0; iCopyShape < ProcessingWay[0].nShapePoints; iCopyShape++)
+				{
+					ProcessingWay[0].pShapePoints[iCopyShape].m_iLat = m_pRecords[iRec].pShapePoints[iCopyShape].m_iLat;
+					ProcessingWay[0].pShapePoints[iCopyShape].m_iLong = m_pRecords[iRec].pShapePoints[iCopyShape].m_iLong;
+				}
+				vAdditionalWays.insert(vAdditionalWays.end(),ProcessingWay[0]);				
 			}
 		//	numBreakPoints = 0;
 
@@ -1393,27 +1419,73 @@ bool TIGERProcessor::BreakWays()
 			
 			
 		}
+		else
+		{
+			ProcessingWay[0].nShapePoints = m_pRecords[iRec].nShapePoints;
+			ProcessingWay[0].pShapePoints = new Coords[ProcessingWay[0].nShapePoints];
+			for(int iCopyShape = 0; iCopyShape < ProcessingWay[0].nShapePoints; iCopyShape++)
+			{
+				ProcessingWay[0].pShapePoints[iCopyShape].m_iLat = m_pRecords[iRec].pShapePoints[iCopyShape].m_iLat;
+				ProcessingWay[0].pShapePoints[iCopyShape].m_iLong = m_pRecords[iRec].pShapePoints[iCopyShape].m_iLong;
+			}
+			vAdditionalWays.insert(vAdditionalWays.end(),ProcessingWay[0]);
+		}
 
 		
 	}
 	printf("finished break\r\n");
 
-
-	m_pRecords = new MapRecord[m_nRecords + vAdditionalWays.size()];
-	memcpy(m_pRecords, psOldSegments, sizeof(MapRecord) * m_nRecords);
-	for(int i = m_nRecords; i < m_nRecords + vAdditionalWays.size(); i ++)
+	for (unsigned int iRec = 0; iRec < m_nRecords; iRec++)
 	{
-		m_pRecords[i] = vAdditionalWays[i - m_nRecords];
+		if (m_pRecords[iRec].pAddressRanges != NULL) delete[] m_pRecords[iRec].pAddressRanges;
+		if (m_pRecords[iRec].pFeatureNames != NULL) delete[] m_pRecords[iRec].pFeatureNames;
+		if (m_pRecords[iRec].pFeatureTypes != NULL) delete[] m_pRecords[iRec].pFeatureTypes;
+		if (m_pRecords[iRec].pShapePoints != NULL) delete[] m_pRecords[iRec].pShapePoints;
+		if (m_pRecords[iRec].pVertices != NULL) delete[] m_pRecords[iRec].pVertices;
 	}
-//	printf("rec expanded\r\n");
-//	printf("old numRecord:%d\r\n",m_nRecords);
-//	printf("vAdditionalWays size:%d\r\n",vAdditionalWays.size());
-	int orig_m_nRecords = m_nRecords;
-	m_nRecords = m_nRecords + vAdditionalWays.size();
 
+
+	if (m_pRecords != NULL) {
+		delete[] m_pRecords;
+		m_pRecords = NULL;
+	}
+	printf("m_pRecords cleared\r\n");
+	m_nRecords = vAdditionalWays.size();
+	m_pRecords = new MapRecord[vAdditionalWays.size()];
+	for(int iRec = 0; iRec < m_nRecords; iRec++)
+	{
+		m_pRecords[iRec].nFeatureNames =vAdditionalWays[iRec].nFeatureNames;
+		m_pRecords[iRec].pFeatureNames = new unsigned int[m_pRecords[iRec].nFeatureNames];
+		m_pRecords[iRec].pFeatureTypes = new unsigned int[m_pRecords[iRec].nFeatureNames];
+		for(int i = 0; i < m_pRecords[iRec].nFeatureNames; i++)
+		{
+			m_pRecords[iRec].pFeatureNames[i] = vAdditionalWays[iRec].pFeatureNames[i];
+			m_pRecords[iRec].pFeatureTypes[i] = vAdditionalWays[iRec].pFeatureTypes[i];
+		}
+		m_pRecords[iRec].nAddressRanges = vAdditionalWays[iRec].nAddressRanges;
+		m_pRecords[iRec].pAddressRanges = new AddressRange[m_pRecords[iRec].nAddressRanges];
+		for(int i = 0; i < m_pRecords[iRec].nAddressRanges; i++)
+		{
+			m_pRecords[iRec].pAddressRanges[i].iFromAddr = vAdditionalWays[iRec].pAddressRanges[i].iFromAddr;	
+			m_pRecords[iRec].pAddressRanges[i].iToAddr = vAdditionalWays[iRec].pAddressRanges[i].iToAddr;
+			m_pRecords[iRec].pAddressRanges[i].iZip = vAdditionalWays[iRec].pAddressRanges[i].iZip;
+			m_pRecords[iRec].pAddressRanges[i].bOnLeft = vAdditionalWays[iRec].pAddressRanges[i].bOnLeft;
+		}
+		m_pRecords[iRec].nShapePoints = vAdditionalWays[iRec].nShapePoints;
+		m_pRecords[iRec].pShapePoints = new Coords[m_pRecords[iRec].nShapePoints];
+		for(int i = 0; i < m_pRecords[iRec].nShapePoints; i++)
+		{
+			m_pRecords[iRec].pShapePoints[i].m_iLat = vAdditionalWays[iRec].pShapePoints[i].m_iLat;
+			m_pRecords[iRec].pShapePoints[i].m_iLong = vAdditionalWays[iRec].pShapePoints[i].m_iLong;
+		}
+		m_pRecords[iRec].eRecordType = vAdditionalWays[iRec].eRecordType;
+		m_pRecords[iRec].nVertices = 0;
+		m_pRecords[iRec].pVertices = NULL;
+	}
 	
 	
 }
+
 
 bool TIGERProcessor::LoadSet(const QString & strBaseName)
 {
@@ -1580,7 +1652,7 @@ void TIGERProcessor::EnumerateVertices()
 		psRec->rBounds = Rect::BoundingRect(psRec->pShapePoints, psRec->nShapePoints);
 
 		// can't drive on rivers or railroad tracks
-		if (IsRoad(psRec) || psRec->eRecordType == RecordTypePedestrian)
+		if (IsRoad(psRec)/* || (psRec->eRecordType == RecordTypePedestrian && psRec->pFeatureNames[0] != AddString(QString("    ").stripWhiteSpace())   )*/)
 		{
 			iPreviousVertex = 0;
 			pt = psRec->pShapePoints;
@@ -1630,11 +1702,11 @@ void TIGERProcessor::EnumerateVertices()
 					AddRecordToVertex(&m_Vertices[iVertex], m_pRecords, iRec, iPreviousVertex);
 //					m_Vertices[iVertex].mapEdges.insert(std::pair<unsigned int, unsigned>(iRec, iPreviousVertex));
 				}
-				else
+			/*	else
 				{
 					AddRecordToVertex(&m_Vertices[iVertex], m_pRecords, iRec, iVertex);
 					
-				}
+				}*/
 			}
 		}
 	}

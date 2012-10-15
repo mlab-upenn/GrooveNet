@@ -68,7 +68,7 @@ std::map<unsigned int, unsigned int> g_mapZipToCountyCode;
 
 bool StringToAddress(const QString & strValue, Address * pAddress)
 {
-	printf("stringtoadd start\r\n");
+
 	QStringList listAddress;
 	QStringList::iterator iterString;
 	unsigned int i;
@@ -78,11 +78,15 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 	listAddress = QStringList::split(",", strValue);
 	if (listAddress.size() < 3) // make sure we have enough members
 		return false;
-
+/*
+	if(strValue.find('&)'ww = -1)
+	{
+		iterString = listAddress.begin();
+	}*/
 	iterString = listAddress.begin();
 	if ((*iterString).find(" & ") > -1)
 	{
-		printf("intersection start\r\n");
+		printf("INTERSECTION\r\n");
 		// intersection
 		QString strStreetName, strStreetType, strStreetTypeAbbrev, strCity, strState, strTemp;
 		QStringList listStreets;
@@ -100,6 +104,8 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 
 		// get all records for first street
 		iterStreet = listStreets.begin();
+//		strStreetName = QString("Walnut");
+//		strStreetType = QString("St");
 		strStreetName = (*iterStreet).section(" ", 0, -2);
 		strStreetType = (*iterStreet).section(" ", -1, -1);
 		strStreetTypeAbbrev = GetAbbreviation(strStreetType);
@@ -137,6 +143,8 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 		{
 			strStreetName = (*iterStreet).section(" ", 0, -2);
 			strStreetType = (*iterStreet).section(" ", -1, -1);
+		//	strStreetName = QString("40th");
+		//	strStreetType = QString("St");
 			strStreetTypeAbbrev = GetAbbreviation(strStreetType);
 			if (strStreetTypeAbbrev.isEmpty())
 				strStreetTypeAbbrev = strStreetType;
@@ -144,10 +152,16 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 			sStreetNameAndType.iStreetType = g_pMapDB->GetStringIndex(strStreetTypeAbbrev);
 			setStreetNamesAndTypes.insert(sStreetNameAndType);
 		}
+		
+	//	if(strStreetName == QString("Walnut"))
+		printf("2nd FeatureName: %d\r\n",sStreetNameAndType.iStreetName);
+	//	if(strStreetTypeAbbrev == QString("St"))
+		printf("2nd FeatureType: %d\r\n",sStreetNameAndType.iStreetType);
 
 		// go through records to find the vertices we want
 		for (iterRecord = setRecords.begin(); iterRecord != setRecords.end(); ++iterRecord)
 		{
+		//	printf("setRecords:%d\r\n",*iterRecord);
 			MapRecord * pRecord = g_pMapDB->GetRecord(*iterRecord);
 			bool bFoundZipCode = false;
 			// confirm that we're in the right zip code
@@ -155,7 +169,7 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 			{
 				if (setZipCodes.find(pRecord->pAddressRanges[i].iZip) != setZipCodes.end())
 				{
-					printf("zipcode checked\r\n");
+				//	printf("zipcode checked\r\n");
 					bFoundZipCode = true;
 					break;
 				}
@@ -183,7 +197,119 @@ bool StringToAddress(const QString & strValue, Address * pAddress)
 	}
 	else
 	{
-		// regular address
+		printf("REGULAR ADDRESS\r\n");
+// 		QString strStreetName, strStreetType, strStreetTypeAbbrev, strCity, strState, strTemp;
+// 		QStringList listStreets;
+// 		QStringList::iterator iterStreet;
+// 		std::vector<unsigned int> vecZipCodes;
+// 		std::set<unsigned int> setZipCodes, setRecords;
+// 		std::set<unsigned int>::iterator iterRecord;
+// 		std::set<unsigned short> setDownload;
+// 		std::set<StreetNameAndType> setStreetNamesAndTypes;
+// 		StreetNameAndType sStreetNameAndType;
+// 		int iStreetNumber;
+// 		
+// 		
+// // 		Generating the first street by using street number
+// 		*iterString = (*iterString).simplifyWhiteSpace();
+// 		listStreets = QStringList::split(" & ", *iterString);
+// 		
+// 		iterStreet = listStreets.begin();
+// 		strTemp = (*iterStreet).section(" ", 0, 0);
+// 		iStreetNumber = strTemp.toInt() / 100;
+// 		if((iStreetNumber % 10 == 1) && iStreetNumber / 10 != 1)
+// 			strStreetName = ((QString("%1st").arg(iStreetNumber)));
+// 		else if((iStreetNumber % 10 == 2) && iStreetNumber /10 != 1)
+// 			strStreetName = ((QString("%1nd").arg(iStreetNumber)));
+// 		else if((iStreetNumber % 10 == 3) && iStreetNumber /10 != 1)
+// 			strStreetName = ((QString("%1rd").arg(iStreetNumber)));
+// 		else 
+// 			strStreetName = ((QString("%1th").arg(iStreetNumber)));
+// 		strStreetType = QString("St");
+// 		
+// 		//strStreetType = (*iterStreet).section(" ", -1, -1);	
+// 		//strStreetName = QString("40th");
+// 		strStreetTypeAbbrev = GetAbbreviation(strStreetType);
+// 		if (strStreetTypeAbbrev.isEmpty())
+// 			strStreetTypeAbbrev = strStreetType;
+// 	
+// 		++iterString;
+// 		*iterString = (*iterString).simplifyWhiteSpace();
+// 		strCity = *iterString;
+// 		
+// 		++iterString;
+// 		*iterString = (*iterString).simplifyWhiteSpace();
+// 		strState = *iterString;
+// 		
+// 		vecZipCodes = ZipCodesByCityState(strCity,strState);
+// 		
+// 		for (i = 0; i < vecZipCodes.size(); i++)
+// 		{
+// 			unsigned short iCountyCode = CountyCodeByZip(vecZipCodes[i]);
+// 			if (!g_pMapDB->IsCountyLoaded(iCountyCode))
+// 				setDownload.insert(iCountyCode);
+// 			setZipCodes.insert(vecZipCodes[i]);
+// 		}	
+// 		if (!setDownload.empty())
+// 			g_pMapDB->DownloadCounties(setDownload);
+// 
+// 		g_pMapDB->GetStreetsByName(strStreetName, strStreetTypeAbbrev, setRecords);
+// 		
+// 
+// 		strStreetName = (*iterStreet).section(" ", 1, -2);
+// 		strStreetType = (*iterStreet).section(" ", -1, -1);
+// 		//	strStreetName = QString("Walnut");
+// 		//	strStreetType = QString("St");
+// 		strStreetTypeAbbrev = GetAbbreviation(strStreetType);
+// 		if (strStreetTypeAbbrev.isEmpty())
+// 			strStreetTypeAbbrev = strStreetType;
+// 		sStreetNameAndType.iStreetName = g_pMapDB->GetStringIndex(strStreetName);
+// 		sStreetNameAndType.iStreetType = g_pMapDB->GetStringIndex(strStreetTypeAbbrev);
+// 		setStreetNamesAndTypes.insert(sStreetNameAndType);
+// 		//if(strStreetName == QString("Walnut"))
+// 		printf("2nd FeatureName: %d\r\n",sStreetNameAndType.iStreetName);
+// 	//	if(strStreetTypeAbbrev == QString("St"))
+// 		printf("2nd FeatureType: %d\r\n",sStreetNameAndType.iStreetType);
+// 
+// 		for (iterRecord = setRecords.begin(); iterRecord != setRecords.end(); ++iterRecord)
+// 		{
+// 
+// 			MapRecord * pRecord = g_pMapDB->GetRecord(*iterRecord);
+// 
+// 			bool bFoundZipCode = false;
+// 			// confirm that we're in the right zip code
+// 			for (i = 0; i < pRecord->nAddressRanges; i++)
+// 			{
+// 				if (setZipCodes.find(pRecord->pAddressRanges[i].iZip) != setZipCodes.end())
+// 				{
+// 				//	printf("zipcode checked\r\n");
+// 					bFoundZipCode = true;
+// 					break;
+// 				}
+// 			}
+// 
+// 			if (!bFoundZipCode) // not in the right zip code
+// 				continue;
+// 
+// 			for (i = 0; i < pRecord->nVertices; i++)
+// 			{
+// 				// for each vertex, see if we have all the streets
+// 				// we are looking for (and no others)
+// 				if (g_pMapDB->IsVertex(pRecord->pVertices[i], setStreetNamesAndTypes))
+// 				{
+// 					// found it!
+// 					printf("we found the intersection\r\n");
+// 				//	printf("");pRecord->pVertice
+// 					if (g_pMapDB->GetVertex(pRecord->pVertices[i], pAddress))
+// 						return true;
+// 				}
+// 			}
+// 		}
+// 
+// 		return false;
+		//getting the second street 
+		
+		
 		printf("num and st start\r\n");
 		QString strStreetName, strStreetType, strCity, strState, strTemp;
 		int iStreetNumber;
@@ -1227,10 +1353,10 @@ void MapDB::GetStreetsByName(const QString & strStreetName, const QString & strS
 		{
 			if (m_pRecords[i].pFeatureNames[j] == iStreetName && m_pRecords[i].pFeatureTypes[j] == iStreetType)
 			{
-				printf("pFeatureNames: %d	iStreetName: %d\r\n",m_pRecords[i].pFeatureNames[j],iStreetName);
-		        	printf("pFeatureTypes: %d	iStreetType: %d\r\n",m_pRecords[i].pFeatureTypes[j],iStreetType);
-				printf("Rec No.%d\r\n",i);
-				printf("GetStreetsByName, name, type checked\r\n");
+			//	printf("pFeatureNames: %d	iStreetName: %d\r\n",m_pRecords[i].pFeatureNames[j],iStreetName);
+		        //	printf("pFeatureTypes: %d	iStreetType: %d\r\n",m_pRecords[i].pFeatureTypes[j],iStreetType);
+			//	printf("Rec No.%d\r\n",i);
+			//	printf("GetStreetsByName, name, type checked\r\n");
 				setMatching.insert(i);
 				cnt++;
 				break;
@@ -1350,7 +1476,7 @@ bool MapDB::IsCountyLoaded(unsigned short iFIPSCode)
 
 bool MapDB::DownloadCounties(const std::set<unsigned short> & setFIPSCodes)
 {
-	printf("DownloadCounties\r\n");
+//	printf("DownloadCounties\r\n");
 	std::set<unsigned short>::iterator iterFIPSCode;
 	std::set<QString> filesLoad;
 	bool bProcessable, bRetVal = false;
@@ -1393,7 +1519,7 @@ bool MapDB::DownloadCounties(const std::set<unsigned short> & setFIPSCodes)
 		bRetVal = LoadAll(GetDataPath(), filesLoad); // load processed files
 	qApp->restoreOverrideCursor();
 	
-	printf("DownloadCounties finished\r\n");
+//	printf("DownloadCounties finished\r\n");
 	return bRetVal;
 }
 
@@ -1758,6 +1884,14 @@ bool MapDB::FindAddress(Address * pAddress, int iSearchNumber, const QString & s
 	double fPercentageAlongLeg, fTotalDistance, fDesiredDistance, fSearchDistance, fChange;
 	int iAddressZipEntry;
 
+	std::map<QString, unsigned int>::iterator iterString;
+	std::vector<QString> vecToString;
+	vecToString.resize(m_mapStringsToIndex.size());
+	for(iterString = m_mapStringsToIndex.begin(); iterString != m_mapStringsToIndex.end(); ++iterString)
+	{
+		vecToString[iterString->second] = iterString->first;
+	}
+	std::map<unsigned int, unsigned int>::iterator edgeItr;
 	if (!strSearchStreet.isEmpty() && (iterStringID = m_mapStringsToIndex.find(strSearchStreet)) != m_mapStringsToIndex.end())
 		iStreetName = iterStringID->second;
 
@@ -1804,6 +1938,16 @@ bool MapDB::FindAddress(Address * pAddress, int iSearchNumber, const QString & s
 			iAddressZipEntry = -1;
 			if (iSearchNumber || (!strCity.isEmpty() && !strState.isEmpty()))
 			{
+				int streetNumber = iSearchNumber / 100;
+				int houseNumber = iSearchNumber % 100;
+				for(int iVerCnt = 0; iVerCnt < pRec->nVertices; iVerCnt++)
+				{
+					for(edgeItr = m_vecVertices[pRec->pVertices[iVerCnt]].mapEdges.begin(); edgeItr != m_vecVertices[pRec->pVertices[iVerCnt]].mapEdges.end(); ++edgeItr)
+					{
+// 						if(vecToString[GetRecord(edgeItr->first)->pFeatureNames[0]].toInt() == streetNumber);
+					}
+				}
+				
 				for (j = 0; j < pRec->nAddressRanges; j++)
 				{
 					int iLow = pRec->pAddressRanges[j].iFromAddr;
@@ -2313,6 +2457,7 @@ std::list<unsigned int> MapDB::ShortestPath(Address * pStart, Address * pEnd, bo
 
 	// use starting address to start algorithm
 	startVertex1 = startVertex2 = pStart->iVertex;
+	pStart->iVertex = (unsigned)-1;
 	if (pStart->iVertex < m_vecVerticesHeapLookup.size()) { // address is a vertex
 		heap.DecreaseKey(m_vecVerticesHeapLookup[startVertex1], 0.0);
 	} else {

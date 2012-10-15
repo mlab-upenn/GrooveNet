@@ -138,6 +138,7 @@ protected:
 	// the records themselves
 	MapRecord * m_pRecords;
 	MapRecord * ProcessingWay;
+
 	// the number of records
 	unsigned int m_nRecords;
 

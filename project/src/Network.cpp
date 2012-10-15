@@ -525,7 +525,7 @@ void SendPacketToAll(const Packet * packet)
 		//loop over the map
 		for(iterMapSendPackets = mapSendPackets.begin(); iterMapSendPackets != mapSendPackets.end(); iterMapSendPackets++)
 		{
-			dbgprint("*");
+			//dbgprint("*");
 			pBuffer = iterMapSendPackets->second->ToBytes(iLength);
 			if (pBuffer == NULL)
 			{
@@ -553,7 +553,7 @@ void SendPacketToAll(const Packet * packet)
 	}
 	else //not time to send yet
 	{
-		dbgprint("-");
+		//dbgprint("-");
 		//add packets to map. be sure to clone
 		mapSendPackets[packet->m_ipTX] = packet->clone();
 	}
