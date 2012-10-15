@@ -1,4 +1,4 @@
-The GrooveNet Simulator has been tested on Ubuntu 10.10. This is qt3 stable version. For qt4 version please go to https://github.com/mlab/GrooveNet.
+The GrooveNet Simulator has been tested on Ubuntu 12.04. This is qt3 OSM map beta version. For qt4(TIGER map) version please go to https://github.com/mlab/GrooveNet.
 
 1. First, make sure you have installed qt3 platform and g++ compiler. It works fine for g++ with 4.4.5 or above.
    
@@ -23,3 +23,12 @@ The GrooveNet Simulator has been tested on Ubuntu 10.10. This is qt3 stable vers
 8. If there are no errors, cd into bin folder
 
 9. type './groovenet' to run the simulator
+
+
+
+TODO:
+
+1. In the current version, you can only find a address by using intersection since OSM map does not provide address range info. You can fix this by either import address range info or generate address range by estimation.
+
+2. Generate water polygon.
+
