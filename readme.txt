@@ -26,6 +26,15 @@ The GrooveNet Simulator has been tested on Ubuntu 12.04. This is qt3 OSM map bet
 
 
 Map import:
+Where can I get OSM map?
+1. Exprot a piece of map from http://www.openstreetmap.org/
+2. Download "XML OSM" map from http://metro.teczno.com/
+3. Please refer to http://planet.openstreetmap.org/
+
+Where should I put the maps?
+Put them into the folder "mapdata"
+
+What else should I do before I can use the map?
 Rename your OSM map file according to ../mapdata/counties.txt
 For example, you've downloaded the map of Philadelphia county, you will need to rename it to "42101.osm" before you can use it.
 
@@ -36,5 +45,7 @@ TODO:
 
 2. Add random address generation based on intersection address. Currently, random address generation is based on normal address, all function related to random address generation will not work properly. 
 
-3. Generate water polygon.
+3. Add support to non-US maps.
+
+4. Generate water polygon.
 (If TODO1 is implemented, TODO2 can be ignored)
