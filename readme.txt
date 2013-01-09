@@ -14,7 +14,7 @@ The GrooveNet Simulator has been tested on Ubuntu 12.04. This is qt3 OSM map bet
 
 4. Navigate to your download folder and untar (or unzip) the package. You may use tar -xzvf 'file name'
 
-5. cd into your extracted folder -> project
+5. cd into your extracted folder -> project/src
 
 6. type 'make clean'
 
@@ -54,3 +54,7 @@ TODO:
 
 4. Generate water polygon.
 (If TODO1 is implemented, TODO2 can be ignored)
+
+Change Log:
+
+Jan 8 2013	remove lpcap from make file.
