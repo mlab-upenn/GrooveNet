@@ -70,11 +70,8 @@ HEADERS += Global.h \
            TCP.h \
            SimUnconstrainedModel.h \
            RandomWaypointModel.h \
-           Denso.h \
            queue.h \
            unpifi.h \
-           WAVEapi.h \
-           IP.h \
            QMessageList.h 
 SOURCES += main.cpp \
            StringHelp.cpp \
@@ -143,11 +140,8 @@ SOURCES += main.cpp \
            TCP.cpp \
            SimUnconstrainedModel.cpp \
            RandomWaypointModel.cpp \
-           Denso.cpp \
            get_ifi_info.cpp \
            queue.cpp \
-           WAVEapi.cpp \
-           IP.cpp \
            QMessageList.cpp 
 LIBS += -lpcap
 QMAKE_CXXFLAGS_RELEASE += -Wno-non-virtual-dtor \
